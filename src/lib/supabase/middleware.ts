@@ -31,14 +31,35 @@ export async function updateSession(request: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser()
 
-  if (
-    !user &&
-    !request.nextUrl.pathname.startsWith('/login') &&
-    !request.nextUrl.pathname.startsWith('/auth') &&
-    request.nextUrl.pathname.startsWith('/dashboard')
-  ) {
+  const pathname = request.nextUrl.pathname
+
+  // Public routes that don't require authentication
+  const publicRoutes = [
+    '/login',
+    '/signup',
+    '/magic-link',
+    '/forgot-password',
+    '/auth/callback',
+  ]
+
+  const isPublicRoute = publicRoutes.some(route => pathname.startsWith(route))
+  const isAuthPage = pathname.startsWith('/login') || pathname.startsWith('/signup') ||
+    pathname.startsWith('/magic-link') || pathname.startsWith('/forgot-password')
+
+  // If user is logged in and trying to access auth pages, redirect to dashboard
+  if (user && isAuthPage) {
+    const url = request.nextUrl.clone()
+    url.pathname = '/dashboard'
+    return NextResponse.redirect(url)
+  }
+
+  // If user is not logged in and trying to access protected routes, redirect to login
+  if (!user && !isPublicRoute && !pathname.startsWith('/_next') &&
+      !pathname.startsWith('/api') && !pathname.startsWith('/static') &&
+      !pathname.match(/\.(svg|png|jpg|jpeg|gif|webp)$/)) {
     const url = request.nextUrl.clone()
     url.pathname = '/login'
+    url.searchParams.set('redirectTo', pathname)
     return NextResponse.redirect(url)
   }
 
