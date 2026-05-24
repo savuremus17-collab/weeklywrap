@@ -4,14 +4,16 @@ import * as React from "react"
 import { motion } from "framer-motion"
 import { cn } from "@/lib/utils"
 
-interface GlassCardProps extends React.HTMLAttributes<HTMLDivElement> {
+interface GlassCardProps {
   intensity?: "low" | "medium" | "high"
   hover?: boolean
+  className?: string
+  children: React.ReactNode
 }
 
 const GlassCard = React.forwardRef<HTMLDivElement, GlassCardProps>(
-  ({ className, intensity = "medium", hover = true, children, ...props }, ref) => {
-    const intensities = {
+  ({ className, intensity = "medium" as "low" | "medium" | "high", hover = true, children, ...props }: any, ref) => {
+    const intensities: Record<string, string> = {
       low: "bg-background/20 backdrop-blur-sm border-white/5",
       medium: "bg-background/40 backdrop-blur-md border-white/10",
       high: "bg-background/60 backdrop-blur-xl border-white/20",
@@ -19,11 +21,11 @@ const GlassCard = React.forwardRef<HTMLDivElement, GlassCardProps>(
 
     return (
       <motion.div
-        ref={ref as any}
+        ref={ref}
         whileHover={hover ? { scale: 1.01, transition: { duration: 0.2 } } : undefined}
         className={cn(
           "rounded-2xl border shadow-xl overflow-hidden",
-          intensities[intensity],
+          intensities[intensity as string],
           className
         )}
         {...props}

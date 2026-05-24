@@ -174,8 +174,7 @@ export function DashboardSidebar({
       {/* User area */}
       <div className={cn("border-t border-sidebar-border/50 p-3", collapsed && "px-2")}>
         <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <button
+          <button
               className={cn(
                 "flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm transition-all hover:bg-sidebar-accent",
                 collapsed && "justify-center px-2"
@@ -205,7 +204,6 @@ export function DashboardSidebar({
                 )}
               </AnimatePresence>
             </button>
-          </DropdownMenuTrigger>
           <DropdownMenuContent
             align="end"
             side="right"

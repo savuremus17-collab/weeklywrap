@@ -13,6 +13,7 @@ import {
   ChevronRight,
   Check,
   Calendar,
+  Eye,
   Users,
   Settings2,
   Wand2,
