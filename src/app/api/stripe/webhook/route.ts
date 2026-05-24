@@ -30,7 +30,7 @@ export async function POST(req: NextRequest) {
   try {
     switch (event.type) {
       case 'checkout.session.completed': {
-        const session = event.data.object as Stripe.CheckoutSession;
+        const session = event.data.object as Stripe.Checkout.Session;
         const supabaseUserId = session.metadata?.supabaseUserId;
         const planType = session.metadata?.planType as PlanType;
 
@@ -42,14 +42,15 @@ export async function POST(req: NextRequest) {
           const subscriptionId = session.subscription as string;
           const subscription = await stripe.subscriptions.retrieve(subscriptionId);
 
+          const sub = subscription as any;
           await updateSubscription(
             supabaseUserId,
             subscriptionId,
             session.customer as string,
-            subscription.status,
+            sub.status,
             planType,
-            new Date(subscription.current_period_start * 1000),
-            new Date(subscription.current_period_end * 1000)
+            new Date(sub.current_period_start * 1000),
+            new Date(sub.current_period_end * 1000)
           );
         } else if (session.mode === 'payment') {
           // Lifetime payment (Founding Member)
@@ -59,31 +60,31 @@ export async function POST(req: NextRequest) {
 
           await updateSubscription(
             supabaseUserId,
-            `one_time_${session.id}`, // Placeholder ID for one-time payments
+            `one_time_${session.id}`,
             session.customer as string,
             'active',
             planType,
             new Date(),
-            new Date(new Date().setFullYear(new Date().getFullYear() + 100)) // Lifetime
+            new Date(new Date().setFullYear(new Date().getFullYear() + 100))
           );
         }
         break;
       }
 
       case 'customer.subscription.updated': {
-        const subscription = event.data.object as Stripe.Subscription;
-        const supabaseUserId = subscription.metadata?.supabaseUserId;
-        const planType = subscription.metadata?.planType as PlanType;
+        const sub = event.data.object as any;
+        const supabaseUserId = sub.metadata?.supabaseUserId;
+        const planType = sub.metadata?.planType as PlanType;
 
         if (supabaseUserId && planType) {
           await updateSubscription(
             supabaseUserId,
-            subscription.id,
-            subscription.customer as string,
-            subscription.status,
+            sub.id,
+            sub.customer as string,
+            sub.status,
             planType,
-            new Date(subscription.current_period_start * 1000),
-            new Date(subscription.current_period_end * 1000)
+            new Date(sub.current_period_start * 1000),
+            new Date(sub.current_period_end * 1000)
           );
         }
         break;
@@ -96,12 +97,10 @@ export async function POST(req: NextRequest) {
       }
 
       case 'invoice.paid': {
-        // You could send a success email here
         break;
       }
 
       case 'invoice.payment_failed': {
-        // You could send a failure email here
         break;
       }
 
