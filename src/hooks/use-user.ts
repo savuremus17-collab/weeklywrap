@@ -3,12 +3,7 @@
 import { useContext } from 'react'
 import { AuthContext, type AuthContextType } from '@/lib/auth-context'
 
-export function useUser(): {
-  user: AuthContextType['user']
-  session: AuthContextType['session']
-  loading: AuthContextType['loading']
-  initialized: AuthContextType['initialized']
-} {
+export function useUser() {
   const context = useContext(AuthContext)
 
   if (context === undefined) {
@@ -19,6 +14,5 @@ export function useUser(): {
     user: context.user,
     session: context.session,
     loading: context.loading,
-    initialized: context.initialized,
   }
 }

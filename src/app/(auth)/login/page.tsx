@@ -70,7 +70,7 @@ export default function LoginPage() {
       setIsLoading(true);
 
       try {
-        const { error } = await signIn(email, password, rememberMe);
+        const { error } = await signIn(email, password);
         if (error) {
           toast.error(error.message);
           return;

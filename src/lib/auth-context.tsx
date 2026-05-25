@@ -2,7 +2,7 @@
 
 import { createContext, useCallback, useEffect, useRef, useState } from 'react'
 import type { User, Session } from '@supabase/supabase-js'
-import { createClient } from '@/lib/supabase/client'
+import { supabase } from '@/lib/supabase/client'
 import {
   signInWithEmail as signInEmail,
   signUpWithEmail as signUpEmail,
@@ -18,8 +18,7 @@ export type AuthContextType = {
   user: User | null
   session: Session | null
   loading: boolean
-  initialized: boolean
-  signIn: (email: string, password: string, rememberMe?: boolean) => Promise<{ error: AuthError | null }>
+  signIn: (email: string, password: string) => Promise<{ error: AuthError | null }>
   signUp: (email: string, password: string, name?: string) => Promise<{ error: AuthError | null }>
   signInWithGoogle: () => Promise<{ error: AuthError | null }>
   sendMagicLink: (email: string) => Promise<{ error: AuthError | null }>
@@ -34,19 +33,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null)
   const [session, setSession] = useState<Session | null>(null)
   const [loading, setLoading] = useState(true)
-  const [initialized, setInitialized] = useState(false)
-  const supabase = createClient()
   const initializedRef = useRef(false)
 
   useEffect(() => {
-    // Prevent double initialization in Strict Mode
     if (initializedRef.current) return
     initializedRef.current = true
 
     const initialize = async () => {
       try {
         const { data: { session: currentSession } } = await supabase.auth.getSession()
-
         if (currentSession) {
           setSession(currentSession)
           setUser(currentSession.user)
@@ -55,16 +50,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         console.error('Error initializing auth:', err)
       } finally {
         setLoading(false)
-        setInitialized(true)
       }
     }
 
     initialize()
 
-    // Listen for auth state changes
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, newSession) => {
+    } = supabase.auth.onAuthStateChange((_event: string, newSession: Session | null) => {
       setSession(newSession)
       setUser(newSession?.user ?? null)
       setLoading(false)
@@ -73,11 +66,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     return () => {
       subscription.unsubscribe()
     }
-  }, [supabase])
+  }, [])
 
-  const signIn = useCallback(async (email: string, password: string, rememberMe = false) => {
+  const signIn = useCallback(async (email: string, password: string) => {
     setLoading(true)
-    const { error } = await signInEmail(email, password, rememberMe)
+    const { error } = await signInEmail(email, password)
     setLoading(false)
     return { error }
   }, [])
@@ -119,7 +112,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     user,
     session,
     loading,
-    initialized,
     signIn,
     signUp,
     signInWithGoogle: handleSignInWithGoogle,
