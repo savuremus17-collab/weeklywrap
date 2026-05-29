@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server'
-import { stripe } from '@/lib/stripe/server'
+import { stripe } from '../../../../lib/stripe/server'
 
 export async function POST(req: Request) {
   const body = await req.text()
