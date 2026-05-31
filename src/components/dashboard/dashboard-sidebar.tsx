@@ -227,6 +227,7 @@ export function DashboardSidebar({
     </DropdownMenuContent>
   </DropdownMenu>
 </div>
+    </div>
   )
 
   return (
