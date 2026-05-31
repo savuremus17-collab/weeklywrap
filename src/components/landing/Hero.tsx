@@ -72,12 +72,16 @@ export const Hero = () => {
             transition={{ duration: 0.5, delay: 0.3 }}
             className="flex flex-col sm:flex-row items-center gap-4"
           >
-            <Button size="lg" className="h-12 px-8 text-base gap-2">
-              Start Free <ArrowRight size={18} />
-            </Button>
-            <Button size="lg" variant="outline" className="h-12 px-8 text-base gap-2">
-              <Play size={18} fill="currentColor" /> Watch Demo
-            </Button>
+           <Button size="lg" className="h-12 px-8 text-base gap-2" asChild>
+  <a href="/login">
+    Start Free <ArrowRight size={18} />
+  </a>
+</Button>
+<Button size="lg" variant="outline" className="h-12 px-8 text-base gap-2" asChild>
+  <a href="#demo">
+    <Play size={18} fill="currentColor" /> Watch Demo
+  </a>
+</Button>
           </motion.div>
 
           <motion.div
