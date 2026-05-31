@@ -56,12 +56,12 @@ export const Nav = () => {
 
         {/* Desktop CTAs */}
         <div className="hidden md:flex items-center gap-4">
-          <Link href="/auth/login">
+         <Link href="/login">
             <Button variant="ghost" size="sm">
               Log in
             </Button>
           </Link>
-          <Link href="/auth/signup">
+          <Link href="/signup">
             <Button size="sm">Get Started</Button>
           </Link>
         </div>
