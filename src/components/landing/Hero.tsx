@@ -1,5 +1,5 @@
 "use client";
-
+import { useRouter } from 'next/navigation';
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Play, CheckCircle2 } from "lucide-react";
@@ -24,6 +24,7 @@ const data = [
 ];
 
 export const Hero = () => {
+  const router = useRouter();
   return (
     <section className="relative pt-32 pb-20 md:pt-48 md:pb-32 overflow-hidden">
       {/* Background Gradients */}
@@ -72,15 +73,11 @@ export const Hero = () => {
             transition={{ duration: 0.5, delay: 0.3 }}
             className="flex flex-col sm:flex-row items-center gap-4"
           >
-           <Button size="lg" className="h-12 px-8 text-base gap-2" asChild>
-  <a href="/login">
-    Start Free <ArrowRight size={18} />
-  </a>
+          <Button size="lg" className="h-12 px-8 text-base gap-2" onClick={() => router.push('/login')}>
+  Start Free <ArrowRight size={18} />
 </Button>
-<Button size="lg" variant="outline" className="h-12 px-8 text-base gap-2" asChild>
-  <a href="#demo">
-    <Play size={18} fill="currentColor" /> Watch Demo
-  </a>
+<Button size="lg" variant="outline" className="h-12 px-8 text-base gap-2" onClick={() => router.push('#demo')}>
+  <Play size={18} fill="currentColor" /> Watch Demo
 </Button>
           </motion.div>
 
