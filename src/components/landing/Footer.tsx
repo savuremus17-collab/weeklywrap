@@ -14,15 +14,12 @@ const footerLinks = [
     ],
   },
   {
-    title: "Resources",
-    links: [
-      { name: "Documentation", href: "#" },
-      { name: "Blog", href: "#" },
-      { name: "Community", href: "#" },
-      { name: "Support", href: "#" },
-    ],
-  },
-  {
+   {
+  title: "Resources",
+  links: [
+    { name: "Support", href: "mailto:weeklywrapsupport@gmail.com" },
+  ],
+},
     title: "Company",
     links: [
       { name: "About", href: "#" },
