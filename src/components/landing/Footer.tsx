@@ -12,12 +12,11 @@ const footerLinks = [
       { name: "Demo", href: "#" },
       { name: "Changelog", href: "#" },
     ],
-  },
+ },
   {
-   {
-  title: "Resources",
-  links: [
-    { name: "Support", href: "mailto:weeklywrapsupport@gmail.com" },
+    title: "Resources",
+    links: [
+      { name: "Support", href: "mailto:weeklywrapsupport@gmail.com" },
   ],
 },
     title: "Company",
