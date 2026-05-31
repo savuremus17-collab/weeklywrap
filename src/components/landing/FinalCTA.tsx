@@ -27,13 +27,13 @@ export const FinalCTA = () => {
               their weekends with WeeklyWrap.
             </p>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-              <Button size="lg" className="h-14 px-10 text-lg gap-2 w-full sm:w-auto">
-                Start For Free <ArrowRight size={20} />
-              </Button>
-              <Button size="lg" variant="outline" className="h-14 px-10 text-lg w-full sm:w-auto">
-                View Pricing
-              </Button>
-            </div>
+  <Button size="lg" className="h-14 px-10 text-lg gap-2 w-full sm:w-auto">
+    Start For Free <ArrowRight size={20} />
+  </Button>
+  <Button size="lg" variant="outline" className="h-14 px-10 text-lg w-full sm:w-auto">
+    View Pricing
+  </Button>
+</div>
             <p className="mt-8 text-sm text-muted-foreground">
               No credit card required. Cancel anytime.
             </p>
