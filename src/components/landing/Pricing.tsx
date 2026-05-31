@@ -19,6 +19,10 @@ const plans = [
     ],
     cta: "Get Started",
     popular: false,
+    link: {
+      monthly: "https://buy.stripe.com/test_dRm6oIaJHfeyan4g248Zq00",
+      yearly: "https://buy.stripe.com/test_dRm6oIaJHfeyan4g248Zq00",
+    },
   },
   {
     name: "Pro",
@@ -34,6 +38,10 @@ const plans = [
     ],
     cta: "Start Free Trial",
     popular: true,
+    link: {
+      monthly: "https://buy.stripe.com/test_28E9AUbNL1nIan4cPS8Zq01",
+      yearly: "https://buy.stripe.com/test_fZu28s9FD1nIcvc9DG8Zq02",
+    },
   },
   {
     name: "Agency",
@@ -49,6 +57,10 @@ const plans = [
     ],
     cta: "Contact Sales",
     popular: false,
+    link: {
+      monthly: "https://buy.stripe.com/test_28E4gA2dbaYibr8eY08Zq03",
+      yearly: "https://buy.stripe.com/test_eVq6oIeZX3vQ9j02be8Zq04",
+    },
   },
 ];
 
@@ -92,8 +104,8 @@ export const Pricing = () => {
               viewport={{ once: true }}
               transition={{ duration: 0.5, delay: index * 0.1 }}
               className={`relative p-8 rounded-2xl border ${
-                plan.popular 
-                  ? 'border-primary bg-primary/5 shadow-[0_0_40px_-15px_rgba(var(--primary),0.3)]' 
+                plan.popular
+                  ? 'border-primary bg-primary/5 shadow-[0_0_40px_-15px_rgba(var(--primary),0.3)]'
                   : 'border-border bg-card'
               }`}
             >
@@ -121,12 +133,18 @@ export const Pricing = () => {
                 ))}
               </div>
 
-              <Button 
-                variant={plan.popular ? "default" : "outline"} 
-                className="w-full h-12"
+              <a
+                href={isYearly ? plan.link.yearly : plan.link.monthly}
+                target="_blank"
+                rel="noopener noreferrer"
               >
-                {plan.cta}
-              </Button>
+                <Button
+                  variant={plan.popular ? "default" : "outline"}
+                  className="w-full h-12"
+                >
+                  {plan.cta}
+                </Button>
+              </a>
             </motion.div>
           ))}
         </div>
@@ -148,17 +166,23 @@ export const Pricing = () => {
                 <span className="bg-primary text-primary-foreground text-[10px] font-black px-1.5 py-0.5 rounded uppercase">Limited</span>
               </div>
               <p className="text-muted-foreground max-w-md">
-                Get lifetime access to WeeklyWrap Pro for a one-time payment. 
+                Get lifetime access to WeeklyWrap Pro for a one-time payment.
                 Only 50 spots available.
               </p>
             </div>
           </div>
-          
+
           <div className="flex flex-col items-center md:items-end gap-3">
             <div className="text-3xl font-bold">$79 <span className="text-sm font-normal text-muted-foreground line-through">$499</span></div>
-            <Button className="bg-primary hover:bg-primary/90 text-primary-foreground font-bold">
-              Claim Your Spot
-            </Button>
+            <a
+              href="https://buy.stripe.com/test_bJecN6cRPd6qdzgg248Zq05"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <Button className="bg-primary hover:bg-primary/90 text-primary-foreground font-bold">
+                Claim Your Spot
+              </Button>
+            </a>
             <div className="text-xs text-muted-foreground">
               <span className="text-primary font-bold">12 spots</span> remaining
             </div>
