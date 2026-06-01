@@ -212,14 +212,17 @@ export function DashboardSidebar({
       <DropdownMenuSeparator />
       <DropdownMenuItem
   className="gap-2 text-red-400 cursor-pointer"
-onClick={async () => {
-  const { supabase } = await import("@/lib/supabase/client")
-  await supabase.auth.signOut()
-  window.location.href = "/"
-}}
+<DropdownMenuSeparator />
+<DropdownMenuItem
+  className="gap-2 text-red-400 cursor-pointer"
+  onClick={async () => {
+    const { supabase } = await import("@/lib/supabase/client")
+    await supabase.auth.signOut()
+    window.location.href = "/"
+  }}
 >
-        <LogOut className="h-4 w-4" />
-        Sign out
+  <LogOut className="h-4 w-4" />
+  Sign out
       </DropdownMenuItem>
     </DropdownMenuContent>
   </DropdownMenu>
