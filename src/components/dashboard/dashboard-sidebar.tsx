@@ -15,19 +15,10 @@ import {
   ChevronLeft,
   Menu,
   LogOut,
-  User,
   Zap,
 } from "lucide-react"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
 
 const navItems = [
   { name: "Overview", href: "/dashboard", icon: LayoutDashboard },
@@ -70,11 +61,7 @@ export function DashboardSidebar({
   }
 
   const sidebarContent = (
-    <div
-      className={cn(
-        "flex h-full flex-col bg-sidebar/80 backdrop-blur-xl border-r border-sidebar-border transition-all duration-300"
-      )}
-    >
+    <div className="flex h-full flex-col bg-sidebar/80 backdrop-blur-xl border-r border-sidebar-border transition-all duration-300">
       {/* Logo */}
       <div className={cn("flex h-16 items-center border-b border-sidebar-border/50 px-4", collapsed && "justify-center px-2")}>
         <Link href="/dashboard" className="flex items-center gap-3">
@@ -135,14 +122,8 @@ export function DashboardSidebar({
                   transition={{ type: "spring", stiffness: 380, damping: 30 }}
                 />
               )}
-              <div className={cn(
-                "relative z-10 flex items-center gap-3",
-                collapsed && "justify-center"
-              )}>
-                <Icon className={cn(
-                  "h-[18px] w-[18px] transition-all",
-                  isActive && "text-sidebar-primary"
-                )} />
+              <div className={cn("relative z-10 flex items-center gap-3", collapsed && "justify-center")}>
+                <Icon className={cn("h-[18px] w-[18px] transition-all", isActive && "text-sidebar-primary")} />
                 <AnimatePresence mode="wait">
                   {!collapsed && (
                     <motion.span
@@ -171,40 +152,40 @@ export function DashboardSidebar({
         })}
       </nav>
 
-{/* User area */}
-    <div className={cn("border-t border-sidebar-border/50 p-3", collapsed && "px-2")}>
-      <Link
-        href="/dashboard/settings"
-        className={cn(
-          "flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm transition-all hover:bg-sidebar-accent",
-          collapsed && "justify-center px-2"
-        )}
-      >
-        <Avatar className="h-8 w-8 ring-2 ring-sidebar-primary/20">
-          <AvatarImage src="/avatars/user.jpg" alt="User" />
-          <AvatarFallback className="bg-gradient-to-br from-blue-500 to-purple-600 text-xs text-white">
-            JD
-          </AvatarFallback>
-        </Avatar>
-        <AnimatePresence mode="wait">
-          {!collapsed && (
-            <motion.div
-              initial={{ opacity: 0, width: 0 }}
-              animate={{ opacity: 1, width: "auto" }}
-              exit={{ opacity: 0, width: 0 }}
-              className="flex-1 overflow-hidden text-left"
-            >
-              <p className="text-sm font-medium text-sidebar-foreground truncate">John Doe</p>
-              <p className="text-xs text-sidebar-foreground/50 truncate">Pro Plan</p>
-            </motion.div>
+      {/* User area */}
+      <div className={cn("border-t border-sidebar-border/50 p-3", collapsed && "px-2")}>
+        <Link
+          href="/dashboard/settings"
+          className={cn(
+            "flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm transition-all hover:bg-sidebar-accent",
+            collapsed && "justify-center px-2"
           )}
-        </AnimatePresence>
-      </Link>
-</div>
-  </div>
-)
+        >
+          <Avatar className="h-8 w-8 ring-2 ring-sidebar-primary/20">
+            <AvatarImage src="/avatars/user.jpg" alt="User" />
+            <AvatarFallback className="bg-gradient-to-br from-blue-500 to-purple-600 text-xs text-white">
+              JD
+            </AvatarFallback>
+          </Avatar>
+          <AnimatePresence mode="wait">
+            {!collapsed && (
+              <motion.div
+                initial={{ opacity: 0, width: 0 }}
+                animate={{ opacity: 1, width: "auto" }}
+                exit={{ opacity: 0, width: 0 }}
+                className="flex-1 overflow-hidden text-left"
+              >
+                <p className="text-sm font-medium text-sidebar-foreground truncate">John Doe</p>
+                <p className="text-xs text-sidebar-foreground/50 truncate">Pro Plan</p>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </Link>
+      </div>
+    </div>
+  )
 
-return (
+  return (
     <>
       {/* Desktop sidebar */}
       <aside
