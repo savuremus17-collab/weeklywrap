@@ -108,7 +108,7 @@ export default function ClientsPage() {
             Manage your clients and their weekly reports.
           </p>
         </div>
-        <Button className="h-9 gap-1.5 bg-gradient-to-r from-blue-500 to-blue-700 hover:from-blue-600 hover:to-blue-800 shadow-lg shadow-blue-500/25">
+        <Button className="h-9 gap-1.5 bg-gradient-to-r from-blue-500 to-blue-700 hover:from-blue-600 hover:to-blue-800 shadow-lg shadow-blue-500/25" onClick={() => window.location.href = "/dashboard/clients/new"}>
           <Plus className="h-4 w-4" />
           Add Client
         </Button>
