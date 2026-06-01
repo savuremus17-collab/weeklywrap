@@ -213,9 +213,8 @@ export function DashboardSidebar({
       <DropdownMenuItem
         className="gap-2 text-red-400 cursor-pointer"
         onClick={async () => {
-          const { createClient } = await import("@/lib/supabase/client")
-          const supabase = createClient()
-          await supabase.auth.signOut()
+         const { supabase } = await import("@/lib/supabase/client")
+await supabase.auth.signOut()
           window.location.href = "/"
         }}
       >
