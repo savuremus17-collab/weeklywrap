@@ -174,7 +174,7 @@ export function DashboardSidebar({
     {/* User area */}
 <div className={cn("border-t border-sidebar-border/50 p-3", collapsed && "px-2")}>
   <DropdownMenu>
-    <DropdownMenuTrigger asChild>
+    <DropdownMenuTrigger>
       <button
         className={cn(
           "flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm transition-all hover:bg-sidebar-accent",
