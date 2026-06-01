@@ -226,7 +226,6 @@ export function DashboardSidebar({
  </div>
   </div>
 )
-
 return (
     <>
       {/* Desktop sidebar */}
