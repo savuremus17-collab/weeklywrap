@@ -171,7 +171,7 @@ export function DashboardSidebar({
         })}
       </nav>
 
-  {/* User area */}
+{/* User area */}
     <div className={cn("border-t border-sidebar-border/50 p-3", collapsed && "px-2")}>
       <DropdownMenu>
         <DropdownMenuTrigger>
@@ -224,9 +224,6 @@ export function DashboardSidebar({
         </DropdownMenuContent>
       </DropdownMenu>
     </div>
-  </div>
-)
-
 return (
     <>
       {/* Desktop sidebar */}
