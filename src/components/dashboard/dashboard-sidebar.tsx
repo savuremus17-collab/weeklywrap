@@ -223,7 +223,10 @@ export function DashboardSidebar({
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
-    </div>
+ </div>
+  </div>
+)
+
 return (
     <>
       {/* Desktop sidebar */}
