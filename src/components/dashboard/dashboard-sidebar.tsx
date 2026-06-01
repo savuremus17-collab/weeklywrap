@@ -200,7 +200,10 @@ export function DashboardSidebar({
           )}
         </AnimatePresence>
       </Link>
-    </div>
+   </div>
+  </div>
+)
+
 return (
     <>
       {/* Desktop sidebar */}
