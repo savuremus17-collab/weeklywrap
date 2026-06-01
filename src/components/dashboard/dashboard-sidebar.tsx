@@ -173,58 +173,34 @@ export function DashboardSidebar({
 
 {/* User area */}
     <div className={cn("border-t border-sidebar-border/50 p-3", collapsed && "px-2")}>
-      <DropdownMenu>
-       <DropdownMenuTrigger
-  className={cn(
-    "flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm transition-all hover:bg-sidebar-accent",
-    collapsed && "justify-center px-2"
-  )}
->
-            <Avatar className="h-8 w-8 ring-2 ring-sidebar-primary/20">
-              <AvatarImage src="/avatars/user.jpg" alt="User" />
-              <AvatarFallback className="bg-gradient-to-br from-blue-500 to-purple-600 text-xs text-white">
-                JD
-              </AvatarFallback>
-            </Avatar>
-            <AnimatePresence mode="wait">
-              {!collapsed && (
-                <motion.div
-                  initial={{ opacity: 0, width: 0 }}
-                  animate={{ opacity: 1, width: "auto" }}
-                  exit={{ opacity: 0, width: 0 }}
-                  className="flex-1 overflow-hidden text-left"
-                >
-                  <p className="text-sm font-medium text-sidebar-foreground truncate">John Doe</p>
-                  <p className="text-xs text-sidebar-foreground/50 truncate">Pro Plan</p>
-                </motion.div>
-              )}
-            </AnimatePresence>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent align="end" side="right" sideOffset={8} className="w-56">
-          <DropdownMenuLabel>My Account</DropdownMenuLabel>
-          <DropdownMenuSeparator />
-          <DropdownMenuItem onClick={() => window.location.href = "/dashboard/settings"} className="gap-2 flex items-center">
-            <Settings className="h-4 w-4" />
-            Settings
-          </DropdownMenuItem>
-          <DropdownMenuSeparator />
-          <DropdownMenuItem
-            className="gap-2 text-red-400 cursor-pointer"
-            onClick={async () => {
-              const { supabase } = await import("@/lib/supabase/client")
-              await supabase.auth.signOut()
-              window.location.href = "/"
-            }}
-          >
-            <LogOut className="h-4 w-4" />
-            Sign out
-          </DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
- </div>
-  </div>
-)
-
+      <Link
+        href="/dashboard/settings"
+        className={cn(
+          "flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm transition-all hover:bg-sidebar-accent",
+          collapsed && "justify-center px-2"
+        )}
+      >
+        <Avatar className="h-8 w-8 ring-2 ring-sidebar-primary/20">
+          <AvatarImage src="/avatars/user.jpg" alt="User" />
+          <AvatarFallback className="bg-gradient-to-br from-blue-500 to-purple-600 text-xs text-white">
+            JD
+          </AvatarFallback>
+        </Avatar>
+        <AnimatePresence mode="wait">
+          {!collapsed && (
+            <motion.div
+              initial={{ opacity: 0, width: 0 }}
+              animate={{ opacity: 1, width: "auto" }}
+              exit={{ opacity: 0, width: 0 }}
+              className="flex-1 overflow-hidden text-left"
+            >
+              <p className="text-sm font-medium text-sidebar-foreground truncate">John Doe</p>
+              <p className="text-xs text-sidebar-foreground/50 truncate">Pro Plan</p>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </Link>
+    </div>
 return (
     <>
       {/* Desktop sidebar */}
