@@ -199,7 +199,6 @@ export function DashboardSidebar({
                 </motion.div>
               )}
             </AnimatePresence>
-          </button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" side="right" sideOffset={8} className="w-56">
           <DropdownMenuLabel>My Account</DropdownMenuLabel>
