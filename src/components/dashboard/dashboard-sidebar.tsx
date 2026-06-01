@@ -174,13 +174,12 @@ export function DashboardSidebar({
 {/* User area */}
     <div className={cn("border-t border-sidebar-border/50 p-3", collapsed && "px-2")}>
       <DropdownMenu>
-        <DropdownMenuTrigger>
-          <button
-            className={cn(
-              "flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm transition-all hover:bg-sidebar-accent",
-              collapsed && "justify-center px-2"
-            )}
-          >
+       <DropdownMenuTrigger
+  className={cn(
+    "flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm transition-all hover:bg-sidebar-accent",
+    collapsed && "justify-center px-2"
+  )}
+>
             <Avatar className="h-8 w-8 ring-2 ring-sidebar-primary/20">
               <AvatarImage src="/avatars/user.jpg" alt="User" />
               <AvatarFallback className="bg-gradient-to-br from-blue-500 to-purple-600 text-xs text-white">
