@@ -205,12 +205,10 @@ export function DashboardSidebar({
     <DropdownMenuContent align="end" side="right" sideOffset={8} className="w-56">
       <DropdownMenuLabel>My Account</DropdownMenuLabel>
       <DropdownMenuSeparator />
-      <DropdownMenuItem asChild>
-        <Link href="/dashboard/settings" className="gap-2 flex items-center">
-          <Settings className="h-4 w-4" />
-          Settings
-        </Link>
-      </DropdownMenuItem>
+     <DropdownMenuItem onClick={() => window.location.href = "/dashboard/settings"} className="gap-2 flex items-center">
+  <Settings className="h-4 w-4" />
+  Settings
+</DropdownMenuItem>
       <DropdownMenuSeparator />
       <DropdownMenuItem
         className="gap-2 text-red-400 cursor-pointer"
