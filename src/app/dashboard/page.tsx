@@ -146,9 +146,7 @@ export default function DashboardPage() {
           </p>
         </div>
         <div className="flex items-center gap-2">
-         <Button variant="outline" size="sm" className="h-9 gap-1.5" onClick={() => window.location.href = "/dashboard/reports"}>
-  <Download className="h-4 w-4" />
-  Export
+         <<Button variant="outline" size="sm" className="h-9 gap-1.5" onClick={() => window.location.href = "/dashboard/clients"}>
 </Button>
 <Button size="sm" className="h-9 gap-1.5 bg-gradient-to-r from-blue-500 to-blue-700 hover:from-blue-600 hover:to-blue-800 shadow-lg shadow-blue-500/25" onClick={() => window.location.href = "/dashboard/reports"}>
   <Plus className="h-4 w-4" />
