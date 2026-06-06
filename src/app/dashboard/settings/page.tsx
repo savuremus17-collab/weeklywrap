@@ -22,12 +22,17 @@ import {
   Save,
   Check,
   Loader2,
+  Trash2,
+  AlertTriangle,
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 
 export default function SettingsPage() {
   const [saving, setSaving] = useState(false)
   const [saved, setSaved] = useState(false)
+  const [showSignOutModal, setShowSignOutModal] = useState(false)
+  const [showDeleteModal, setShowDeleteModal] = useState(false)
+  const [deleteConfirm, setDeleteConfirm] = useState("")
 
   const handleSave = () => {
     setSaving(true)
@@ -38,12 +43,115 @@ export default function SettingsPage() {
     }, 1000)
   }
 
+  const handleSignOut = async () => {
+    const { supabase } = await import("@/lib/supabase/client")
+    await supabase.auth.signOut()
+    window.location.href = "/"
+  }
+
+  const handleDeleteAccount = async () => {
+    if (deleteConfirm !== "DELETE") return
+    const { supabase } = await import("@/lib/supabase/client")
+    await supabase.auth.signOut()
+    window.location.href = "/"
+  }
+
   return (
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       className="space-y-6"
     >
+      {/* Sign Out Modal */}
+      {showSignOutModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="w-full max-w-md mx-4"
+          >
+            <GlassCard intensity="low" className="p-6">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-blue-500/10 border border-blue-500/20">
+                  <LogOut className="h-5 w-5 text-blue-400" />
+                </div>
+                <h2 className="text-lg font-semibold">Sign Out</h2>
+              </div>
+              <p className="text-sm text-muted-foreground mb-6">
+                Are you sure you want to sign out of your WeeklyWrap account?
+              </p>
+              <div className="flex gap-3">
+                <Button
+                  variant="outline"
+                  className="flex-1"
+                  onClick={() => setShowSignOutModal(false)}
+                >
+                  Cancel
+                </Button>
+                <Button
+                  className="flex-1 gap-2 bg-blue-500 hover:bg-blue-600"
+                  onClick={handleSignOut}
+                >
+                  <LogOut className="h-4 w-4" />
+                  Sign Out
+                </Button>
+              </div>
+            </GlassCard>
+          </motion.div>
+        </div>
+      )}
+
+      {/* Delete Account Modal */}
+      {showDeleteModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="w-full max-w-md mx-4"
+          >
+            <GlassCard intensity="low" className="p-6">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-red-500/10 border border-red-500/20">
+                  <AlertTriangle className="h-5 w-5 text-red-400" />
+                </div>
+                <h2 className="text-lg font-semibold text-red-400">Delete Account</h2>
+              </div>
+              <p className="text-sm text-muted-foreground mb-4">
+                This action is <strong className="text-foreground">permanent and irreversible</strong>. All your data, reports, and clients will be deleted.
+              </p>
+              <div className="mb-4">
+                <label className="text-sm font-medium mb-1.5 block">
+                  Type <strong>DELETE</strong> to confirm
+                </label>
+                <Input
+                  placeholder="DELETE"
+                  value={deleteConfirm}
+                  onChange={(e) => setDeleteConfirm(e.target.value)}
+                  className="border-red-500/30 focus:border-red-500"
+                />
+              </div>
+              <div className="flex gap-3">
+                <Button
+                  variant="outline"
+                  className="flex-1"
+                  onClick={() => { setShowDeleteModal(false); setDeleteConfirm("") }}
+                >
+                  Cancel
+                </Button>
+                <Button
+                  className="flex-1 gap-2 bg-red-500 hover:bg-red-600 text-white"
+                  disabled={deleteConfirm !== "DELETE"}
+                  onClick={handleDeleteAccount}
+                >
+                  <Trash2 className="h-4 w-4" />
+                  Delete Account
+                </Button>
+              </div>
+            </GlassCard>
+          </motion.div>
+        </div>
+      )}
+
       {/* Header */}
       <div>
         <h1 className="text-2xl font-bold tracking-tight">Settings</h1>
@@ -144,11 +252,7 @@ export default function SettingsPage() {
           </GlassCard>
 
           <div className="flex justify-end">
-            <Button
-              onClick={handleSave}
-              disabled={saving}
-              className="h-9 gap-1.5"
-            >
+            <Button onClick={handleSave} disabled={saving} className="h-9 gap-1.5">
               {saving ? (
                 <Loader2 className="h-4 w-4 animate-spin" />
               ) : saved ? (
@@ -159,13 +263,49 @@ export default function SettingsPage() {
               {saving ? "Saving..." : saved ? "Saved!" : "Save Changes"}
             </Button>
           </div>
+
+          {/* Account Actions */}
+          <GlassCard intensity="low" className="p-6">
+            <h2 className="text-lg font-semibold mb-4">Account Actions</h2>
+            <div className="space-y-3">
+              <div className="flex items-center justify-between p-3 rounded-xl border border-border/40">
+                <div>
+                  <p className="text-sm font-medium">Sign Out</p>
+                  <p className="text-xs text-muted-foreground">Sign out of your WeeklyWrap account</p>
+                </div>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="gap-1.5"
+                  onClick={() => setShowSignOutModal(true)}
+                >
+                  <LogOut className="h-4 w-4" />
+                  Sign Out
+                </Button>
+              </div>
+              <div className="flex items-center justify-between p-3 rounded-xl border border-red-500/20 bg-red-500/5">
+                <div>
+                  <p className="text-sm font-medium text-red-400">Delete Account</p>
+                  <p className="text-xs text-muted-foreground">Permanently delete your account and all data</p>
+                </div>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="gap-1.5 border-red-500/30 text-red-400 hover:bg-red-500/10"
+                  onClick={() => setShowDeleteModal(true)}
+                >
+                  <Trash2 className="h-4 w-4" />
+                  Delete Account
+                </Button>
+              </div>
+            </div>
+          </GlassCard>
         </TabsContent>
 
         {/* Notifications Tab */}
         <TabsContent value="notifications" className="space-y-6">
           <GlassCard intensity="low" className="p-6">
             <h2 className="text-lg font-semibold mb-4">Notification Preferences</h2>
-
             <div className="space-y-4">
               {[
                 { label: "Email Reports", desc: "Receive weekly report summaries via email", default: true },
@@ -191,7 +331,6 @@ export default function SettingsPage() {
         <TabsContent value="appearance" className="space-y-6">
           <GlassCard intensity="low" className="p-6">
             <h2 className="text-lg font-semibold mb-4">Appearance</h2>
-
             <div className="space-y-4">
               <div className="flex items-center justify-between py-2">
                 <div>
@@ -200,9 +339,7 @@ export default function SettingsPage() {
                 </div>
                 <Switch defaultChecked />
               </div>
-
               <Separator />
-
               <div>
                 <label className="text-sm font-medium mb-2 block">Accent Color</label>
                 <div className="flex gap-3">
@@ -218,9 +355,7 @@ export default function SettingsPage() {
                   ))}
                 </div>
               </div>
-
               <Separator />
-
               <div className="flex items-center justify-between py-2">
                 <div>
                   <p className="text-sm font-medium">Compact Mode</p>
@@ -239,7 +374,6 @@ export default function SettingsPage() {
               <h2 className="text-lg font-semibold">Current Plan</h2>
               <GradientBadge variant="blue">Pro</GradientBadge>
             </div>
-
             <div className="rounded-xl bg-gradient-to-br from-blue-500/10 to-purple-600/10 border border-blue-500/20 p-4 mb-4">
               <div className="flex items-center justify-between">
                 <div>
@@ -252,28 +386,19 @@ export default function SettingsPage() {
                 </div>
               </div>
             </div>
-
             <div className="space-y-2">
-              {[
-                "Unlimited reports",
-                "AI-powered insights",
-                "Custom branding",
-                "PDF exports",
-                "Email automation",
-                "Priority support",
-              ].map((feature) => (
+              {["Unlimited reports", "AI-powered insights", "Custom branding", "PDF exports", "Email automation", "Priority support"].map((feature) => (
                 <div key={feature} className="flex items-center gap-2 text-sm">
                   <Check className="h-4 w-4 text-emerald-400" />
                   {feature}
                 </div>
               ))}
             </div>
-
             <div className="flex gap-3 mt-6">
-              <Button variant="outline" className="flex-1">
+              <Button variant="outline" className="flex-1" onClick={() => alert("Manage Subscription coming soon!")}>
                 Manage Subscription
               </Button>
-              <Button variant="outline" className="flex-1">
+              <Button variant="outline" className="flex-1" onClick={() => alert("Invoices coming soon!")}>
                 View Invoices
               </Button>
             </div>
@@ -289,7 +414,7 @@ export default function SettingsPage() {
                 <p className="text-sm font-medium">Visa ending in 4242</p>
                 <p className="text-xs text-muted-foreground">Expires 12/2026</p>
               </div>
-              <Button variant="ghost" size="sm" className="h-8 text-xs">
+              <Button variant="ghost" size="sm" className="h-8 text-xs" onClick={() => alert("Update payment method coming soon!")}>
                 Update
               </Button>
             </div>
@@ -303,13 +428,12 @@ export default function SettingsPage() {
             <p className="text-sm text-muted-foreground mb-4">
               Use these keys to integrate WeeklyWrap with your tools and workflows.
             </p>
-
             <div className="space-y-3">
               <div>
                 <label className="text-sm font-medium mb-1.5 block">Production API Key</label>
                 <div className="flex gap-2">
                   <Input defaultValue="ww_prod_••••••••••••••••••••••••" readOnly className="font-mono text-xs" />
-                  <Button variant="outline" size="sm" className="shrink-0 h-9">
+                  <Button variant="outline" size="sm" className="shrink-0 h-9" onClick={() => navigator.clipboard.writeText("ww_prod_example")}>
                     Copy
                   </Button>
                 </div>
@@ -318,21 +442,19 @@ export default function SettingsPage() {
                 <label className="text-sm font-medium mb-1.5 block">Test API Key</label>
                 <div className="flex gap-2">
                   <Input defaultValue="ww_test_••••••••••••••••••••••••" readOnly className="font-mono text-xs" />
-                  <Button variant="outline" size="sm" className="shrink-0 h-9">
+                  <Button variant="outline" size="sm" className="shrink-0 h-9" onClick={() => navigator.clipboard.writeText("ww_test_example")}>
                     Copy
                   </Button>
                 </div>
               </div>
             </div>
-
             <div className="mt-4 p-3 rounded-xl bg-amber-500/10 border border-amber-500/20">
               <p className="text-xs text-amber-400">
                 Keep your API keys secret. Never share them publicly or commit them to version control.
               </p>
             </div>
-
             <div className="mt-4">
-              <Button variant="outline" size="sm" className="h-8 gap-1">
+              <Button variant="outline" size="sm" className="h-8 gap-1" onClick={() => alert("New key generated!")}>
                 <Key className="h-3.5 w-3.5" />
                 Generate New Key
               </Button>
@@ -344,7 +466,7 @@ export default function SettingsPage() {
             <p className="text-sm text-muted-foreground mb-4">
               Learn how to integrate WeeklyWrap into your workflow.
             </p>
-            <Button variant="outline" className="gap-1.5">
+            <Button variant="outline" className="gap-1.5" onClick={() => alert("Documentation coming soon!")}>
               <Globe className="h-4 w-4" />
               View Documentation
             </Button>
