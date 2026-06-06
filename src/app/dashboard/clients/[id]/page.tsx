@@ -15,10 +15,8 @@ import {
   FileText,
   Users,
   TrendingUp,
-  Plus,
   Send,
   ExternalLink,
-  MoreHorizontal,
 } from "lucide-react"
 import Link from "next/link"
 import { cn } from "@/lib/utils"
@@ -55,7 +53,6 @@ export default function ClientDetailPage() {
       animate={{ opacity: 1 }}
       className="space-y-6"
     >
-      {/* Back button */}
       <Link
         href="/dashboard/clients"
         className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition-colors"
@@ -64,7 +61,6 @@ export default function ClientDetailPage() {
         Back to clients
       </Link>
 
-      {/* Client header */}
       <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
         <div className="flex items-center gap-4">
           <Avatar className="h-16 w-16 ring-2 ring-border/40">
@@ -95,7 +91,7 @@ export default function ClientDetailPage() {
             variant="outline"
             size="sm"
             className="h-9 gap-1.5"
-            onClick={() => document.getElementById('contact-info')?.scrollIntoView({ behavior: 'smooth' })}
+            onClick={() => document.getElementById("contact-info")?.scrollIntoView({ behavior: "smooth" })}
           >
             <Mail className="h-4 w-4" />
             Contact
@@ -111,7 +107,6 @@ export default function ClientDetailPage() {
         </div>
       </div>
 
-      {/* Stats */}
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {[
           { label: "Total Reports", value: 14, icon: FileText, color: "text-blue-400", bg: "bg-blue-500/10" },
@@ -136,7 +131,6 @@ export default function ClientDetailPage() {
       </div>
 
       <div className="grid gap-6 lg:grid-cols-3">
-        {/* Revenue chart */}
         <div className="lg:col-span-2 space-y-6">
           <GlassCard intensity="low" className="p-6">
             <h2 className="text-sm font-medium text-muted-foreground mb-4">Revenue from Client</h2>
@@ -159,7 +153,6 @@ export default function ClientDetailPage() {
             </div>
           </GlassCard>
 
-          {/* Recent Reports */}
           <GlassCard intensity="low" className="p-6">
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-sm font-medium text-muted-foreground">Recent Reports</h2>
@@ -188,8 +181,7 @@ export default function ClientDetailPage() {
                     </div>
                     <span className={cn(
                       "text-xs font-bold px-2 py-0.5 rounded-md",
-                      report.score >= 80 ? "text-emerald-400 bg-emerald-500/10" :
-                      "text-blue-400 bg-blue-500/10"
+                      report.score >= 80 ? "text-emerald-400 bg-emerald-500/10" : "text-blue-400 bg-blue-500/10"
                     )}>{report.score}</span>
                     <ExternalLink className="h-3.5 w-3.5 text-muted-foreground/30 opacity-0 group-hover:opacity-100 transition-opacity" />
                   </div>
@@ -199,36 +191,35 @@ export default function ClientDetailPage() {
           </GlassCard>
         </div>
 
-        {/* Right sidebar */}
         <div className="space-y-6">
-          {/* Contact info */}
-          <GlassCard intensity="low" className="p-5" id="contact-info">
-            <h3 className="text-sm font-medium mb-3">Contact Information</h3>
-            <div className="space-y-3">
-              <div className="flex items-center gap-2 text-xs">
-                <Mail className="h-3.5 w-3.5 text-muted-foreground" />
-                <a href="mailto:sarah@acmecorp.com" className="text-muted-foreground hover:text-foreground transition-colors">
-                  sarah@acmecorp.com
-                </a>
+          <div id="contact-info">
+            <GlassCard intensity="low" className="p-5">
+              <h3 className="text-sm font-medium mb-3">Contact Information</h3>
+              <div className="space-y-3">
+                <div className="flex items-center gap-2 text-xs">
+                  <Mail className="h-3.5 w-3.5 text-muted-foreground" />
+                  <a href="mailto:sarah@acmecorp.com" className="text-muted-foreground hover:text-foreground transition-colors">
+                    sarah@acmecorp.com
+                  </a>
+                </div>
+                <div className="flex items-center gap-2 text-xs">
+                  <Phone className="h-3.5 w-3.5 text-muted-foreground" />
+                  <a href="tel:+15551234567" className="text-muted-foreground hover:text-foreground transition-colors">
+                    +1 (555) 123-4567
+                  </a>
+                </div>
+                <div className="flex items-center gap-2 text-xs">
+                  <MapPin className="h-3.5 w-3.5 text-muted-foreground" />
+                  <span className="text-muted-foreground">San Francisco, CA</span>
+                </div>
+                <div className="flex items-center gap-2 text-xs">
+                  <Calendar className="h-3.5 w-3.5 text-muted-foreground" />
+                  <span className="text-muted-foreground">Client since Jan 2025</span>
+                </div>
               </div>
-              <div className="flex items-center gap-2 text-xs">
-                <Phone className="h-3.5 w-3.5 text-muted-foreground" />
-                <a href="tel:+15551234567" className="text-muted-foreground hover:text-foreground transition-colors">
-                  +1 (555) 123-4567
-                </a>
-              </div>
-              <div className="flex items-center gap-2 text-xs">
-                <MapPin className="h-3.5 w-3.5 text-muted-foreground" />
-                <span className="text-muted-foreground">San Francisco, CA</span>
-              </div>
-              <div className="flex items-center gap-2 text-xs">
-                <Calendar className="h-3.5 w-3.5 text-muted-foreground" />
-                <span className="text-muted-foreground">Client since Jan 2025</span>
-              </div>
-            </div>
-          </GlassCard>
+            </GlassCard>
+          </div>
 
-          {/* Projects */}
           <GlassCard intensity="low" className="p-5">
             <h3 className="text-sm font-medium mb-3">Active Projects</h3>
             <div className="space-y-2">
@@ -241,7 +232,6 @@ export default function ClientDetailPage() {
             </div>
           </GlassCard>
 
-          {/* Quick actions */}
           <GlassCard intensity="low" className="p-5">
             <h3 className="text-sm font-medium mb-3">Quick Actions</h3>
             <div className="space-y-2">
