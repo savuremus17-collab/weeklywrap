@@ -35,7 +35,6 @@ const [generating, setGenerating] = useState(false)
 const [generated, setGenerated] = useState(false)
 const [reportType, setReportType] = useState("")
 const [selectedClient, setSelectedClient] = useState("")
-const [selectedClient, setSelectedClient] = useState("")
   const handleGenerate = () => {
     setGenerating(true)
     setTimeout(() => {
