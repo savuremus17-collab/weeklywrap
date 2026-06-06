@@ -344,18 +344,23 @@ const [accentColor, setAccentColor] = useState("#3b82f6")
               <div>
                 <label className="text-sm font-medium mb-2 block">Accent Color</label>
                 <div className="flex gap-3">
-                 {["#3b82f6", "#10b981", "#8b5cf6", "#f59e0b", "#e11d48"].map((color) => (
-  <button
-    key={color}
-    onClick={() => setAccentColor(color)}
-    className={cn(
-      "h-8 w-8 rounded-full border-2 transition-all hover:scale-110",
-      accentColor === color ? "border-white" : "border-border"
-    )}
-    style={{ backgroundColor: color, outline: accentColor === color ? `2px solid ${color}` : "none", outlineOffset: "2px" }}
-  />
-))}
-                </div>
+  {["#3b82f6", "#10b981", "#8b5cf6", "#f59e0b", "#e11d48"].map((color) => (
+    <button
+      key={color}
+      onClick={() => {
+        setAccentColor(color)
+        document.documentElement.style.setProperty("--primary", color)
+        document.documentElement.style.setProperty("--ring", color)
+        document.documentElement.style.setProperty("--sidebar-primary", color)
+      }}
+      className={cn(
+        "h-8 w-8 rounded-full border-2 transition-all hover:scale-110",
+        accentColor === color ? "border-white" : "border-border"
+      )}
+      style={{ backgroundColor: color, outline: accentColor === color ? `2px solid ${color}` : "none", outlineOffset: "2px" }}
+    />
+  ))}
+</div>
               </div>
               <Separator />
               <div className="flex items-center justify-between py-2">
