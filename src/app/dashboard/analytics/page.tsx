@@ -99,10 +99,10 @@ export default function AnalyticsPage() {
             Deep insights into your performance, growth, and client metrics.
           </p>
         </div>
-        <Button variant="outline" size="sm" className="h-9 gap-1.5">
-          <Download className="h-4 w-4" />
-          Export Report
-        </Button>
+        <Button variant="outline" size="sm" className="h-9 gap-1.5" onClick={() => window.print()}>
+  <Download className="h-4 w-4" />
+  Export Report
+</Button>
       </div>
 
       {/* Overview stats */}
