@@ -91,11 +91,20 @@ export default function ClientDetailPage() {
           </div>
         </div>
         <div className="flex items-center gap-2">
-          <Button variant="outline" size="sm" className="h-9 gap-1.5">
+          <Button
+            variant="outline"
+            size="sm"
+            className="h-9 gap-1.5"
+            onClick={() => document.getElementById('contact-info')?.scrollIntoView({ behavior: 'smooth' })}
+          >
             <Mail className="h-4 w-4" />
             Contact
           </Button>
-          <Button size="sm" className="h-9 gap-1.5 bg-gradient-to-r from-blue-500 to-blue-700 shadow-lg shadow-blue-500/25">
+          <Button
+            size="sm"
+            className="h-9 gap-1.5 bg-gradient-to-r from-blue-500 to-blue-700 shadow-lg shadow-blue-500/25"
+            onClick={() => window.location.href = "/dashboard/reports/new"}
+          >
             <FileText className="h-4 w-4" />
             New Report
           </Button>
@@ -133,7 +142,7 @@ export default function ClientDetailPage() {
             <h2 className="text-sm font-medium text-muted-foreground mb-4">Revenue from Client</h2>
             <div className="h-[200px]">
               <ResponsiveContainer width="100%" height="100%">
-                <AreaChart data={revenueData}>
+                <AreaChart data={revenueData} style={{ background: "transparent" }}>
                   <defs>
                     <linearGradient id="clientRevenue" x1="0" y1="0" x2="0" y2="1">
                       <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.3} />
@@ -160,29 +169,31 @@ export default function ClientDetailPage() {
             </div>
             <div className="space-y-2">
               {reports.map((report, i) => (
-                <div key={i} className="flex items-center gap-3 p-3 rounded-xl hover:bg-accent/40 transition-colors cursor-pointer group">
-                  <div className={cn(
-                    "flex h-8 w-8 items-center justify-center rounded-lg",
-                    report.status === "sent" ? "bg-blue-500/10" :
-                    report.status === "draft" ? "bg-muted/50" : "bg-emerald-500/10"
-                  )}>
-                    <FileText className={cn(
-                      "h-4 w-4",
-                      report.status === "sent" ? "text-blue-400" :
-                      report.status === "draft" ? "text-muted-foreground" : "text-emerald-400"
-                    )} />
+                <Link key={i} href={`/dashboard/reports/rpt-${i + 1}`}>
+                  <div className="flex items-center gap-3 p-3 rounded-xl hover:bg-accent/40 transition-colors cursor-pointer group">
+                    <div className={cn(
+                      "flex h-8 w-8 items-center justify-center rounded-lg",
+                      report.status === "sent" ? "bg-blue-500/10" :
+                      report.status === "draft" ? "bg-muted/50" : "bg-emerald-500/10"
+                    )}>
+                      <FileText className={cn(
+                        "h-4 w-4",
+                        report.status === "sent" ? "text-blue-400" :
+                        report.status === "draft" ? "text-muted-foreground" : "text-emerald-400"
+                      )} />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-medium truncate">{report.title}</p>
+                      <p className="text-xs text-muted-foreground">{report.date}</p>
+                    </div>
+                    <span className={cn(
+                      "text-xs font-bold px-2 py-0.5 rounded-md",
+                      report.score >= 80 ? "text-emerald-400 bg-emerald-500/10" :
+                      "text-blue-400 bg-blue-500/10"
+                    )}>{report.score}</span>
+                    <ExternalLink className="h-3.5 w-3.5 text-muted-foreground/30 opacity-0 group-hover:opacity-100 transition-opacity" />
                   </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium truncate">{report.title}</p>
-                    <p className="text-xs text-muted-foreground">{report.date}</p>
-                  </div>
-                  <span className={cn(
-                    "text-xs font-bold px-2 py-0.5 rounded-md",
-                    report.score >= 80 ? "text-emerald-400 bg-emerald-500/10" :
-                    "text-blue-400 bg-blue-500/10"
-                  )}>{report.score}</span>
-                  <ExternalLink className="h-3.5 w-3.5 text-muted-foreground/30 opacity-0 group-hover:opacity-100 transition-opacity" />
-                </div>
+                </Link>
               ))}
             </div>
           </GlassCard>
@@ -191,16 +202,20 @@ export default function ClientDetailPage() {
         {/* Right sidebar */}
         <div className="space-y-6">
           {/* Contact info */}
-          <GlassCard intensity="low" className="p-5">
+          <GlassCard intensity="low" className="p-5" id="contact-info">
             <h3 className="text-sm font-medium mb-3">Contact Information</h3>
             <div className="space-y-3">
               <div className="flex items-center gap-2 text-xs">
                 <Mail className="h-3.5 w-3.5 text-muted-foreground" />
-                <span className="text-muted-foreground">sarah@acmecorp.com</span>
+                <a href="mailto:sarah@acmecorp.com" className="text-muted-foreground hover:text-foreground transition-colors">
+                  sarah@acmecorp.com
+                </a>
               </div>
               <div className="flex items-center gap-2 text-xs">
                 <Phone className="h-3.5 w-3.5 text-muted-foreground" />
-                <span className="text-muted-foreground">+1 (555) 123-4567</span>
+                <a href="tel:+15551234567" className="text-muted-foreground hover:text-foreground transition-colors">
+                  +1 (555) 123-4567
+                </a>
               </div>
               <div className="flex items-center gap-2 text-xs">
                 <MapPin className="h-3.5 w-3.5 text-muted-foreground" />
@@ -230,15 +245,27 @@ export default function ClientDetailPage() {
           <GlassCard intensity="low" className="p-5">
             <h3 className="text-sm font-medium mb-3">Quick Actions</h3>
             <div className="space-y-2">
-              <Button variant="outline" className="w-full justify-start gap-2 h-9 text-xs">
+              <Button
+                variant="outline"
+                className="w-full justify-start gap-2 h-9 text-xs"
+                onClick={() => window.location.href = "/dashboard/reports/new"}
+              >
                 <FileText className="h-3.5 w-3.5" />
                 Create new report
               </Button>
-              <Button variant="outline" className="w-full justify-start gap-2 h-9 text-xs">
+              <Button
+                variant="outline"
+                className="w-full justify-start gap-2 h-9 text-xs"
+                onClick={() => alert("Report sent to client!")}
+              >
                 <Send className="h-3.5 w-3.5" />
                 Send recent report
               </Button>
-              <Button variant="outline" className="w-full justify-start gap-2 h-9 text-xs">
+              <Button
+                variant="outline"
+                className="w-full justify-start gap-2 h-9 text-xs"
+                onClick={() => window.location.href = "mailto:sarah@acmecorp.com"}
+              >
                 <Mail className="h-3.5 w-3.5" />
                 Send message
               </Button>
