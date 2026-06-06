@@ -31,8 +31,9 @@ export default function SettingsPage() {
   const [saving, setSaving] = useState(false)
   const [saved, setSaved] = useState(false)
   const [showSignOutModal, setShowSignOutModal] = useState(false)
-  const [showDeleteModal, setShowDeleteModal] = useState(false)
-  const [deleteConfirm, setDeleteConfirm] = useState("")
+const [showDeleteModal, setShowDeleteModal] = useState(false)
+const [deleteConfirm, setDeleteConfirm] = useState("")
+const [accentColor, setAccentColor] = useState("#3b82f6")
 
   const handleSave = () => {
     setSaving(true)
@@ -343,16 +344,17 @@ export default function SettingsPage() {
               <div>
                 <label className="text-sm font-medium mb-2 block">Accent Color</label>
                 <div className="flex gap-3">
-                  {["#3b82f6", "#10b981", "#8b5cf6", "#f59e0b", "#e11d48"].map((color) => (
-                    <button
-                      key={color}
-                      className={cn(
-                        "h-8 w-8 rounded-full border-2 transition-all hover:scale-110",
-                        color === "#3b82f6" ? "border-blue-400 ring-2 ring-blue-400/30 ring-offset-2 ring-offset-background" : "border-border"
-                      )}
-                      style={{ backgroundColor: color }}
-                    />
-                  ))}
+                 {["#3b82f6", "#10b981", "#8b5cf6", "#f59e0b", "#e11d48"].map((color) => (
+  <button
+    key={color}
+    onClick={() => setAccentColor(color)}
+    className={cn(
+      "h-8 w-8 rounded-full border-2 transition-all hover:scale-110",
+      accentColor === color ? "border-white" : "border-border"
+    )}
+    style={{ backgroundColor: color, outline: accentColor === color ? `2px solid ${color}` : "none", outlineOffset: "2px" }}
+  />
+))}
                 </div>
               </div>
               <Separator />
