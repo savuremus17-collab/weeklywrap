@@ -31,8 +31,9 @@ const steps = [
 
 export default function NewReportPage() {
   const [currentStep, setCurrentStep] = useState(0)
-  const [generating, setGenerating] = useState(false)
-  const [generated, setGenerated] = useState(false)
+const [generating, setGenerating] = useState(false)
+const [generated, setGenerated] = useState(false)
+const [reportType, setReportType] = useState("")
 
   const handleGenerate = () => {
     setGenerating(true)
@@ -165,14 +166,23 @@ export default function NewReportPage() {
                 <label className="text-sm font-medium mb-1.5 block">Report Type</label>
                 <div className="grid grid-cols-2 gap-2">
                   {["Weekly Summary", "Project Update", "Performance", "Custom"].map((type) => (
-                    <button
-                      key={type}
-                      className="flex items-center gap-2 rounded-xl border border-border/40 p-3 text-sm hover:bg-accent/50 transition-colors text-left"
-                    >
-                      <div className="h-4 w-4 rounded-full border-2 border-border" />
-                      {type}
-                    </button>
-                  ))}
+  <button
+    key={type}
+    onClick={() => setReportType(type)}
+    className={cn(
+      "flex items-center gap-2 rounded-xl border p-3 text-sm transition-colors text-left",
+      reportType === type
+        ? "border-blue-500/50 bg-blue-500/10 text-blue-400"
+        : "border-border/40 hover:bg-accent/50"
+    )}
+  >
+    <div className={cn(
+      "h-4 w-4 rounded-full border-2 transition-colors",
+      reportType === type ? "border-blue-500 bg-blue-500" : "border-border"
+    )} />
+    {type}
+  </button>
+))}
                 </div>
               </div>
             </div>
