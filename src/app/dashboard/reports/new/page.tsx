@@ -33,8 +33,7 @@ export default function NewReportPage() {
   const [currentStep, setCurrentStep] = useState(0)
 const [generating, setGenerating] = useState(false)
 const [generated, setGenerated] = useState(false)
-const [reportType, setReportType] = useState("")
-
+const [selectedClient, setSelectedClient] = useState("")
   const handleGenerate = () => {
     setGenerating(true)
     setTimeout(() => {
@@ -200,10 +199,16 @@ const [reportType, setReportType] = useState("")
 
             <div className="space-y-2">
               {["Acme Corp", "DesignStudio", "TechFlow Inc", "GrowthLabs"].map((client) => (
-                <button
-                  key={client}
-                  className="flex items-center gap-3 w-full rounded-xl border border-border/40 p-4 text-sm hover:bg-accent/50 transition-colors text-left"
-                >
+  <button
+    key={client}
+    onClick={() => setSelectedClient(client)}
+    className={cn(
+      "flex items-center gap-3 w-full rounded-xl border p-4 text-sm transition-colors text-left",
+      selectedClient === client
+        ? "border-blue-500/50 bg-blue-500/10"
+        : "border-border/40 hover:bg-accent/50"
+    )}
+  >
                   <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-blue-500/20 to-blue-600/20 border border-blue-500/30">
                     <span className="text-xs font-bold text-blue-400">
                       {client.split(" ").map(w => w[0]).join("")}
@@ -213,7 +218,10 @@ const [reportType, setReportType] = useState("")
                     <p className="font-medium">{client}</p>
                     <p className="text-xs text-muted-foreground">3 active projects</p>
                   </div>
-                  <div className="h-5 w-5 rounded-full border-2 border-border" />
+                 <div className={cn(
+  "h-5 w-5 rounded-full border-2 transition-colors",
+  selectedClient === client ? "border-blue-500 bg-blue-500" : "border-border"
+)} />
                 </button>
               ))}
             </div>
