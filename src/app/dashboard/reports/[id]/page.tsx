@@ -89,10 +89,6 @@ export default function ReportDetailPage() {
           </p>
         </div>
         <div className="flex items-center gap-2">
-          <Button variant="outline" size="sm" className="h-9 gap-1.5">
-            <Edit3 className="h-4 w-4" />
-            Edit
-          </Button>
           <Button variant="outline" size="sm" className="h-9 gap-1.5" onClick={() => window.location.href = "/dashboard/reports/rpt-1/edit"}>
   <Edit3 className="h-4 w-4" />
   Edit
