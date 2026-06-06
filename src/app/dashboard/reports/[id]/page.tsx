@@ -172,7 +172,7 @@ export default function ReportDetailPage() {
             <h2 className="text-sm font-medium text-muted-foreground mb-4">Daily Performance</h2>
             <div className="h-[250px]">
               <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={performanceData}>
+               <BarChart data={performanceData} style={{ background: "transparent" }}>
                   <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" strokeOpacity={0.3} />
                   <XAxis dataKey="day" tick={{ fontSize: 10, fill: "hsl(var(--muted-foreground))", opacity: 0.6 }} tickLine={false} axisLine={false} />
                   <YAxis tick={{ fontSize: 10, fill: "hsl(var(--muted-foreground))", opacity: 0.6 }} tickLine={false} axisLine={false} />
@@ -189,7 +189,7 @@ export default function ReportDetailPage() {
             <h2 className="text-sm font-medium text-muted-foreground mb-4">Score Trend</h2>
             <div className="h-[200px]">
               <ResponsiveContainer width="100%" height="100%">
-                <AreaChart data={performanceData}>
+                <AreaChart data={performanceData} style={{ background: "transparent" }}>
                   <defs>
                     <linearGradient id="scoreGradient" x1="0" y1="0" x2="0" y2="1">
                       <stop offset="5%" stopColor="#10b981" stopOpacity={0.3} />
