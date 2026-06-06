@@ -198,3 +198,7 @@
     backdrop-filter: blur(8px) saturate(180%);
   }
 }
+.recharts-wrapper,
+.recharts-surface {
+  background: transparent !important;
+}
