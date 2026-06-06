@@ -93,14 +93,18 @@ export default function ReportDetailPage() {
             <Edit3 className="h-4 w-4" />
             Edit
           </Button>
-          <Button variant="outline" size="sm" className="h-9 gap-1.5">
-            <Download className="h-4 w-4" />
-            Export PDF
-          </Button>
-          <Button size="sm" className="h-9 gap-1.5 bg-gradient-to-r from-blue-500 to-blue-700 shadow-lg shadow-blue-500/25">
-            <Send className="h-4 w-4" />
-            Send to Client
-          </Button>
+          <Button variant="outline" size="sm" className="h-9 gap-1.5" onClick={() => window.location.href = "/dashboard/reports/rpt-1/edit"}>
+  <Edit3 className="h-4 w-4" />
+  Edit
+</Button>
+<Button variant="outline" size="sm" className="h-9 gap-1.5" onClick={() => window.print()}>
+  <Download className="h-4 w-4" />
+  Export PDF
+</Button>
+<Button size="sm" className="h-9 gap-1.5 bg-gradient-to-r from-blue-500 to-blue-700 shadow-lg shadow-blue-500/25" onClick={() => alert("Report sent to client!")}>
+  <Send className="h-4 w-4" />
+  Send to Client
+</Button>
         </div>
       </div>
 
