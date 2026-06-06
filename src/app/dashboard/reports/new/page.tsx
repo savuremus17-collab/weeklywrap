@@ -30,9 +30,11 @@ const steps = [
 ]
 
 export default function NewReportPage() {
-  const [currentStep, setCurrentStep] = useState(0)
+ const [currentStep, setCurrentStep] = useState(0)
 const [generating, setGenerating] = useState(false)
 const [generated, setGenerated] = useState(false)
+const [reportType, setReportType] = useState("")
+const [selectedClient, setSelectedClient] = useState("")
 const [selectedClient, setSelectedClient] = useState("")
   const handleGenerate = () => {
     setGenerating(true)
