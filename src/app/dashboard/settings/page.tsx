@@ -11,7 +11,6 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { Separator } from "@/components/ui/separator"
 import {
-  Settings,
   User,
   Bell,
   Palette,
@@ -24,16 +23,23 @@ import {
   Loader2,
   Trash2,
   AlertTriangle,
+  Zap,
+  Crown,
+  Building2,
+  Star,
 } from "lucide-react"
 import { cn } from "@/lib/utils"
+import { PLANS } from "@/lib/stripe/plans"
 
 export default function SettingsPage() {
   const [saving, setSaving] = useState(false)
   const [saved, setSaved] = useState(false)
   const [showSignOutModal, setShowSignOutModal] = useState(false)
-const [showDeleteModal, setShowDeleteModal] = useState(false)
-const [deleteConfirm, setDeleteConfirm] = useState("")
-const [accentColor, setAccentColor] = useState("#3b82f6")
+  const [showDeleteModal, setShowDeleteModal] = useState(false)
+  const [deleteConfirm, setDeleteConfirm] = useState("")
+  const [accentColor, setAccentColor] = useState("#3b82f6")
+  const [loadingPlan, setLoadingPlan] = useState<string | null>(null)
+  const [loadingPortal, setLoadingPortal] = useState(false)
 
   const handleSave = () => {
     setSaving(true)
@@ -55,6 +61,67 @@ const [accentColor, setAccentColor] = useState("#3b82f6")
     const { supabase } = await import("@/lib/supabase/client")
     await supabase.auth.signOut()
     window.location.href = "/"
+  }
+
+  const handleCheckout = async (priceId: string, planId: string) => {
+    if (!priceId) return
+    setLoadingPlan(planId)
+    try {
+      const res = await fetch("/api/stripe/create-checkout", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          priceId,
+          successUrl: `${window.location.origin}/dashboard?checkout=success`,
+          cancelUrl: `${window.location.origin}/dashboard/settings`,
+        }),
+      })
+      const data = await res.json()
+      if (data.url) {
+        window.location.href = data.url
+      } else {
+        alert("Error: " + data.error)
+      }
+    } catch (error) {
+      alert("Something went wrong. Please try again.")
+    } finally {
+      setLoadingPlan(null)
+    }
+  }
+
+  const handleManageSubscription = async () => {
+    setLoadingPortal(true)
+    try {
+      const res = await fetch("/api/stripe/portal", {
+        method: "POST",
+      })
+      const data = await res.json()
+      if (data.url) {
+        window.location.href = data.url
+      } else {
+        alert("Error: " + data.error)
+      }
+    } catch (error) {
+      alert("Something went wrong. Please try again.")
+    } finally {
+      setLoadingPortal(false)
+    }
+  }
+
+  const planIcons: Record<string, any> = {
+    free: Zap,
+    pro: Crown,
+    yearly: Crown,
+    agency: Building2,
+    founding: Star,
+  }
+
+  const planColors: Record<string, string> = {
+    free: "from-gray-500/10 to-gray-600/10 border-gray-500/20",
+    pro: "from-blue-500/10 to-blue-600/10 border-blue-500/20",
+    yearly: "from-blue-500/10 to-purple-600/10 border-blue-500/20",
+    agency: "from-emerald-500/10 to-emerald-600/10 border-emerald-500/20",
+    founding: "from-amber-500/10 to-amber-600/10 border-amber-500/20",
   }
 
   return (
@@ -82,17 +149,10 @@ const [accentColor, setAccentColor] = useState("#3b82f6")
                 Are you sure you want to sign out of your WeeklyWrap account?
               </p>
               <div className="flex gap-3">
-                <Button
-                  variant="outline"
-                  className="flex-1"
-                  onClick={() => setShowSignOutModal(false)}
-                >
+                <Button variant="outline" className="flex-1" onClick={() => setShowSignOutModal(false)}>
                   Cancel
                 </Button>
-                <Button
-                  className="flex-1 gap-2 bg-blue-500 hover:bg-blue-600"
-                  onClick={handleSignOut}
-                >
+                <Button className="flex-1 gap-2 bg-blue-500 hover:bg-blue-600" onClick={handleSignOut}>
                   <LogOut className="h-4 w-4" />
                   Sign Out
                 </Button>
@@ -132,11 +192,7 @@ const [accentColor, setAccentColor] = useState("#3b82f6")
                 />
               </div>
               <div className="flex gap-3">
-                <Button
-                  variant="outline"
-                  className="flex-1"
-                  onClick={() => { setShowDeleteModal(false); setDeleteConfirm("") }}
-                >
+                <Button variant="outline" className="flex-1" onClick={() => { setShowDeleteModal(false); setDeleteConfirm("") }}>
                   Cancel
                 </Button>
                 <Button
@@ -153,7 +209,6 @@ const [accentColor, setAccentColor] = useState("#3b82f6")
         </div>
       )}
 
-      {/* Header */}
       <div>
         <h1 className="text-2xl font-bold tracking-tight">Settings</h1>
         <p className="text-sm text-muted-foreground mt-1">
@@ -189,7 +244,6 @@ const [accentColor, setAccentColor] = useState("#3b82f6")
         <TabsContent value="profile" className="space-y-6">
           <GlassCard intensity="low" className="p-6">
             <h2 className="text-lg font-semibold mb-4">Personal Information</h2>
-
             <div className="flex items-center gap-4 mb-6">
               <Avatar className="h-16 w-16 ring-2 ring-border/40">
                 <AvatarFallback className="bg-gradient-to-br from-blue-500 to-purple-600 text-lg font-bold text-white">
@@ -197,13 +251,10 @@ const [accentColor, setAccentColor] = useState("#3b82f6")
                 </AvatarFallback>
               </Avatar>
               <div>
-                <Button variant="outline" size="sm" className="h-8 gap-1">
-                  Change Avatar
-                </Button>
+                <Button variant="outline" size="sm" className="h-8 gap-1">Change Avatar</Button>
                 <p className="text-xs text-muted-foreground mt-1">JPG, PNG or GIF. Max 2MB.</p>
               </div>
             </div>
-
             <div className="grid gap-4 md:grid-cols-2">
               <div>
                 <label className="text-sm font-medium mb-1.5 block">First Name</label>
@@ -222,7 +273,6 @@ const [accentColor, setAccentColor] = useState("#3b82f6")
                 <Input defaultValue="Freelance" />
               </div>
             </div>
-
             <div className="mt-6 pt-4 border-t border-border/30">
               <div className="flex items-center gap-2 mb-4">
                 <Globe className="h-4 w-4 text-muted-foreground" />
@@ -254,18 +304,11 @@ const [accentColor, setAccentColor] = useState("#3b82f6")
 
           <div className="flex justify-end">
             <Button onClick={handleSave} disabled={saving} className="h-9 gap-1.5">
-              {saving ? (
-                <Loader2 className="h-4 w-4 animate-spin" />
-              ) : saved ? (
-                <Check className="h-4 w-4" />
-              ) : (
-                <Save className="h-4 w-4" />
-              )}
+              {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : saved ? <Check className="h-4 w-4" /> : <Save className="h-4 w-4" />}
               {saving ? "Saving..." : saved ? "Saved!" : "Save Changes"}
             </Button>
           </div>
 
-          {/* Account Actions */}
           <GlassCard intensity="low" className="p-6">
             <h2 className="text-lg font-semibold mb-4">Account Actions</h2>
             <div className="space-y-3">
@@ -274,12 +317,7 @@ const [accentColor, setAccentColor] = useState("#3b82f6")
                   <p className="text-sm font-medium">Sign Out</p>
                   <p className="text-xs text-muted-foreground">Sign out of your WeeklyWrap account</p>
                 </div>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="gap-1.5"
-                  onClick={() => setShowSignOutModal(true)}
-                >
+                <Button variant="outline" size="sm" className="gap-1.5" onClick={() => setShowSignOutModal(true)}>
                   <LogOut className="h-4 w-4" />
                   Sign Out
                 </Button>
@@ -289,12 +327,7 @@ const [accentColor, setAccentColor] = useState("#3b82f6")
                   <p className="text-sm font-medium text-red-400">Delete Account</p>
                   <p className="text-xs text-muted-foreground">Permanently delete your account and all data</p>
                 </div>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="gap-1.5 border-red-500/30 text-red-400 hover:bg-red-500/10"
-                  onClick={() => setShowDeleteModal(true)}
-                >
+                <Button variant="outline" size="sm" className="gap-1.5 border-red-500/30 text-red-400 hover:bg-red-500/10" onClick={() => setShowDeleteModal(true)}>
                   <Trash2 className="h-4 w-4" />
                   Delete Account
                 </Button>
@@ -344,23 +377,23 @@ const [accentColor, setAccentColor] = useState("#3b82f6")
               <div>
                 <label className="text-sm font-medium mb-2 block">Accent Color</label>
                 <div className="flex gap-3">
-  {["#3b82f6", "#10b981", "#8b5cf6", "#f59e0b", "#e11d48"].map((color) => (
-    <button
-      key={color}
-      onClick={() => {
-        setAccentColor(color)
-        document.documentElement.style.setProperty("--primary", color)
-        document.documentElement.style.setProperty("--ring", color)
-        document.documentElement.style.setProperty("--sidebar-primary", color)
-      }}
-      className={cn(
-        "h-8 w-8 rounded-full border-2 transition-all hover:scale-110",
-        accentColor === color ? "border-white" : "border-border"
-      )}
-      style={{ backgroundColor: color, outline: accentColor === color ? `2px solid ${color}` : "none", outlineOffset: "2px" }}
-    />
-  ))}
-</div>
+                  {["#3b82f6", "#10b981", "#8b5cf6", "#f59e0b", "#e11d48"].map((color) => (
+                    <button
+                      key={color}
+                      onClick={() => {
+                        setAccentColor(color)
+                        document.documentElement.style.setProperty("--primary", color)
+                        document.documentElement.style.setProperty("--ring", color)
+                        document.documentElement.style.setProperty("--sidebar-primary", color)
+                      }}
+                      className={cn(
+                        "h-8 w-8 rounded-full border-2 transition-all hover:scale-110",
+                        accentColor === color ? "border-white" : "border-border"
+                      )}
+                      style={{ backgroundColor: color, outline: accentColor === color ? `2px solid ${color}` : "none", outlineOffset: "2px" }}
+                    />
+                  ))}
+                </div>
               </div>
               <Separator />
               <div className="flex items-center justify-between py-2">
@@ -377,11 +410,11 @@ const [accentColor, setAccentColor] = useState("#3b82f6")
         {/* Billing Tab */}
         <TabsContent value="billing" className="space-y-6">
           <GlassCard intensity="low" className="p-6">
-            <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center justify-between mb-6">
               <h2 className="text-lg font-semibold">Current Plan</h2>
               <GradientBadge variant="blue">Pro</GradientBadge>
             </div>
-            <div className="rounded-xl bg-gradient-to-br from-blue-500/10 to-purple-600/10 border border-blue-500/20 p-4 mb-4">
+            <div className="rounded-xl bg-gradient-to-br from-blue-500/10 to-purple-600/10 border border-blue-500/20 p-4 mb-6">
               <div className="flex items-center justify-between">
                 <div>
                   <p className="font-semibold">WeeklyWrap Pro</p>
@@ -393,21 +426,69 @@ const [accentColor, setAccentColor] = useState("#3b82f6")
                 </div>
               </div>
             </div>
-            <div className="space-y-2">
-              {["Unlimited reports", "AI-powered insights", "Custom branding", "PDF exports", "Email automation", "Priority support"].map((feature) => (
-                <div key={feature} className="flex items-center gap-2 text-sm">
-                  <Check className="h-4 w-4 text-emerald-400" />
-                  {feature}
-                </div>
-              ))}
-            </div>
-            <div className="flex gap-3 mt-6">
-              <Button variant="outline" className="flex-1" onClick={() => alert("Manage Subscription coming soon!")}>
+            <div className="flex gap-3">
+              <Button variant="outline" className="flex-1" onClick={handleManageSubscription} disabled={loadingPortal}>
+                {loadingPortal ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
                 Manage Subscription
               </Button>
-              <Button variant="outline" className="flex-1" onClick={() => alert("Invoices coming soon!")}>
+              <Button variant="outline" className="flex-1" onClick={handleManageSubscription} disabled={loadingPortal}>
                 View Invoices
               </Button>
+            </div>
+          </GlassCard>
+
+          <GlassCard intensity="low" className="p-6">
+            <h2 className="text-lg font-semibold mb-2">Available Plans</h2>
+            <p className="text-sm text-muted-foreground mb-6">Upgrade or change your plan at any time.</p>
+            <div className="grid gap-4 md:grid-cols-2">
+              {PLANS.filter(p => p.id !== "free").map((plan) => {
+                const Icon = planIcons[plan.id] || Zap
+                const isPopular = plan.metadata?.isMostPopular === "true"
+                return (
+                  <div
+                    key={plan.id}
+                    className={cn(
+                      "relative rounded-xl border bg-gradient-to-br p-5",
+                      planColors[plan.id]
+                    )}
+                  >
+                    {isPopular && (
+                      <div className="absolute -top-2.5 left-4">
+                        <span className="bg-blue-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full">
+                          MOST POPULAR
+                        </span>
+                      </div>
+                    )}
+                    <div className="flex items-start justify-between mb-3">
+                      <div className="flex items-center gap-2">
+                        <Icon className="h-5 w-5 text-blue-400" />
+                        <h3 className="font-semibold">{plan.name}</h3>
+                      </div>
+                      <div className="text-right">
+                        <p className="text-lg font-bold">${plan.price}</p>
+                        <p className="text-xs text-muted-foreground">/{plan.interval}</p>
+                      </div>
+                    </div>
+                    <p className="text-xs text-muted-foreground mb-3">{plan.description}</p>
+                    <ul className="space-y-1.5 mb-4">
+                      {plan.features.map((feature) => (
+                        <li key={feature} className="flex items-center gap-2 text-xs">
+                          <Check className="h-3.5 w-3.5 text-emerald-400 shrink-0" />
+                          <span className="text-muted-foreground">{feature}</span>
+                        </li>
+                      ))}
+                    </ul>
+                    <Button
+                      className="w-full h-8 text-xs"
+                      onClick={() => plan.stripePriceId && handleCheckout(plan.stripePriceId, plan.id)}
+                      disabled={loadingPlan === plan.id || !plan.stripePriceId}
+                    >
+                      {loadingPlan === plan.id ? <Loader2 className="h-3.5 w-3.5 animate-spin mr-1" /> : null}
+                      {loadingPlan === plan.id ? "Loading..." : `Get ${plan.name}`}
+                    </Button>
+                  </div>
+                )
+              })}
             </div>
           </GlassCard>
 
@@ -421,7 +502,7 @@ const [accentColor, setAccentColor] = useState("#3b82f6")
                 <p className="text-sm font-medium">Visa ending in 4242</p>
                 <p className="text-xs text-muted-foreground">Expires 12/2026</p>
               </div>
-              <Button variant="ghost" size="sm" className="h-8 text-xs" onClick={() => alert("Update payment method coming soon!")}>
+              <Button variant="ghost" size="sm" className="h-8 text-xs" onClick={handleManageSubscription} disabled={loadingPortal}>
                 Update
               </Button>
             </div>
