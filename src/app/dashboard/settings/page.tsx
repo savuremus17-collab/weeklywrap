@@ -278,17 +278,29 @@ export default function SettingsPage() {
               <div>
                 <>
   <input
-    type="file"
-    id="avatar-upload"
-    accept="image/*"
-    className="hidden"
-    onChange={(e) => {
-      const file = e.target.files?.[0]
-      if (file) {
-        alert(`Avatar "${file.name}" selected! Upload functionality coming soon.`)
-      }
-    }}
-  />
+  type="file"
+  id="avatar-upload"
+  accept="image/*"
+  className="hidden"
+  onChange={async (e) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+    try {
+      const { supabase } = await import("@/lib/supabase/client")
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) return alert("Not logged in")
+      const fileExt = file.name.split(".").pop()
+      const filePath = `avatars/${user.id}.${fileExt}`
+      const { error } = await supabase.storage
+        .from("avatars")
+        .upload(filePath, file, { upsert: true })
+      if (error) throw error
+      alert("Avatar uploaded successfully!")
+    } catch (error: any) {
+      alert("Error uploading avatar: " + error.message)
+    }
+  }}
+/>
   <Button variant="outline" size="sm" className="h-8 gap-1" onClick={() => document.getElementById("avatar-upload")?.click()}>
     Change Avatar
   </Button>
