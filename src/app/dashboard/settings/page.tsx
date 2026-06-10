@@ -323,21 +323,86 @@ export default function SettingsPage() {
                 <div>
                   <label className="text-sm font-medium mb-1.5 block">Timezone</label>
                   <select className="flex h-9 w-full rounded-lg border border-input bg-transparent px-3 py-1 text-sm shadow-sm">
-                    <option>America/New_York (UTC -5)</option>
-                    <option>America/Chicago (UTC -6)</option>
-                    <option>America/Denver (UTC -7)</option>
-                    <option>America/Los_Angeles (UTC -8)</option>
-                    <option>Europe/London (UTC +0)</option>
-                    <option>Europe/Paris (UTC +1)</option>
-                  </select>
+  <optgroup label="Americas">
+    <option>America/New_York (UTC -5)</option>
+    <option>America/Chicago (UTC -6)</option>
+    <option>America/Denver (UTC -7)</option>
+    <option>America/Los_Angeles (UTC -8)</option>
+    <option>America/Anchorage (UTC -9)</option>
+    <option>America/Honolulu (UTC -10)</option>
+    <option>America/Sao_Paulo (UTC -3)</option>
+    <option>America/Buenos_Aires (UTC -3)</option>
+    <option>America/Bogota (UTC -5)</option>
+    <option>America/Mexico_City (UTC -6)</option>
+    <option>America/Toronto (UTC -5)</option>
+    <option>America/Vancouver (UTC -8)</option>
+  </optgroup>
+  <optgroup label="Europe">
+    <option>Europe/London (UTC +0)</option>
+    <option>Europe/Paris (UTC +1)</option>
+    <option>Europe/Berlin (UTC +1)</option>
+    <option>Europe/Rome (UTC +1)</option>
+    <option>Europe/Madrid (UTC +1)</option>
+    <option>Europe/Amsterdam (UTC +1)</option>
+    <option>Europe/Brussels (UTC +1)</option>
+    <option>Europe/Bucharest (UTC +2)</option>
+    <option>Europe/Helsinki (UTC +2)</option>
+    <option>Europe/Athens (UTC +2)</option>
+    <option>Europe/Moscow (UTC +3)</option>
+    <option>Europe/Istanbul (UTC +3)</option>
+  </optgroup>
+  <optgroup label="Asia">
+    <option>Asia/Dubai (UTC +4)</option>
+    <option>Asia/Karachi (UTC +5)</option>
+    <option>Asia/Kolkata (UTC +5:30)</option>
+    <option>Asia/Dhaka (UTC +6)</option>
+    <option>Asia/Bangkok (UTC +7)</option>
+    <option>Asia/Singapore (UTC +8)</option>
+    <option>Asia/Shanghai (UTC +8)</option>
+    <option>Asia/Tokyo (UTC +9)</option>
+    <option>Asia/Seoul (UTC +9)</option>
+  </optgroup>
+  <optgroup label="Africa">
+    <option>Africa/Cairo (UTC +2)</option>
+    <option>Africa/Johannesburg (UTC +2)</option>
+    <option>Africa/Lagos (UTC +1)</option>
+    <option>Africa/Nairobi (UTC +3)</option>
+  </optgroup>
+  <optgroup label="Pacific">
+    <option>Pacific/Auckland (UTC +12)</option>
+    <option>Pacific/Sydney (UTC +10)</option>
+    <option>Pacific/Fiji (UTC +12)</option>
+  </optgroup>
+</select>
                 </div>
                 <div>
                   <label className="text-sm font-medium mb-1.5 block">Currency</label>
                   <select className="flex h-9 w-full rounded-lg border border-input bg-transparent px-3 py-1 text-sm shadow-sm">
-                    <option>USD ($)</option>
-                    <option>EUR (€)</option>
-                    <option>GBP (£)</option>
-                  </select>
+  <option>USD ($) - US Dollar</option>
+  <option>EUR (€) - Euro</option>
+  <option>GBP (£) - British Pound</option>
+  <option>CAD ($) - Canadian Dollar</option>
+  <option>AUD ($) - Australian Dollar</option>
+  <option>JPY (¥) - Japanese Yen</option>
+  <option>CHF (Fr) - Swiss Franc</option>
+  <option>CNY (¥) - Chinese Yuan</option>
+  <option>INR (₹) - Indian Rupee</option>
+  <option>BRL (R$) - Brazilian Real</option>
+  <option>MXN ($) - Mexican Peso</option>
+  <option>SGD ($) - Singapore Dollar</option>
+  <option>HKD ($) - Hong Kong Dollar</option>
+  <option>NOK (kr) - Norwegian Krone</option>
+  <option>SEK (kr) - Swedish Krona</option>
+  <option>DKK (kr) - Danish Krone</option>
+  <option>PLN (zł) - Polish Zloty</option>
+  <option>RON (lei) - Romanian Leu</option>
+  <option>TRY (₺) - Turkish Lira</option>
+  <option>ZAR (R) - South African Rand</option>
+  <option>AED (د.إ) - UAE Dirham</option>
+  <option>SAR (﷼) - Saudi Riyal</option>
+  <option>KRW (₩) - South Korean Won</option>
+  <option>NZD ($) - New Zealand Dollar</option>
+</select>
                 </div>
               </div>
             </div>
