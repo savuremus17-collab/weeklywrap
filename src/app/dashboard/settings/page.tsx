@@ -35,6 +35,10 @@ export default function SettingsPage() {
   const [saving, setSaving] = useState(false)
   const [saved, setSaved] = useState(false)
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null)
+  const [firstName, setFirstName] = useState("")
+const [lastName, setLastName] = useState("")
+const [email, setEmail] = useState("")
+const [company, setCompany] = useState("")
   const [showSignOutModal, setShowSignOutModal] = useState(false)
   const [showDeleteModal, setShowDeleteModal] = useState(false)
   const [deleteConfirm, setDeleteConfirm] = useState("")
@@ -52,7 +56,7 @@ export default function SettingsPage() {
   }
   return true
 })
-  useEffect(() => {
+ useEffect(() => {
   const saved = localStorage.getItem("accentColor")
   if (saved) {
     document.documentElement.style.setProperty("--primary", saved)
@@ -65,16 +69,50 @@ export default function SettingsPage() {
   } else {
     document.documentElement.classList.add("dark")
   }
+
+  const loadUser = async () => {
+    const { supabase } = await import("@/lib/supabase/client")
+    const { data: { user } } = await supabase.auth.getUser()
+    if (user) {
+      setEmail(user.email || "")
+      const { data } = await supabase
+        .from("users")
+        .select("name, email")
+        .eq("id", user.id)
+        .single()
+      if (data) {
+        const parts = (data.name || "").split(" ")
+        setFirstName(parts[0] || "")
+        setLastName(parts.slice(1).join(" ") || "")
+        setEmail(data.email || user.email || "")
+      }
+    }
+  }
+  loadUser()
 }, [])
 
-  const handleSave = () => {
-    setSaving(true)
-    setTimeout(() => {
-      setSaving(false)
-      setSaved(true)
-      setTimeout(() => setSaved(false), 2000)
-    }, 1000)
+  const handleSave = async () => {
+  setSaving(true)
+  try {
+    const { supabase } = await import("@/lib/supabase/client")
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) return
+    const { error } = await supabase
+      .from("users")
+      .update({
+        name: `${firstName} ${lastName}`,
+        email: email,
+      })
+      .eq("id", user.id)
+    if (error) throw error
+    setSaved(true)
+    setTimeout(() => setSaved(false), 2000)
+  } catch (error: any) {
+    alert("Error saving: " + error.message)
+  } finally {
+    setSaving(false)
   }
+}
 
   const handleSignOut = async () => {
     const { supabase } = await import("@/lib/supabase/client")
