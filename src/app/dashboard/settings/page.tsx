@@ -36,83 +36,89 @@ export default function SettingsPage() {
   const [saved, setSaved] = useState(false)
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null)
   const [firstName, setFirstName] = useState("")
-const [lastName, setLastName] = useState("")
-const [email, setEmail] = useState("")
-const [company, setCompany] = useState("")
+  const [lastName, setLastName] = useState("")
+  const [email, setEmail] = useState("")
+  const [company, setCompany] = useState("")
   const [showSignOutModal, setShowSignOutModal] = useState(false)
   const [showDeleteModal, setShowDeleteModal] = useState(false)
   const [deleteConfirm, setDeleteConfirm] = useState("")
   const [accentColor, setAccentColor] = useState(() => {
-  if (typeof window !== "undefined") {
-    return localStorage.getItem("accentColor") || "#3b82f6"
-  }
-  return "#3b82f6"
-})
+    if (typeof window !== "undefined") {
+      return localStorage.getItem("accentColor") || "#3b82f6"
+    }
+    return "#3b82f6"
+  })
   const [loadingPlan, setLoadingPlan] = useState<string | null>(null)
   const [loadingPortal, setLoadingPortal] = useState(false)
   const [darkMode, setDarkMode] = useState(() => {
-  if (typeof window !== "undefined") {
-    return localStorage.getItem("darkMode") !== "false"
-  }
-  return true
-})
- useEffect(() => {
-  const saved = localStorage.getItem("accentColor")
-  if (saved) {
-    document.documentElement.style.setProperty("--primary", saved)
-    document.documentElement.style.setProperty("--ring", saved)
-    document.documentElement.style.setProperty("--sidebar-primary", saved)
-  }
-  const savedDark = localStorage.getItem("darkMode")
-  if (savedDark === "false") {
-    document.documentElement.classList.remove("dark")
-  } else {
-    document.documentElement.classList.add("dark")
-  }
+    if (typeof window !== "undefined") {
+      return localStorage.getItem("darkMode") !== "false"
+    }
+    return true
+  })
 
-  const loadUser = async () => {
-    const { supabase } = await import("@/lib/supabase/client")
-    const { data: { user } } = await supabase.auth.getUser()
-    if (user) {
-      setEmail(user.email || "")
-      const { data } = await supabase
-        .from("users")
-        .select("name, email")
-        .eq("id", user.id)
-        .single()
-      if (data) {
-        const parts = (data.name || "").split(" ")
-        setFirstName(parts[0] || "")
-        setLastName(parts.slice(1).join(" ") || "")
-        setEmail(data.email || user.email || "")
+  useEffect(() => {
+    const savedColor = localStorage.getItem("accentColor")
+    if (savedColor) {
+      document.documentElement.style.setProperty("--primary", savedColor)
+      document.documentElement.style.setProperty("--ring", savedColor)
+      document.documentElement.style.setProperty("--sidebar-primary", savedColor)
+    }
+    const savedDark = localStorage.getItem("darkMode")
+    if (savedDark === "false") {
+      document.documentElement.classList.remove("dark")
+    } else {
+      document.documentElement.classList.add("dark")
+    }
+    const loadUser = async () => {
+      const { supabase } = await import("@/lib/supabase/client")
+      const { data: { user } } = await supabase.auth.getUser()
+      if (user) {
+        setEmail(user.email || "")
+        const { data } = await supabase
+          .from("users")
+          .select("name, email")
+          .eq("id", user.id)
+          .single()
+        if (data) {
+          const parts = (data.name || "").split(" ")
+          setFirstName(parts[0] || "")
+          setLastName(parts.slice(1).join(" ") || "")
+          setEmail(data.email || user.email || "")
+        }
+        const fileExt = "jpg"
+        const filePath = `avatars/${user.id}.${fileExt}`
+        const { data: { publicUrl } } = supabase.storage
+          .from("avatars")
+          .getPublicUrl(filePath)
+        if (publicUrl) setAvatarUrl(publicUrl)
       }
     }
-  }
-  loadUser()
-}, [])
+    loadUser()
+  }, [])
 
   const handleSave = async () => {
-  setSaving(true)
-  try {
-    const { supabase } = await import("@/lib/supabase/client")
-    const { data: { user } } = await supabase.auth.getUser()
-    if (!user) return
-    const { error } = await supabase
-      .from("users")
-      .update({
-        name: `${firstName} ${lastName}`,
-        email: email,
-      })
-      .eq("id", user.id)
-    if (error) throw error
-    setSaved(true)
-    setTimeout(() => setSaved(false), 2000)
-  } catch (error: any) {
-    alert("Error saving: " + error.message)
-  } finally {
-    setSaving(false)
+    setSaving(true)
+    try {
+      const { supabase } = await import("@/lib/supabase/client")
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) return
+      const { error } = await supabase
+        .from("users")
+        .update({
+          name: `${firstName} ${lastName}`,
+          email: email,
+        })
+        .eq("id", user.id)
+      if (error) throw error
+      setSaved(true)
+      setTimeout(() => setSaved(false), 2000)
+    } catch (error: any) {
+      alert("Error saving: " + error.message)
+    } finally {
+      setSaving(false)
+    }
   }
-}
 
   const handleSignOut = async () => {
     const { supabase } = await import("@/lib/supabase/client")
@@ -311,62 +317,60 @@ const [company, setCompany] = useState("")
             <div className="flex items-center gap-4 mb-6">
               <Avatar className="h-16 w-16 ring-2 ring-border/40">
                 {avatarUrl && <AvatarImage src={avatarUrl} alt="Avatar" />}
-<AvatarFallback className="bg-gradient-to-br from-blue-500 to-purple-600 text-lg font-bold text-white">
-  JD
-</AvatarFallback>
+                <AvatarFallback className="bg-gradient-to-br from-blue-500 to-purple-600 text-lg font-bold text-white">
+                  {firstName ? firstName[0].toUpperCase() : "JD"}
+                </AvatarFallback>
               </Avatar>
               <div>
-                <>
-  <input
-  type="file"
-  id="avatar-upload"
-  accept="image/*"
-  className="hidden"
-  onChange={async (e) => {
-    const file = e.target.files?.[0]
-    if (!file) return
-    try {
-      const { supabase } = await import("@/lib/supabase/client")
-      const { data: { user } } = await supabase.auth.getUser()
-      if (!user) return alert("Not logged in")
-      const fileExt = file.name.split(".").pop()
-      const filePath = `avatars/${user.id}.${fileExt}`
-      const { error } = await supabase.storage
-        .from("avatars")
-        .upload(filePath, file, { upsert: true })
-      if (error) throw error
-const { data: { publicUrl } } = supabase.storage
-  .from("avatars")
-  .getPublicUrl(filePath)
-setAvatarUrl(publicUrl)
-    } catch (error: any) {
-      alert("Error uploading avatar: " + error.message)
-    }
-  }}
-/>
-  <Button variant="outline" size="sm" className="h-8 gap-1" onClick={() => document.getElementById("avatar-upload")?.click()}>
-    Change Avatar
-  </Button>
-</>
+                <input
+                  type="file"
+                  id="avatar-upload"
+                  accept="image/*"
+                  className="hidden"
+                  onChange={async (e) => {
+                    const file = e.target.files?.[0]
+                    if (!file) return
+                    try {
+                      const { supabase } = await import("@/lib/supabase/client")
+                      const { data: { user } } = await supabase.auth.getUser()
+                      if (!user) return alert("Not logged in")
+                      const fileExt = file.name.split(".").pop()
+                      const filePath = `avatars/${user.id}.${fileExt}`
+                      const { error } = await supabase.storage
+                        .from("avatars")
+                        .upload(filePath, file, { upsert: true })
+                      if (error) throw error
+                      const { data: { publicUrl } } = supabase.storage
+                        .from("avatars")
+                        .getPublicUrl(filePath)
+                      setAvatarUrl(publicUrl)
+                    } catch (error: any) {
+                      alert("Error uploading avatar: " + error.message)
+                    }
+                  }}
+                />
+                <Button variant="outline" size="sm" className="h-8 gap-1" onClick={() => document.getElementById("avatar-upload")?.click()}>
+                  Change Avatar
+                </Button>
                 <p className="text-xs text-muted-foreground mt-1">JPG, PNG or GIF. Max 2MB.</p>
               </div>
             </div>
             <div className="grid gap-4 md:grid-cols-2">
               <div>
                 <label className="text-sm font-medium mb-1.5 block">First Name</label>
-                <Input defaultValue="John" />
+                <Input value={firstName} onChange={(e) => setFirstName(e.target.value)} />
               </div>
               <div>
                 <label className="text-sm font-medium mb-1.5 block">Last Name</label>
-                <Input defaultValue="Doe" />
+                <Input value={lastName} onChange={(e) => setLastName(e.target.value)} />
               </div>
               <div>
                 <label className="text-sm font-medium mb-1.5 block">Email</label>
-                <Input defaultValue="john@example.com" type="email" />
+                <Input value={email} onChange={(e) => setEmail(e.target.value)} type="email" />
               </div>
               <div>
                 <label className="text-sm font-medium mb-1.5 block">Company</label>
-                <Input defaultValue="Freelance" />
+                <Input value={company} onChange={(e) => setCompany(e.target.value)} />
               </div>
             </div>
             <div className="mt-6 pt-4 border-t border-border/30">
@@ -378,86 +382,86 @@ setAvatarUrl(publicUrl)
                 <div>
                   <label className="text-sm font-medium mb-1.5 block">Timezone</label>
                   <select className="flex h-9 w-full rounded-lg border border-input bg-transparent px-3 py-1 text-sm shadow-sm">
-  <optgroup label="Americas">
-    <option>America/New_York (UTC -5)</option>
-    <option>America/Chicago (UTC -6)</option>
-    <option>America/Denver (UTC -7)</option>
-    <option>America/Los_Angeles (UTC -8)</option>
-    <option>America/Anchorage (UTC -9)</option>
-    <option>America/Honolulu (UTC -10)</option>
-    <option>America/Sao_Paulo (UTC -3)</option>
-    <option>America/Buenos_Aires (UTC -3)</option>
-    <option>America/Bogota (UTC -5)</option>
-    <option>America/Mexico_City (UTC -6)</option>
-    <option>America/Toronto (UTC -5)</option>
-    <option>America/Vancouver (UTC -8)</option>
-  </optgroup>
-  <optgroup label="Europe">
-    <option>Europe/London (UTC +0)</option>
-    <option>Europe/Paris (UTC +1)</option>
-    <option>Europe/Berlin (UTC +1)</option>
-    <option>Europe/Rome (UTC +1)</option>
-    <option>Europe/Madrid (UTC +1)</option>
-    <option>Europe/Amsterdam (UTC +1)</option>
-    <option>Europe/Brussels (UTC +1)</option>
-    <option>Europe/Bucharest (UTC +2)</option>
-    <option>Europe/Helsinki (UTC +2)</option>
-    <option>Europe/Athens (UTC +2)</option>
-    <option>Europe/Moscow (UTC +3)</option>
-    <option>Europe/Istanbul (UTC +3)</option>
-  </optgroup>
-  <optgroup label="Asia">
-    <option>Asia/Dubai (UTC +4)</option>
-    <option>Asia/Karachi (UTC +5)</option>
-    <option>Asia/Kolkata (UTC +5:30)</option>
-    <option>Asia/Dhaka (UTC +6)</option>
-    <option>Asia/Bangkok (UTC +7)</option>
-    <option>Asia/Singapore (UTC +8)</option>
-    <option>Asia/Shanghai (UTC +8)</option>
-    <option>Asia/Tokyo (UTC +9)</option>
-    <option>Asia/Seoul (UTC +9)</option>
-  </optgroup>
-  <optgroup label="Africa">
-    <option>Africa/Cairo (UTC +2)</option>
-    <option>Africa/Johannesburg (UTC +2)</option>
-    <option>Africa/Lagos (UTC +1)</option>
-    <option>Africa/Nairobi (UTC +3)</option>
-  </optgroup>
-  <optgroup label="Pacific">
-    <option>Pacific/Auckland (UTC +12)</option>
-    <option>Pacific/Sydney (UTC +10)</option>
-    <option>Pacific/Fiji (UTC +12)</option>
-  </optgroup>
-</select>
+                    <optgroup label="Americas">
+                      <option>America/New_York (UTC -5)</option>
+                      <option>America/Chicago (UTC -6)</option>
+                      <option>America/Denver (UTC -7)</option>
+                      <option>America/Los_Angeles (UTC -8)</option>
+                      <option>America/Anchorage (UTC -9)</option>
+                      <option>America/Honolulu (UTC -10)</option>
+                      <option>America/Sao_Paulo (UTC -3)</option>
+                      <option>America/Buenos_Aires (UTC -3)</option>
+                      <option>America/Bogota (UTC -5)</option>
+                      <option>America/Mexico_City (UTC -6)</option>
+                      <option>America/Toronto (UTC -5)</option>
+                      <option>America/Vancouver (UTC -8)</option>
+                    </optgroup>
+                    <optgroup label="Europe">
+                      <option>Europe/London (UTC +0)</option>
+                      <option>Europe/Paris (UTC +1)</option>
+                      <option>Europe/Berlin (UTC +1)</option>
+                      <option>Europe/Rome (UTC +1)</option>
+                      <option>Europe/Madrid (UTC +1)</option>
+                      <option>Europe/Amsterdam (UTC +1)</option>
+                      <option>Europe/Brussels (UTC +1)</option>
+                      <option>Europe/Bucharest (UTC +2)</option>
+                      <option>Europe/Helsinki (UTC +2)</option>
+                      <option>Europe/Athens (UTC +2)</option>
+                      <option>Europe/Moscow (UTC +3)</option>
+                      <option>Europe/Istanbul (UTC +3)</option>
+                    </optgroup>
+                    <optgroup label="Asia">
+                      <option>Asia/Dubai (UTC +4)</option>
+                      <option>Asia/Karachi (UTC +5)</option>
+                      <option>Asia/Kolkata (UTC +5:30)</option>
+                      <option>Asia/Dhaka (UTC +6)</option>
+                      <option>Asia/Bangkok (UTC +7)</option>
+                      <option>Asia/Singapore (UTC +8)</option>
+                      <option>Asia/Shanghai (UTC +8)</option>
+                      <option>Asia/Tokyo (UTC +9)</option>
+                      <option>Asia/Seoul (UTC +9)</option>
+                    </optgroup>
+                    <optgroup label="Africa">
+                      <option>Africa/Cairo (UTC +2)</option>
+                      <option>Africa/Johannesburg (UTC +2)</option>
+                      <option>Africa/Lagos (UTC +1)</option>
+                      <option>Africa/Nairobi (UTC +3)</option>
+                    </optgroup>
+                    <optgroup label="Pacific">
+                      <option>Pacific/Auckland (UTC +12)</option>
+                      <option>Pacific/Sydney (UTC +10)</option>
+                      <option>Pacific/Fiji (UTC +12)</option>
+                    </optgroup>
+                  </select>
                 </div>
                 <div>
                   <label className="text-sm font-medium mb-1.5 block">Currency</label>
                   <select className="flex h-9 w-full rounded-lg border border-input bg-transparent px-3 py-1 text-sm shadow-sm">
-  <option>USD ($) - US Dollar</option>
-  <option>EUR (€) - Euro</option>
-  <option>GBP (£) - British Pound</option>
-  <option>CAD ($) - Canadian Dollar</option>
-  <option>AUD ($) - Australian Dollar</option>
-  <option>JPY (¥) - Japanese Yen</option>
-  <option>CHF (Fr) - Swiss Franc</option>
-  <option>CNY (¥) - Chinese Yuan</option>
-  <option>INR (₹) - Indian Rupee</option>
-  <option>BRL (R$) - Brazilian Real</option>
-  <option>MXN ($) - Mexican Peso</option>
-  <option>SGD ($) - Singapore Dollar</option>
-  <option>HKD ($) - Hong Kong Dollar</option>
-  <option>NOK (kr) - Norwegian Krone</option>
-  <option>SEK (kr) - Swedish Krona</option>
-  <option>DKK (kr) - Danish Krone</option>
-  <option>PLN (zł) - Polish Zloty</option>
-  <option>RON (lei) - Romanian Leu</option>
-  <option>TRY (₺) - Turkish Lira</option>
-  <option>ZAR (R) - South African Rand</option>
-  <option>AED (د.إ) - UAE Dirham</option>
-  <option>SAR (﷼) - Saudi Riyal</option>
-  <option>KRW (₩) - South Korean Won</option>
-  <option>NZD ($) - New Zealand Dollar</option>
-</select>
+                    <option>USD ($) - US Dollar</option>
+                    <option>EUR (€) - Euro</option>
+                    <option>GBP (£) - British Pound</option>
+                    <option>CAD ($) - Canadian Dollar</option>
+                    <option>AUD ($) - Australian Dollar</option>
+                    <option>JPY (¥) - Japanese Yen</option>
+                    <option>CHF (Fr) - Swiss Franc</option>
+                    <option>CNY (¥) - Chinese Yuan</option>
+                    <option>INR (₹) - Indian Rupee</option>
+                    <option>BRL (R$) - Brazilian Real</option>
+                    <option>MXN ($) - Mexican Peso</option>
+                    <option>SGD ($) - Singapore Dollar</option>
+                    <option>HKD ($) - Hong Kong Dollar</option>
+                    <option>NOK (kr) - Norwegian Krone</option>
+                    <option>SEK (kr) - Swedish Krona</option>
+                    <option>DKK (kr) - Danish Krone</option>
+                    <option>PLN (zł) - Polish Zloty</option>
+                    <option>RON (lei) - Romanian Leu</option>
+                    <option>TRY (₺) - Turkish Lira</option>
+                    <option>ZAR (R) - South African Rand</option>
+                    <option>AED (د.إ) - UAE Dirham</option>
+                    <option>SAR (﷼) - Saudi Riyal</option>
+                    <option>KRW (₩) - South Korean Won</option>
+                    <option>NZD ($) - New Zealand Dollar</option>
+                  </select>
                 </div>
               </div>
             </div>
@@ -532,19 +536,19 @@ setAvatarUrl(publicUrl)
                   <p className="text-sm font-medium">Dark Mode</p>
                   <p className="text-xs text-muted-foreground">Use dark theme throughout the app</p>
                 </div>
-                <Switch 
-  checked={darkMode} 
-  onCheckedChange={(checked) => {
-    setDarkMode(checked)
-    if (checked) {
-      document.documentElement.classList.add("dark")
-      localStorage.setItem("darkMode", "true")
-    } else {
-      document.documentElement.classList.remove("dark")
-      localStorage.setItem("darkMode", "false")
-    }
-  }} 
-/>
+                <Switch
+                  checked={darkMode}
+                  onCheckedChange={(checked) => {
+                    setDarkMode(checked)
+                    if (checked) {
+                      document.documentElement.classList.add("dark")
+                      localStorage.setItem("darkMode", "true")
+                    } else {
+                      document.documentElement.classList.remove("dark")
+                      localStorage.setItem("darkMode", "false")
+                    }
+                  }}
+                />
               </div>
               <Separator />
               <div>
@@ -554,12 +558,12 @@ setAvatarUrl(publicUrl)
                     <button
                       key={color}
                       onClick={() => {
-  setAccentColor(color)
-  localStorage.setItem("accentColor", color)
-  document.documentElement.style.setProperty("--primary", color)
-  document.documentElement.style.setProperty("--ring", color)
-  document.documentElement.style.setProperty("--sidebar-primary", color)
-}}
+                        setAccentColor(color)
+                        localStorage.setItem("accentColor", color)
+                        document.documentElement.style.setProperty("--primary", color)
+                        document.documentElement.style.setProperty("--ring", color)
+                        document.documentElement.style.setProperty("--sidebar-primary", color)
+                      }}
                       className={cn(
                         "h-8 w-8 rounded-full border-2 transition-all hover:scale-110",
                         accentColor === color ? "border-white" : "border-border"
