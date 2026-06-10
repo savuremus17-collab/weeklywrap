@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Switch } from "@/components/ui/switch"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Avatar, AvatarFallback } from "@/components/ui/avatar"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Separator } from "@/components/ui/separator"
 import {
   User,
@@ -34,6 +34,7 @@ import { PLANS } from "@/lib/stripe/plans"
 export default function SettingsPage() {
   const [saving, setSaving] = useState(false)
   const [saved, setSaved] = useState(false)
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(null)
   const [showSignOutModal, setShowSignOutModal] = useState(false)
   const [showDeleteModal, setShowDeleteModal] = useState(false)
   const [deleteConfirm, setDeleteConfirm] = useState("")
@@ -271,9 +272,10 @@ export default function SettingsPage() {
             <h2 className="text-lg font-semibold mb-4">Personal Information</h2>
             <div className="flex items-center gap-4 mb-6">
               <Avatar className="h-16 w-16 ring-2 ring-border/40">
-                <AvatarFallback className="bg-gradient-to-br from-blue-500 to-purple-600 text-lg font-bold text-white">
-                  JD
-                </AvatarFallback>
+                {avatarUrl && <AvatarImage src={avatarUrl} alt="Avatar" />}
+<AvatarFallback className="bg-gradient-to-br from-blue-500 to-purple-600 text-lg font-bold text-white">
+  JD
+</AvatarFallback>
               </Avatar>
               <div>
                 <>
@@ -295,7 +297,10 @@ export default function SettingsPage() {
         .from("avatars")
         .upload(filePath, file, { upsert: true })
       if (error) throw error
-      alert("Avatar uploaded successfully!")
+const { data: { publicUrl } } = supabase.storage
+  .from("avatars")
+  .getPublicUrl(filePath)
+setAvatarUrl(publicUrl)
     } catch (error: any) {
       alert("Error uploading avatar: " + error.message)
     }
