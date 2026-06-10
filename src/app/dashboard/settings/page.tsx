@@ -37,7 +37,12 @@ export default function SettingsPage() {
   const [showSignOutModal, setShowSignOutModal] = useState(false)
   const [showDeleteModal, setShowDeleteModal] = useState(false)
   const [deleteConfirm, setDeleteConfirm] = useState("")
-  const [accentColor, setAccentColor] = useState("#3b82f6")
+  const [accentColor, setAccentColor] = useState(() => {
+  if (typeof window !== "undefined") {
+    return localStorage.getItem("accentColor") || "#3b82f6"
+  }
+  return "#3b82f6"
+})
   const [loadingPlan, setLoadingPlan] = useState<string | null>(null)
   const [loadingPortal, setLoadingPortal] = useState(false)
 
@@ -381,11 +386,12 @@ export default function SettingsPage() {
                     <button
                       key={color}
                       onClick={() => {
-                        setAccentColor(color)
-                        document.documentElement.style.setProperty("--primary", color)
-                        document.documentElement.style.setProperty("--ring", color)
-                        document.documentElement.style.setProperty("--sidebar-primary", color)
-                      }}
+  setAccentColor(color)
+  localStorage.setItem("accentColor", color)
+  document.documentElement.style.setProperty("--primary", color)
+  document.documentElement.style.setProperty("--ring", color)
+  document.documentElement.style.setProperty("--sidebar-primary", color)
+}}
                       className={cn(
                         "h-8 w-8 rounded-full border-2 transition-all hover:scale-110",
                         accentColor === color ? "border-white" : "border-border"
