@@ -276,7 +276,23 @@ export default function SettingsPage() {
                 </AvatarFallback>
               </Avatar>
               <div>
-                <Button variant="outline" size="sm" className="h-8 gap-1">Change Avatar</Button>
+                <>
+  <input
+    type="file"
+    id="avatar-upload"
+    accept="image/*"
+    className="hidden"
+    onChange={(e) => {
+      const file = e.target.files?.[0]
+      if (file) {
+        alert(`Avatar "${file.name}" selected! Upload functionality coming soon.`)
+      }
+    }}
+  />
+  <Button variant="outline" size="sm" className="h-8 gap-1" onClick={() => document.getElementById("avatar-upload")?.click()}>
+    Change Avatar
+  </Button>
+</>
                 <p className="text-xs text-muted-foreground mt-1">JPG, PNG or GIF. Max 2MB.</p>
               </div>
             </div>
