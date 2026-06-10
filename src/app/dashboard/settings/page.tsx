@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { motion } from "framer-motion"
 import { GlassCard } from "@/components/ui/premium/glass-card"
 import { GradientBadge } from "@/components/ui/premium/gradient-badge"
@@ -45,6 +45,14 @@ export default function SettingsPage() {
 })
   const [loadingPlan, setLoadingPlan] = useState<string | null>(null)
   const [loadingPortal, setLoadingPortal] = useState(false)
+  useEffect(() => {
+  const saved = localStorage.getItem("accentColor")
+  if (saved) {
+    document.documentElement.style.setProperty("--primary", saved)
+    document.documentElement.style.setProperty("--ring", saved)
+    document.documentElement.style.setProperty("--sidebar-primary", saved)
+  }
+}, [])
 
   const handleSave = () => {
     setSaving(true)
