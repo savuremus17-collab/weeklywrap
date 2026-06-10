@@ -45,12 +45,24 @@ export default function SettingsPage() {
 })
   const [loadingPlan, setLoadingPlan] = useState<string | null>(null)
   const [loadingPortal, setLoadingPortal] = useState(false)
+  const [darkMode, setDarkMode] = useState(() => {
+  if (typeof window !== "undefined") {
+    return localStorage.getItem("darkMode") !== "false"
+  }
+  return true
+})
   useEffect(() => {
   const saved = localStorage.getItem("accentColor")
   if (saved) {
     document.documentElement.style.setProperty("--primary", saved)
     document.documentElement.style.setProperty("--ring", saved)
     document.documentElement.style.setProperty("--sidebar-primary", saved)
+  }
+  const savedDark = localStorage.getItem("darkMode")
+  if (savedDark === "false") {
+    document.documentElement.classList.remove("dark")
+  } else {
+    document.documentElement.classList.add("dark")
   }
 }, [])
 
@@ -384,7 +396,19 @@ export default function SettingsPage() {
                   <p className="text-sm font-medium">Dark Mode</p>
                   <p className="text-xs text-muted-foreground">Use dark theme throughout the app</p>
                 </div>
-                <Switch defaultChecked />
+                <Switch 
+  checked={darkMode} 
+  onCheckedChange={(checked) => {
+    setDarkMode(checked)
+    if (checked) {
+      document.documentElement.classList.add("dark")
+      localStorage.setItem("darkMode", "true")
+    } else {
+      document.documentElement.classList.remove("dark")
+      localStorage.setItem("darkMode", "false")
+    }
+  }} 
+/>
               </div>
               <Separator />
               <div>
