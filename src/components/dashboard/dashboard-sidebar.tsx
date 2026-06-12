@@ -44,9 +44,38 @@ export function DashboardSidebar({
 }: DashboardSidebarProps) {
   const pathname = usePathname()
   const [mounted, setMounted] = useState(false)
+  const [userProfile, setUserProfile] = useState<{
+    name: string
+    avatarUrl: string | null
+  }>({ name: "", avatarUrl: null })
 
   useEffect(() => {
     setMounted(true)
+    const loadProfile = async () => {
+      try {
+        const { supabase } = await import("@/lib/supabase/client")
+        const { data: { user } } = await supabase.auth.getUser()
+        if (!user) return
+
+        const { data } = await supabase
+          .from("users")
+          .select("name")
+          .eq("id", user.id)
+          .single()
+
+        const { data: { publicUrl } } = supabase.storage
+          .from("avatars")
+          .getPublicUrl(`avatars/${user.id}.jpg`)
+
+        setUserProfile({
+          name: data?.name || user.email || "User",
+          avatarUrl: publicUrl || null,
+        })
+      } catch (e) {
+        // silently fail
+      }
+    }
+    loadProfile()
   }, [])
 
   if (!mounted) {
@@ -59,6 +88,15 @@ export function DashboardSidebar({
       />
     )
   }
+
+  const initials = userProfile.name
+    ? userProfile.name
+        .split(" ")
+        .map((n) => n[0])
+        .join("")
+        .toUpperCase()
+        .slice(0, 2)
+    : "?"
 
   const sidebarContent = (
     <div className="flex h-full flex-col bg-sidebar/80 backdrop-blur-xl border-r border-sidebar-border transition-all duration-300">
@@ -162,9 +200,11 @@ export function DashboardSidebar({
           )}
         >
           <Avatar className="h-8 w-8 ring-2 ring-sidebar-primary/20">
-            <AvatarImage src="/avatars/user.jpg" alt="User" />
+            {userProfile.avatarUrl && (
+              <AvatarImage src={userProfile.avatarUrl} alt="User" />
+            )}
             <AvatarFallback className="bg-gradient-to-br from-blue-500 to-purple-600 text-xs text-white">
-              JD
+              {initials}
             </AvatarFallback>
           </Avatar>
           <AnimatePresence mode="wait">
@@ -175,7 +215,9 @@ export function DashboardSidebar({
                 exit={{ opacity: 0, width: 0 }}
                 className="flex-1 overflow-hidden text-left"
               >
-                <p className="text-sm font-medium text-sidebar-foreground truncate">John Doe</p>
+                <p className="text-sm font-medium text-sidebar-foreground truncate">
+                  {userProfile.name || "Loading..."}
+                </p>
                 <p className="text-xs text-sidebar-foreground/50 truncate">Pro Plan</p>
               </motion.div>
             )}
