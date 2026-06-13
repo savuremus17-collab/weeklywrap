@@ -1,4 +1,4 @@
-export type PlanType = 'free' | 'pro' | 'yearly' | 'founding' | 'agency';
+export type PlanType = 'free' | 'pro' | 'yearly' | 'founding' | 'agency' | 'agency_yearly';
 
 export interface Plan {
   id: PlanType;
@@ -87,5 +87,21 @@ export const PLANS: Plan[] = [
       'Dedicated Account Manager',
     ],
     stripePriceId: process.env.NEXT_PUBLIC_STRIPE_AGENCY_PRICE_ID,
+  },
+  {
+    id: 'agency_yearly',
+    name: 'Agency Yearly',
+    description: 'Save 2 months on agency team collaboration.',
+    price: 399,
+    interval: 'year',
+    features: [
+      'Multi-user Workspace',
+      'Team Collaboration',
+      'White-label Reporting',
+      'Advanced Analytics',
+      'Dedicated Account Manager',
+      'Priority Support',
+    ],
+    stripePriceId: process.env.NEXT_PUBLIC_STRIPE_AGENCY_YEARLY_PRICE_ID,
   },
 ];
