@@ -89,20 +89,20 @@ export default function ReportDetailPage() {
           </p>
         </div>
         <div className="flex items-center gap-2">
-         <Link href="/dashboard/reports">
-  <Button variant="outline" size="sm" className="h-9 gap-1.5">
-    <Edit3 className="h-4 w-4" />
-    Edit
-  </Button>
-</Link>
-<Button variant="outline" size="sm" className="h-9 gap-1.5" onClick={() => window.print()}>
-  <Download className="h-4 w-4" />
-  Export PDF
-</Button>
-<Button size="sm" className="h-9 gap-1.5 bg-gradient-to-r from-blue-500 to-blue-700 shadow-lg shadow-blue-500/25" onClick={() => alert("Report sent to client!")}>
-  <Send className="h-4 w-4" />
-  Send to Client
-</Button>
+          <Link href="/dashboard/reports/new">
+            <Button variant="outline" size="sm" className="h-9 gap-1.5">
+              <Edit3 className="h-4 w-4" />
+              Edit
+            </Button>
+          </Link>
+          <Button variant="outline" size="sm" className="h-9 gap-1.5" onClick={() => window.print()}>
+            <Download className="h-4 w-4" />
+            Export PDF
+          </Button>
+          <Button size="sm" className="h-9 gap-1.5 bg-gradient-to-r from-blue-500 to-blue-700 shadow-lg shadow-blue-500/25" onClick={() => alert("Report sent to client!")}>
+            <Send className="h-4 w-4" />
+            Send to Client
+          </Button>
         </div>
       </div>
 
@@ -174,7 +174,7 @@ export default function ReportDetailPage() {
             <h2 className="text-sm font-medium text-muted-foreground mb-4">Daily Performance</h2>
             <div className="h-[250px]">
               <ResponsiveContainer width="100%" height="100%">
-               <BarChart data={performanceData} style={{ background: "transparent" }}>
+                <BarChart data={performanceData} style={{ background: "transparent" }}>
                   <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" strokeOpacity={0.3} />
                   <XAxis dataKey="day" tick={{ fontSize: 10, fill: "hsl(var(--muted-foreground))", opacity: 0.6 }} tickLine={false} axisLine={false} />
                   <YAxis tick={{ fontSize: 10, fill: "hsl(var(--muted-foreground))", opacity: 0.6 }} tickLine={false} axisLine={false} />
