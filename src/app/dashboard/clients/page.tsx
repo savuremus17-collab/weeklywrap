@@ -150,7 +150,7 @@ export default function ClientsPage() {
     c.status === "active" &&
     (c.name.toLowerCase().includes(search.toLowerCase()) ||
      c.email.toLowerCase().includes(search.toLowerCase()) ||
-     c.company.toLowerCase().includes(search.toLowerCase()))
+     (c.company || "").toLowerCase().includes(search.toLowerCase()))
   )
 
   return (
