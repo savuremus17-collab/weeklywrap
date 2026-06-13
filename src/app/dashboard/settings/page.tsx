@@ -31,6 +31,86 @@ import {
 import { cn } from "@/lib/utils"
 import { PLANS } from "@/lib/stripe/plans"
 
+const TIMEZONES = [
+  { group: "Americas", options: [
+    "America/New_York (UTC -5)",
+    "America/Chicago (UTC -6)",
+    "America/Denver (UTC -7)",
+    "America/Los_Angeles (UTC -8)",
+    "America/Anchorage (UTC -9)",
+    "America/Honolulu (UTC -10)",
+    "America/Sao_Paulo (UTC -3)",
+    "America/Buenos_Aires (UTC -3)",
+    "America/Bogota (UTC -5)",
+    "America/Mexico_City (UTC -6)",
+    "America/Toronto (UTC -5)",
+    "America/Vancouver (UTC -8)",
+  ]},
+  { group: "Europe", options: [
+    "Europe/London (UTC +0)",
+    "Europe/Paris (UTC +1)",
+    "Europe/Berlin (UTC +1)",
+    "Europe/Rome (UTC +1)",
+    "Europe/Madrid (UTC +1)",
+    "Europe/Amsterdam (UTC +1)",
+    "Europe/Brussels (UTC +1)",
+    "Europe/Bucharest (UTC +2)",
+    "Europe/Helsinki (UTC +2)",
+    "Europe/Athens (UTC +2)",
+    "Europe/Moscow (UTC +3)",
+    "Europe/Istanbul (UTC +3)",
+  ]},
+  { group: "Asia", options: [
+    "Asia/Dubai (UTC +4)",
+    "Asia/Karachi (UTC +5)",
+    "Asia/Kolkata (UTC +5:30)",
+    "Asia/Dhaka (UTC +6)",
+    "Asia/Bangkok (UTC +7)",
+    "Asia/Singapore (UTC +8)",
+    "Asia/Shanghai (UTC +8)",
+    "Asia/Tokyo (UTC +9)",
+    "Asia/Seoul (UTC +9)",
+  ]},
+  { group: "Africa", options: [
+    "Africa/Cairo (UTC +2)",
+    "Africa/Johannesburg (UTC +2)",
+    "Africa/Lagos (UTC +1)",
+    "Africa/Nairobi (UTC +3)",
+  ]},
+  { group: "Pacific", options: [
+    "Pacific/Auckland (UTC +12)",
+    "Pacific/Sydney (UTC +10)",
+    "Pacific/Fiji (UTC +12)",
+  ]},
+]
+
+const CURRENCIES = [
+  "USD ($) - US Dollar",
+  "EUR (€) - Euro",
+  "GBP (£) - British Pound",
+  "CAD ($) - Canadian Dollar",
+  "AUD ($) - Australian Dollar",
+  "JPY (¥) - Japanese Yen",
+  "CHF (Fr) - Swiss Franc",
+  "CNY (¥) - Chinese Yuan",
+  "INR (₹) - Indian Rupee",
+  "BRL (R$) - Brazilian Real",
+  "MXN ($) - Mexican Peso",
+  "SGD ($) - Singapore Dollar",
+  "HKD ($) - Hong Kong Dollar",
+  "NOK (kr) - Norwegian Krone",
+  "SEK (kr) - Swedish Krona",
+  "DKK (kr) - Danish Krone",
+  "PLN (zł) - Polish Zloty",
+  "RON (lei) - Romanian Leu",
+  "TRY (₺) - Turkish Lira",
+  "ZAR (R) - South African Rand",
+  "AED (د.إ) - UAE Dirham",
+  "SAR (﷼) - Saudi Riyal",
+  "KRW (₩) - South Korean Won",
+  "NZD ($) - New Zealand Dollar",
+]
+
 export default function SettingsPage() {
   const [saving, setSaving] = useState(false)
   const [saved, setSaved] = useState(false)
@@ -39,6 +119,8 @@ export default function SettingsPage() {
   const [lastName, setLastName] = useState("")
   const [email, setEmail] = useState("")
   const [company, setCompany] = useState("")
+  const [timezone, setTimezone] = useState("Europe/Bucharest (UTC +2)")
+  const [currency, setCurrency] = useState("EUR (€) - Euro")
   const [showSignOutModal, setShowSignOutModal] = useState(false)
   const [showDeleteModal, setShowDeleteModal] = useState(false)
   const [deleteConfirm, setDeleteConfirm] = useState("")
@@ -77,7 +159,7 @@ export default function SettingsPage() {
         setEmail(user.email || "")
         const { data } = await supabase
           .from("users")
-          .select("name, email, company")
+          .select("name, email, company, timezone, currency")
           .eq("id", user.id)
           .single()
         if (data) {
@@ -86,6 +168,8 @@ export default function SettingsPage() {
           setLastName(parts.slice(1).join(" ") || "")
           setEmail(data.email || user.email || "")
           setCompany(data.company || "")
+          if (data.timezone) setTimezone(data.timezone)
+          if (data.currency) setCurrency(data.currency)
         }
         const fileExt = "jpg"
         const filePath = `avatars/${user.id}.${fileExt}`
@@ -110,6 +194,8 @@ export default function SettingsPage() {
           name: `${firstName} ${lastName}`.trim(),
           email: email,
           company: company,
+          timezone: timezone,
+          currency: currency,
         })
         .eq("id", user.id)
       if (error) throw error
@@ -164,9 +250,7 @@ export default function SettingsPage() {
   const handleManageSubscription = async () => {
     setLoadingPortal(true)
     try {
-      const res = await fetch("/api/stripe/portal", {
-        method: "POST",
-      })
+      const res = await fetch("/api/stripe/portal", { method: "POST" })
       const data = await res.json()
       if (data.url) {
         window.location.href = data.url
@@ -197,19 +281,10 @@ export default function SettingsPage() {
   }
 
   return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      className="space-y-6"
-    >
-      {/* Sign Out Modal */}
+    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-6">
       {showSignOutModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            className="w-full max-w-md mx-4"
-          >
+          <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="w-full max-w-md mx-4">
             <GlassCard intensity="low" className="p-6">
               <div className="flex items-center gap-3 mb-4">
                 <div className="flex h-10 w-10 items-center justify-center rounded-full bg-blue-500/10 border border-blue-500/20">
@@ -217,16 +292,11 @@ export default function SettingsPage() {
                 </div>
                 <h2 className="text-lg font-semibold">Sign Out</h2>
               </div>
-              <p className="text-sm text-muted-foreground mb-6">
-                Are you sure you want to sign out of your WeeklyWrap account?
-              </p>
+              <p className="text-sm text-muted-foreground mb-6">Are you sure you want to sign out of your WeeklyWrap account?</p>
               <div className="flex gap-3">
-                <Button variant="outline" className="flex-1" onClick={() => setShowSignOutModal(false)}>
-                  Cancel
-                </Button>
+                <Button variant="outline" className="flex-1" onClick={() => setShowSignOutModal(false)}>Cancel</Button>
                 <Button className="flex-1 gap-2 bg-blue-500 hover:bg-blue-600" onClick={handleSignOut}>
-                  <LogOut className="h-4 w-4" />
-                  Sign Out
+                  <LogOut className="h-4 w-4" />Sign Out
                 </Button>
               </div>
             </GlassCard>
@@ -234,14 +304,9 @@ export default function SettingsPage() {
         </div>
       )}
 
-      {/* Delete Account Modal */}
       {showDeleteModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            className="w-full max-w-md mx-4"
-          >
+          <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="w-full max-w-md mx-4">
             <GlassCard intensity="low" className="p-6">
               <div className="flex items-center gap-3 mb-4">
                 <div className="flex h-10 w-10 items-center justify-center rounded-full bg-red-500/10 border border-red-500/20">
@@ -253,27 +318,13 @@ export default function SettingsPage() {
                 This action is <strong className="text-foreground">permanent and irreversible</strong>. All your data, reports, and clients will be deleted.
               </p>
               <div className="mb-4">
-                <label className="text-sm font-medium mb-1.5 block">
-                  Type <strong>DELETE</strong> to confirm
-                </label>
-                <Input
-                  placeholder="DELETE"
-                  value={deleteConfirm}
-                  onChange={(e) => setDeleteConfirm(e.target.value)}
-                  className="border-red-500/30 focus:border-red-500"
-                />
+                <label className="text-sm font-medium mb-1.5 block">Type <strong>DELETE</strong> to confirm</label>
+                <Input placeholder="DELETE" value={deleteConfirm} onChange={(e) => setDeleteConfirm(e.target.value)} className="border-red-500/30 focus:border-red-500" />
               </div>
               <div className="flex gap-3">
-                <Button variant="outline" className="flex-1" onClick={() => { setShowDeleteModal(false); setDeleteConfirm("") }}>
-                  Cancel
-                </Button>
-                <Button
-                  className="flex-1 gap-2 bg-red-500 hover:bg-red-600 text-white"
-                  disabled={deleteConfirm !== "DELETE"}
-                  onClick={handleDeleteAccount}
-                >
-                  <Trash2 className="h-4 w-4" />
-                  Delete Account
+                <Button variant="outline" className="flex-1" onClick={() => { setShowDeleteModal(false); setDeleteConfirm("") }}>Cancel</Button>
+                <Button className="flex-1 gap-2 bg-red-500 hover:bg-red-600 text-white" disabled={deleteConfirm !== "DELETE"} onClick={handleDeleteAccount}>
+                  <Trash2 className="h-4 w-4" />Delete Account
                 </Button>
               </div>
             </GlassCard>
@@ -283,36 +334,18 @@ export default function SettingsPage() {
 
       <div>
         <h1 className="text-2xl font-bold tracking-tight">Settings</h1>
-        <p className="text-sm text-muted-foreground mt-1">
-          Manage your account, preferences, and integrations.
-        </p>
+        <p className="text-sm text-muted-foreground mt-1">Manage your account, preferences, and integrations.</p>
       </div>
 
       <Tabs defaultValue="profile" className="space-y-4">
         <TabsList className="bg-muted/30 border border-border/40">
-          <TabsTrigger value="profile" className="gap-1.5 data-[state=active]:bg-background">
-            <User className="h-4 w-4" />
-            Profile
-          </TabsTrigger>
-          <TabsTrigger value="notifications" className="gap-1.5 data-[state=active]:bg-background">
-            <Bell className="h-4 w-4" />
-            Notifications
-          </TabsTrigger>
-          <TabsTrigger value="appearance" className="gap-1.5 data-[state=active]:bg-background">
-            <Palette className="h-4 w-4" />
-            Appearance
-          </TabsTrigger>
-          <TabsTrigger value="billing" className="gap-1.5 data-[state=active]:bg-background">
-            <CreditCard className="h-4 w-4" />
-            Billing
-          </TabsTrigger>
-          <TabsTrigger value="api" className="gap-1.5 data-[state=active]:bg-background">
-            <Key className="h-4 w-4" />
-            API
-          </TabsTrigger>
+          <TabsTrigger value="profile" className="gap-1.5 data-[state=active]:bg-background"><User className="h-4 w-4" />Profile</TabsTrigger>
+          <TabsTrigger value="notifications" className="gap-1.5 data-[state=active]:bg-background"><Bell className="h-4 w-4" />Notifications</TabsTrigger>
+          <TabsTrigger value="appearance" className="gap-1.5 data-[state=active]:bg-background"><Palette className="h-4 w-4" />Appearance</TabsTrigger>
+          <TabsTrigger value="billing" className="gap-1.5 data-[state=active]:bg-background"><CreditCard className="h-4 w-4" />Billing</TabsTrigger>
+          <TabsTrigger value="api" className="gap-1.5 data-[state=active]:bg-background"><Key className="h-4 w-4" />API</TabsTrigger>
         </TabsList>
 
-        {/* Profile Tab */}
         <TabsContent value="profile" className="space-y-6">
           <GlassCard intensity="low" className="p-6">
             <h2 className="text-lg font-semibold mb-4">Personal Information</h2>
@@ -338,13 +371,9 @@ export default function SettingsPage() {
                       if (!user) return alert("Not logged in")
                       const fileExt = file.name.split(".").pop()
                       const filePath = `avatars/${user.id}.${fileExt}`
-                      const { error } = await supabase.storage
-                        .from("avatars")
-                        .upload(filePath, file, { upsert: true })
+                      const { error } = await supabase.storage.from("avatars").upload(filePath, file, { upsert: true })
                       if (error) throw error
-                      const { data: { publicUrl } } = supabase.storage
-                        .from("avatars")
-                        .getPublicUrl(filePath)
+                      const { data: { publicUrl } } = supabase.storage.from("avatars").getPublicUrl(filePath)
                       setAvatarUrl(publicUrl)
                     } catch (error: any) {
                       alert("Error uploading avatar: " + error.message)
@@ -383,86 +412,30 @@ export default function SettingsPage() {
               <div className="grid gap-4 md:grid-cols-2">
                 <div>
                   <label className="text-sm font-medium mb-1.5 block">Timezone</label>
-                  <select className="flex h-9 w-full rounded-lg border border-input bg-transparent px-3 py-1 text-sm shadow-sm">
-                    <optgroup label="Americas">
-                      <option>America/New_York (UTC -5)</option>
-                      <option>America/Chicago (UTC -6)</option>
-                      <option>America/Denver (UTC -7)</option>
-                      <option>America/Los_Angeles (UTC -8)</option>
-                      <option>America/Anchorage (UTC -9)</option>
-                      <option>America/Honolulu (UTC -10)</option>
-                      <option>America/Sao_Paulo (UTC -3)</option>
-                      <option>America/Buenos_Aires (UTC -3)</option>
-                      <option>America/Bogota (UTC -5)</option>
-                      <option>America/Mexico_City (UTC -6)</option>
-                      <option>America/Toronto (UTC -5)</option>
-                      <option>America/Vancouver (UTC -8)</option>
-                    </optgroup>
-                    <optgroup label="Europe">
-                      <option>Europe/London (UTC +0)</option>
-                      <option>Europe/Paris (UTC +1)</option>
-                      <option>Europe/Berlin (UTC +1)</option>
-                      <option>Europe/Rome (UTC +1)</option>
-                      <option>Europe/Madrid (UTC +1)</option>
-                      <option>Europe/Amsterdam (UTC +1)</option>
-                      <option>Europe/Brussels (UTC +1)</option>
-                      <option>Europe/Bucharest (UTC +2)</option>
-                      <option>Europe/Helsinki (UTC +2)</option>
-                      <option>Europe/Athens (UTC +2)</option>
-                      <option>Europe/Moscow (UTC +3)</option>
-                      <option>Europe/Istanbul (UTC +3)</option>
-                    </optgroup>
-                    <optgroup label="Asia">
-                      <option>Asia/Dubai (UTC +4)</option>
-                      <option>Asia/Karachi (UTC +5)</option>
-                      <option>Asia/Kolkata (UTC +5:30)</option>
-                      <option>Asia/Dhaka (UTC +6)</option>
-                      <option>Asia/Bangkok (UTC +7)</option>
-                      <option>Asia/Singapore (UTC +8)</option>
-                      <option>Asia/Shanghai (UTC +8)</option>
-                      <option>Asia/Tokyo (UTC +9)</option>
-                      <option>Asia/Seoul (UTC +9)</option>
-                    </optgroup>
-                    <optgroup label="Africa">
-                      <option>Africa/Cairo (UTC +2)</option>
-                      <option>Africa/Johannesburg (UTC +2)</option>
-                      <option>Africa/Lagos (UTC +1)</option>
-                      <option>Africa/Nairobi (UTC +3)</option>
-                    </optgroup>
-                    <optgroup label="Pacific">
-                      <option>Pacific/Auckland (UTC +12)</option>
-                      <option>Pacific/Sydney (UTC +10)</option>
-                      <option>Pacific/Fiji (UTC +12)</option>
-                    </optgroup>
+                  <select
+                    value={timezone}
+                    onChange={(e) => setTimezone(e.target.value)}
+                    className="flex h-9 w-full rounded-lg border border-input bg-transparent px-3 py-1 text-sm shadow-sm"
+                  >
+                    {TIMEZONES.map((group) => (
+                      <optgroup key={group.group} label={group.group}>
+                        {group.options.map((tz) => (
+                          <option key={tz} value={tz}>{tz}</option>
+                        ))}
+                      </optgroup>
+                    ))}
                   </select>
                 </div>
                 <div>
                   <label className="text-sm font-medium mb-1.5 block">Currency</label>
-                  <select className="flex h-9 w-full rounded-lg border border-input bg-transparent px-3 py-1 text-sm shadow-sm">
-                    <option>USD ($) - US Dollar</option>
-                    <option>EUR (€) - Euro</option>
-                    <option>GBP (£) - British Pound</option>
-                    <option>CAD ($) - Canadian Dollar</option>
-                    <option>AUD ($) - Australian Dollar</option>
-                    <option>JPY (¥) - Japanese Yen</option>
-                    <option>CHF (Fr) - Swiss Franc</option>
-                    <option>CNY (¥) - Chinese Yuan</option>
-                    <option>INR (₹) - Indian Rupee</option>
-                    <option>BRL (R$) - Brazilian Real</option>
-                    <option>MXN ($) - Mexican Peso</option>
-                    <option>SGD ($) - Singapore Dollar</option>
-                    <option>HKD ($) - Hong Kong Dollar</option>
-                    <option>NOK (kr) - Norwegian Krone</option>
-                    <option>SEK (kr) - Swedish Krona</option>
-                    <option>DKK (kr) - Danish Krone</option>
-                    <option>PLN (zł) - Polish Zloty</option>
-                    <option>RON (lei) - Romanian Leu</option>
-                    <option>TRY (₺) - Turkish Lira</option>
-                    <option>ZAR (R) - South African Rand</option>
-                    <option>AED (د.إ) - UAE Dirham</option>
-                    <option>SAR (﷼) - Saudi Riyal</option>
-                    <option>KRW (₩) - South Korean Won</option>
-                    <option>NZD ($) - New Zealand Dollar</option>
+                  <select
+                    value={currency}
+                    onChange={(e) => setCurrency(e.target.value)}
+                    className="flex h-9 w-full rounded-lg border border-input bg-transparent px-3 py-1 text-sm shadow-sm"
+                  >
+                    {CURRENCIES.map((c) => (
+                      <option key={c} value={c}>{c}</option>
+                    ))}
                   </select>
                 </div>
               </div>
@@ -485,8 +458,7 @@ export default function SettingsPage() {
                   <p className="text-xs text-muted-foreground">Sign out of your WeeklyWrap account</p>
                 </div>
                 <Button variant="outline" size="sm" className="gap-1.5" onClick={() => setShowSignOutModal(true)}>
-                  <LogOut className="h-4 w-4" />
-                  Sign Out
+                  <LogOut className="h-4 w-4" />Sign Out
                 </Button>
               </div>
               <div className="flex items-center justify-between p-3 rounded-xl border border-red-500/20 bg-red-500/5">
@@ -495,15 +467,13 @@ export default function SettingsPage() {
                   <p className="text-xs text-muted-foreground">Permanently delete your account and all data</p>
                 </div>
                 <Button variant="outline" size="sm" className="gap-1.5 border-red-500/30 text-red-400 hover:bg-red-500/10" onClick={() => setShowDeleteModal(true)}>
-                  <Trash2 className="h-4 w-4" />
-                  Delete Account
+                  <Trash2 className="h-4 w-4" />Delete Account
                 </Button>
               </div>
             </div>
           </GlassCard>
         </TabsContent>
 
-        {/* Notifications Tab */}
         <TabsContent value="notifications" className="space-y-6">
           <GlassCard intensity="low" className="p-6">
             <h2 className="text-lg font-semibold mb-4">Notification Preferences</h2>
@@ -528,7 +498,6 @@ export default function SettingsPage() {
           </GlassCard>
         </TabsContent>
 
-        {/* Appearance Tab */}
         <TabsContent value="appearance" className="space-y-6">
           <GlassCard intensity="low" className="p-6">
             <h2 className="text-lg font-semibold mb-4">Appearance</h2>
@@ -566,10 +535,7 @@ export default function SettingsPage() {
                         document.documentElement.style.setProperty("--ring", color)
                         document.documentElement.style.setProperty("--sidebar-primary", color)
                       }}
-                      className={cn(
-                        "h-8 w-8 rounded-full border-2 transition-all hover:scale-110",
-                        accentColor === color ? "border-white" : "border-border"
-                      )}
+                      className={cn("h-8 w-8 rounded-full border-2 transition-all hover:scale-110", accentColor === color ? "border-white" : "border-border")}
                       style={{ backgroundColor: color, outline: accentColor === color ? `2px solid ${color}` : "none", outlineOffset: "2px" }}
                     />
                   ))}
@@ -587,7 +553,6 @@ export default function SettingsPage() {
           </GlassCard>
         </TabsContent>
 
-        {/* Billing Tab */}
         <TabsContent value="billing" className="space-y-6">
           <GlassCard intensity="low" className="p-6">
             <div className="flex items-center justify-between mb-6">
@@ -625,18 +590,10 @@ export default function SettingsPage() {
                 const Icon = planIcons[plan.id] || Zap
                 const isPopular = plan.metadata?.isMostPopular === "true"
                 return (
-                  <div
-                    key={plan.id}
-                    className={cn(
-                      "relative rounded-xl border bg-gradient-to-br p-5",
-                      planColors[plan.id]
-                    )}
-                  >
+                  <div key={plan.id} className={cn("relative rounded-xl border bg-gradient-to-br p-5", planColors[plan.id])}>
                     {isPopular && (
                       <div className="absolute -top-2.5 left-4">
-                        <span className="bg-blue-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full">
-                          MOST POPULAR
-                        </span>
+                        <span className="bg-blue-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full">MOST POPULAR</span>
                       </div>
                     )}
                     <div className="flex items-start justify-between mb-3">
@@ -682,61 +639,46 @@ export default function SettingsPage() {
                 <p className="text-sm font-medium">Visa ending in 4242</p>
                 <p className="text-xs text-muted-foreground">Expires 12/2026</p>
               </div>
-              <Button variant="ghost" size="sm" className="h-8 text-xs" onClick={handleManageSubscription} disabled={loadingPortal}>
-                Update
-              </Button>
+              <Button variant="ghost" size="sm" className="h-8 text-xs" onClick={handleManageSubscription} disabled={loadingPortal}>Update</Button>
             </div>
           </GlassCard>
         </TabsContent>
 
-        {/* API Tab */}
         <TabsContent value="api" className="space-y-6">
           <GlassCard intensity="low" className="p-6">
             <h2 className="text-lg font-semibold mb-4">API Keys</h2>
-            <p className="text-sm text-muted-foreground mb-4">
-              Use these keys to integrate WeeklyWrap with your tools and workflows.
-            </p>
+            <p className="text-sm text-muted-foreground mb-4">Use these keys to integrate WeeklyWrap with your tools and workflows.</p>
             <div className="space-y-3">
               <div>
                 <label className="text-sm font-medium mb-1.5 block">Production API Key</label>
                 <div className="flex gap-2">
                   <Input defaultValue="ww_prod_••••••••••••••••••••••••" readOnly className="font-mono text-xs" />
-                  <Button variant="outline" size="sm" className="shrink-0 h-9" onClick={() => navigator.clipboard.writeText("ww_prod_example")}>
-                    Copy
-                  </Button>
+                  <Button variant="outline" size="sm" className="shrink-0 h-9" onClick={() => navigator.clipboard.writeText("ww_prod_example")}>Copy</Button>
                 </div>
               </div>
               <div>
                 <label className="text-sm font-medium mb-1.5 block">Test API Key</label>
                 <div className="flex gap-2">
                   <Input defaultValue="ww_test_••••••••••••••••••••••••" readOnly className="font-mono text-xs" />
-                  <Button variant="outline" size="sm" className="shrink-0 h-9" onClick={() => navigator.clipboard.writeText("ww_test_example")}>
-                    Copy
-                  </Button>
+                  <Button variant="outline" size="sm" className="shrink-0 h-9" onClick={() => navigator.clipboard.writeText("ww_test_example")}>Copy</Button>
                 </div>
               </div>
             </div>
             <div className="mt-4 p-3 rounded-xl bg-amber-500/10 border border-amber-500/20">
-              <p className="text-xs text-amber-400">
-                Keep your API keys secret. Never share them publicly or commit them to version control.
-              </p>
+              <p className="text-xs text-amber-400">Keep your API keys secret. Never share them publicly or commit them to version control.</p>
             </div>
             <div className="mt-4">
               <Button variant="outline" size="sm" className="h-8 gap-1" onClick={() => alert("New key generated!")}>
-                <Key className="h-3.5 w-3.5" />
-                Generate New Key
+                <Key className="h-3.5 w-3.5" />Generate New Key
               </Button>
             </div>
           </GlassCard>
 
           <GlassCard intensity="low" className="p-6">
             <h2 className="text-lg font-semibold mb-4">API Documentation</h2>
-            <p className="text-sm text-muted-foreground mb-4">
-              Learn how to integrate WeeklyWrap into your workflow.
-            </p>
+            <p className="text-sm text-muted-foreground mb-4">Learn how to integrate WeeklyWrap into your workflow.</p>
             <Button variant="outline" className="gap-1.5" onClick={() => alert("Documentation coming soon!")}>
-              <Globe className="h-4 w-4" />
-              View Documentation
+              <Globe className="h-4 w-4" />View Documentation
             </Button>
           </GlassCard>
         </TabsContent>
