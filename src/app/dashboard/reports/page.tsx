@@ -173,25 +173,31 @@ export default function ReportsPage() {
               ) : (
                 <>
                   <div className="space-y-4 mb-6">
-                    <div>
-                      <label className="text-sm font-medium mb-1.5 block">Client</label>
-                      <Input value={sendingReport.client} readOnly className="bg-muted/20" />
-                    </div>
-                    <div>
-                      <label className="text-sm font-medium mb-1.5 block">Client Email</label>
-                      <Input
-                        type="email"
-                        placeholder="client@example.com"
-                        value={clientEmail}
-                        onChange={(e) => setClientEmail(e.target.value)}
-                        onKeyDown={(e) => e.key === "Enter" && handleSendToClient()}
-                      />
-                    </div>
-                    <div>
-                      <label className="text-sm font-medium mb-1.5 block">Report Period</label>
-                      <Input value={sendingReport.period} readOnly className="bg-muted/20" />
-                    </div>
-                  </div>
+  <div>
+    <label className="text-sm font-medium mb-1.5 block">Client</label>
+    <Input
+      value={sendingReport.client}
+      onChange={(e) => setSendingReport({ ...sendingReport, client: e.target.value })}
+    />
+  </div>
+  <div>
+    <label className="text-sm font-medium mb-1.5 block">Client Email</label>
+    <Input
+      type="email"
+      placeholder="client@example.com"
+      value={clientEmail}
+      onChange={(e) => setClientEmail(e.target.value)}
+      onKeyDown={(e) => e.key === "Enter" && handleSendToClient()}
+    />
+  </div>
+  <div>
+    <label className="text-sm font-medium mb-1.5 block">Report Period</label>
+    <Input
+      value={sendingReport.period}
+      onChange={(e) => setSendingReport({ ...sendingReport, period: e.target.value })}
+    />
+  </div>
+</div>
                   <div className="flex gap-3">
                     <Button variant="outline" className="flex-1" onClick={() => { setSendingReport(null); setClientEmail("") }}>
                       Cancel
