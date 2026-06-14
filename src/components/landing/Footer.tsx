@@ -16,7 +16,7 @@ const footerLinks = [
   {
     title: "Resources",
     links: [
-      { name: "Support", href: "mailto:weeklywrapsupport@gmail.com" },
+      { name: "Contact", href: "mailto:weeklywrapsupport@gmail.com" },
     ],
   },
   {
@@ -25,7 +25,7 @@ const footerLinks = [
       { name: "About", href: "#" },
       { name: "Privacy", href: "/privacy" },
       { name: "Terms", href: "/terms" },
-      { name: "Contact", href: "mailto:weeklywrapsupport@gmail.com" },
+      { name: "Contact", href: "/contact" },
     ],
   },
 ];
