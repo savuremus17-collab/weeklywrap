@@ -20,7 +20,7 @@ const footerLinks = [
       { name: "About", href: "#" },
       { name: "Privacy", href: "/privacy" },
       { name: "Terms", href: "/terms" },
-      { name: "Contact", href: "/contact" },
+      { name: "Contact", href: "mailto:weeklywrapsupport@gmail.com" },
     ],
   },
 ];
