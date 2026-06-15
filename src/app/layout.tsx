@@ -38,6 +38,7 @@ export default function RootLayout({
             theme="dark"
           />
         </AuthProvider>
+        <Analytics />
       </body>
     </html>
   );
