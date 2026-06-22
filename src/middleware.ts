@@ -2,6 +2,13 @@ import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
 
 export async function middleware(request: NextRequest) {
+  const { pathname } = request.nextUrl
+
+  // Skip middleware pentru API routes
+  if (pathname.startsWith('/api/')) {
+    return NextResponse.next()
+  }
+
   let supabaseResponse = NextResponse.next({ request })
 
   const supabase = createServerClient(
@@ -23,13 +30,11 @@ export async function middleware(request: NextRequest) {
 
   const { data: { user } } = await supabase.auth.getUser()
 
-  // Protejezi dashboard
-  if (!user && request.nextUrl.pathname.startsWith('/dashboard')) {
+  if (!user && pathname.startsWith('/dashboard')) {
     return NextResponse.redirect(new URL('/login', request.url))
   }
 
-  // Redirectezi userii logati de pe pagini auth
-  if (user && ['/login', '/signup', '/magic-link'].includes(request.nextUrl.pathname)) {
+  if (user && ['/login', '/signup', '/magic-link'].includes(pathname)) {
     return NextResponse.redirect(new URL('/dashboard', request.url))
   }
 
@@ -38,6 +43,9 @@ export async function middleware(request: NextRequest) {
 
 export const config = {
   matcher: [
-    '/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
+    '/dashboard/:path*',
+    '/login',
+    '/signup',
+    '/magic-link',
   ],
 }
