@@ -1,41 +1,34 @@
-import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
 
 export async function middleware(request: NextRequest) {
-  let supabaseResponse = NextResponse.next({ request })
+  const { pathname } = request.nextUrl
 
-  const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    {
-      cookies: {
-        getAll() { return request.cookies.getAll() },
-        setAll(cookiesToSet) {
-          cookiesToSet.forEach(({ name, value }) =>
-            request.cookies.set(name, value))
-          supabaseResponse = NextResponse.next({ request })
-          cookiesToSet.forEach(({ name, value, options }) =>
-            supabaseResponse.cookies.set(name, value, options))
-        },
-      },
-    }
+  // Skip auth callback
+  if (pathname.startsWith('/auth/')) {
+    return NextResponse.next()
+  }
+
+  const hasSession = request.cookies.getAll().some(c => 
+    c.name.includes('auth-token') || c.name.includes('sb-')
   )
 
-  const { data: { user } } = await supabase.auth.getUser()
-
-  if (!user && request.nextUrl.pathname.startsWith('/dashboard')) {
+  if (!hasSession && pathname.startsWith('/dashboard')) {
     return NextResponse.redirect(new URL('/login', request.url))
   }
 
-  if (user && ['/login', '/signup', '/magic-link'].includes(request.nextUrl.pathname)) {
+  if (hasSession && ['/login', '/signup', '/magic-link'].includes(pathname)) {
     return NextResponse.redirect(new URL('/dashboard', request.url))
   }
 
-  return supabaseResponse
+  return NextResponse.next()
 }
 
 export const config = {
   matcher: [
-    '/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webop)$).*)',
+    '/dashboard/:path*',
+    '/login',
+    '/signup',
+    '/magic-link',
+    '/auth/:path*',
   ],
 }
