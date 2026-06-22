@@ -43,7 +43,7 @@ const faqs = [
   {
     question: "Do you offer refunds?",
     answer:
-      "We offer a 7-day money-back guarantee on all paid plans. If you're not satisfied, contact us and we'll refund you — no questions asked.",
+       "Due to the nature of our service — AI-generated reports consume real computing resources on every request — we are unable to offer refunds. Each report generation incurs direct AI processing costs on our end. We encourage you to try our Free plan before upgrading to make sure WeeklyWrap is the right fit for you.",
   },
 ];
 
