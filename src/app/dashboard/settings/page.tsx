@@ -148,11 +148,21 @@ export default function SettingsPage() {
   }
 
   const handleDeleteAccount = async () => {
-    if (deleteConfirm !== "DELETE") return
-    const { supabase } = await import("@/lib/supabase/client")
-    await supabase.auth.signOut()
-    window.location.href = "/"
+  if (deleteConfirm !== "DELETE") return
+  try {
+    const res = await fetch("/api/user/delete", { method: "POST" })
+    const data = await res.json()
+    if (res.ok) {
+      const { supabase } = await import("@/lib/supabase/client")
+      await supabase.auth.signOut()
+      window.location.href = "/"
+    } else {
+      alert("Error deleting account: " + data.error)
+    }
+  } catch (error: any) {
+    alert("Something went wrong: " + error.message)
   }
+}
 
   const handleCheckout = async (priceId: string, planId: string) => {
     if (!priceId) return
