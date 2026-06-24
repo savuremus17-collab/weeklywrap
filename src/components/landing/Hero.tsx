@@ -1,244 +1,119 @@
 "use client";
-import { useRouter } from 'next/navigation';
-import { motion } from "framer-motion";
-import { Button } from "@/components/ui/button";
-import { ArrowRight, Play, CheckCircle2 } from "lucide-react";
-import { 
-  AreaChart, 
-  Area, 
-  XAxis, 
-  YAxis, 
-  CartesianGrid, 
-  Tooltip, 
-  ResponsiveContainer 
-} from 'recharts';
+import Link from "next/link";
 
-const data = [
-  { name: 'Mon', value: 400 },
-  { name: 'Tue', value: 300 },
-  { name: 'Wed', value: 600 },
-  { name: 'Thu', value: 800 },
-  { name: 'Fri', value: 500 },
-  { name: 'Sat', value: 900 },
-  { name: 'Sun', value: 1100 },
-];
-
-export const Hero = () => {
-  const router = useRouter();
+export function Hero() {
   return (
-    <section className="relative pt-32 pb-20 md:pt-48 md:pb-32 overflow-hidden">
-      {/* Background Gradients */}
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full -z-10 pointer-events-none">
-        <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-primary/20 blur-[120px] rounded-full" />
-        <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-blue-500/10 blur-[120px] rounded-full" />
+    <section className="relative min-h-screen flex items-center justify-center bg-[#0a0a1a] overflow-hidden pt-20">
+      {/* Background glow */}
+      <div className="absolute inset-0 pointer-events-none">
+        <div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-indigo-600/20 rounded-full blur-[120px]" />
+        <div className="absolute top-1/2 left-1/4 w-[300px] h-[300px] bg-violet-600/10 rounded-full blur-[80px]" />
       </div>
 
-      <div className="container mx-auto px-4 md:px-6">
-        <div className="flex flex-col items-center text-center max-w-4xl mx-auto mb-16">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-            className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-primary text-xs font-medium mb-6"
-          >
-            <span className="relative flex h-2 w-2">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
-            </span>
-            Now in public beta
-          </motion.div>
-
-          <motion.h1
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.1 }}
-            className="text-5xl md:text-7xl font-bold tracking-tight mb-6"
-          >
-            Your Week. <span className="text-primary">Wrapped by AI.</span>
-          </motion.h1>
-
-          <motion.p
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.2 }}
-            className="text-xl text-muted-foreground mb-10 max-w-2xl"
-          >
-            Automatically generate beautiful client reports, creator insights and 
-            productivity summaries in minutes. Spend less time reporting and more time creating.
-          </motion.p>
-
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.3 }}
-            className="flex flex-col sm:flex-row items-center gap-4"
-          >
-          <Button size="lg" className="h-12 px-8 text-base gap-2" onClick={() => router.push('/login')}>
-  Start Free <ArrowRight size={18} />
-</Button>
-<Button size="lg" variant="outline" className="h-12 px-8 text-base gap-2" onClick={() => router.push('#demo')}>
-  <Play size={18} fill="currentColor" /> Watch Demo
-</Button>
-          </motion.div>
-
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 1, delay: 0.5 }}
-            className="mt-8 flex items-center gap-6 text-sm text-muted-foreground"
-          >
-            <div className="flex items-center gap-1.5">
-              <CheckCircle2 size={16} className="text-primary" />
-              No credit card required
-            </div>
-            <div className="flex items-center gap-1.5">
-              <CheckCircle2 size={16} className="text-primary" />
-              Free forever plan
-            </div>
-          </motion.div>
+      <div className="relative z-10 max-w-5xl mx-auto px-6 text-center">
+        {/* Badge */}
+        <div className="inline-flex items-center gap-2 bg-indigo-600/20 border border-indigo-500/30 rounded-full px-4 py-1.5 mb-8">
+          <span className="w-2 h-2 bg-indigo-400 rounded-full animate-pulse" />
+          <span className="text-indigo-300 text-sm font-medium">
+            AI-Powered Weekly Reporting
+          </span>
         </div>
 
-        {/* Dashboard Mockup */}
-        <motion.div
-          initial={{ opacity: 0, y: 40 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.4 }}
-          className="relative max-w-6xl mx-auto"
-        >
-          <div className="relative rounded-xl border border-border bg-card/50 backdrop-blur-sm overflow-hidden shadow-2xl">
-            <div className="flex items-center justify-between px-4 py-3 border-b border-border bg-muted/50">
-              <div className="flex gap-1.5">
-                <div className="w-3 h-3 rounded-full bg-red-500/20 border border-red-500/40" />
-                <div className="w-3 h-3 rounded-full bg-yellow-500/20 border border-yellow-500/40" />
-                <div className="w-3 h-3 rounded-full bg-green-500/20 border border-green-500/40" />
-              </div>
-              <div className="text-xs text-muted-foreground font-medium">Weekly Dashboard — May 2024</div>
-              <div className="w-12" />
-            </div>
+        {/* Headline */}
+        <h1 className="text-5xl md:text-7xl font-bold text-white leading-[1.08] tracking-tight mb-6">
+          Your Week.{" "}
+          <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-violet-400">
+            Wrapped by AI.
+          </span>
+        </h1>
 
-            <div className="p-6 md:p-8 grid grid-cols-1 md:grid-cols-3 gap-6">
-              {/* Left Column: Stats */}
-              <div className="space-y-6">
-                <div className="p-4 rounded-lg bg-background border border-border">
-                  <div className="text-sm text-muted-foreground mb-1">Productivity Score</div>
-                  <div className="text-3xl font-bold">92%</div>
-                  <div className="mt-2 h-2 bg-muted rounded-full overflow-hidden">
-                    <motion.div 
-                      initial={{ width: 0 }}
-                      animate={{ width: "92%" }}
-                      transition={{ duration: 1, delay: 1 }}
-                      className="h-full bg-primary" 
+        {/* Subheadline */}
+        <p className="text-lg md:text-xl text-white/60 max-w-2xl mx-auto leading-relaxed mb-10">
+          Stop spending Friday afternoons writing client reports.
+          WeeklyWrap generates beautiful, professional summaries in minutes —
+          so you can focus on the work that actually pays.
+        </p>
+
+        {/* CTAs */}
+        <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-12">
+          <Link
+            href="/signup"
+            className="group bg-indigo-600 hover:bg-indigo-500 text-white font-semibold px-8 py-4 rounded-xl transition-all duration-200 flex items-center gap-2 text-base shadow-lg shadow-indigo-600/30"
+          >
+            Start Free — No Card Needed
+            <span className="group-hover:translate-x-1 transition-transform">→</span>
+          </Link>
+          <Link
+            href="#demo"
+            className="text-white/70 hover:text-white font-medium px-6 py-4 rounded-xl border border-white/10 hover:border-white/20 transition-all text-base flex items-center gap-2"
+          >
+            <span>▶</span> Watch 2-min Demo
+          </Link>
+        </div>
+
+        {/* Trust signals */}
+        <div className="flex flex-col sm:flex-row items-center justify-center gap-6 text-white/40 text-sm">
+          <span className="flex items-center gap-2">
+            <span className="text-green-400">✓</span> Free forever plan
+          </span>
+          <span className="flex items-center gap-2">
+            <span className="text-green-400">✓</span> No credit card required
+          </span>
+          <span className="flex items-center gap-2">
+            <span className="text-green-400">✓</span> Setup in under 5 minutes
+          </span>
+        </div>
+
+        {/* Dashboard preview */}
+        <div className="mt-16 relative">
+          <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a1a] via-transparent to-transparent z-10 pointer-events-none" style={{ top: "60%" }} />
+          <div className="bg-white/5 border border-white/10 rounded-2xl p-1 shadow-2xl shadow-black/50">
+            <div className="bg-[#0f0f23] rounded-xl p-6">
+              {/* Fake browser bar */}
+              <div className="flex items-center gap-2 mb-4">
+                <div className="w-3 h-3 rounded-full bg-red-500/70" />
+                <div className="w-3 h-3 rounded-full bg-yellow-500/70" />
+                <div className="w-3 h-3 rounded-full bg-green-500/70" />
+                <div className="flex-1 mx-4 bg-white/5 rounded px-3 py-1 text-white/30 text-xs text-center">
+                  app.theweeklywrap.online
+                </div>
+              </div>
+              {/* Mock dashboard content */}
+              <div className="grid grid-cols-3 gap-4 mb-4">
+                {[
+                  { label: "Productivity Score", value: "92%", color: "indigo" },
+                  { label: "Time Saved", value: "12.4h", sub: "↑ 15% from last week", color: "violet" },
+                  { label: "Reports Sent", value: "8", sub: "this week", color: "blue" },
+                ].map((card) => (
+                  <div key={card.label} className="bg-white/5 rounded-lg p-4">
+                    <p className="text-white/40 text-xs mb-1">{card.label}</p>
+                    <p className="text-white font-bold text-2xl">{card.value}</p>
+                    {card.sub && <p className="text-green-400 text-xs mt-1">{card.sub}</p>}
+                  </div>
+                ))}
+              </div>
+              {/* Fake chart bar */}
+              <div className="bg-white/5 rounded-lg p-4">
+                <p className="text-white/40 text-xs mb-3">Weekly Output</p>
+                <div className="flex items-end gap-2 h-16">
+                  {[40, 65, 45, 80, 70, 92, 85].map((h, i) => (
+                    <div
+                      key={i}
+                      className="flex-1 bg-indigo-500/40 rounded-t"
+                      style={{ height: `${h}%` }}
                     />
-                  </div>
+                  ))}
                 </div>
-
-                <div className="p-4 rounded-lg bg-background border border-border">
-                  <div className="text-sm text-muted-foreground mb-1">Time Saved</div>
-                  <div className="text-3xl font-bold">12.4h</div>
-                  <div className="text-xs text-green-500 mt-1">↑ 15% from last week</div>
-                </div>
-
-                <div className="p-4 rounded-lg bg-primary/5 border border-primary/20">
-                  <div className="text-sm font-semibold text-primary mb-2">AI Insight</div>
-                  <p className="text-xs leading-relaxed">
-                    You're most productive between 9 AM and 11 AM. Shifting complex tasks to this window could increase output by 20%.
-                  </p>
-                </div>
-              </div>
-
-              {/* Middle & Right Column: Chart */}
-              <div className="md:col-span-2 p-6 rounded-lg bg-background border border-border">
-                <div className="flex items-center justify-between mb-6">
-                  <div>
-                    <div className="text-sm font-semibold">Growth Analytics</div>
-                    <div className="text-xs text-muted-foreground">Audience engagement over time</div>
-                  </div>
-                  <div className="flex gap-2">
-                    <div className="w-3 h-3 rounded-full bg-primary" />
-                    <div className="w-3 h-3 rounded-full bg-blue-400" />
-                  </div>
-                </div>
-                
-                <div className="h-[240px] w-full">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <AreaChart data={data}>
-                      <defs>
-                        <linearGradient id="colorValue" x1="0" y1="0" x2="0" y2="1">
-                          <stop offset="5%" stopColor="var(--primary)" stopOpacity={0.3}/>
-                          <stop offset="95%" stopColor="var(--primary)" stopOpacity={0}/>
-                        </linearGradient>
-                      </defs>
-                      <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(255,255,255,0.05)" />
-                      <XAxis 
-                        dataKey="name" 
-                        axisLine={false} 
-                        tickLine={false} 
-                        tick={{fontSize: 12, fill: 'rgba(255,255,255,0.4)'}} 
-                      />
-                      <YAxis hide />
-                      <Tooltip 
-                        contentStyle={{ 
-                          backgroundColor: '#09090b', 
-                          border: '1px solid rgba(255,255,255,0.1)',
-                          borderRadius: '8px'
-                        }} 
-                      />
-                      <Area 
-                        type="monotone" 
-                        dataKey="value" 
-                        stroke="var(--primary)" 
-                        strokeWidth={3}
-                        fillOpacity={1} 
-                        fill="url(#colorValue)" 
-                      />
-                    </AreaChart>
-                  </ResponsiveContainer>
+                <div className="flex justify-between text-white/20 text-xs mt-2">
+                  {["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"].map((d) => (
+                    <span key={d}>{d}</span>
+                  ))}
                 </div>
               </div>
             </div>
           </div>
-
-          {/* Floating elements for depth */}
-          <motion.div
-            animate={{ y: [0, -10, 0] }}
-            transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-            className="absolute -top-6 -right-6 md:-right-12 p-4 rounded-xl bg-background border border-border shadow-xl z-10 hidden md:block"
-          >
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-green-500/20 flex items-center justify-center text-green-500">
-                <CheckCircle2 size={24} />
-              </div>
-              <div>
-                <div className="text-xs text-muted-foreground font-medium uppercase tracking-wider">Report Ready</div>
-                <div className="text-sm font-bold">Weekly Client Summary</div>
-              </div>
-            </div>
-          </motion.div>
-
-          <motion.div
-            animate={{ y: [0, 10, 0] }}
-            transition={{ duration: 5, repeat: Infinity, ease: "easeInOut", delay: 1 }}
-            className="absolute -bottom-6 -left-6 md:-left-12 p-4 rounded-xl bg-background border border-border shadow-xl z-10 hidden md:block"
-          >
-            <div className="space-y-3">
-              <div className="flex items-center justify-between gap-4">
-                <span className="text-xs font-medium">AI Analysis</span>
-                <span className="text-[10px] bg-primary/10 text-primary px-1.5 py-0.5 rounded">Real-time</span>
-              </div>
-              <div className="flex gap-1">
-                {[1, 2, 3, 4, 5].map((i) => (
-                  <motion.div
-                    key={i}
-                    animate={{ height: [10, 20, 10] }}
-                    transition={{ duration: 1.5, repeat: Infinity, delay: i * 0.2 }}
-                    className="w-1 bg-primary rounded-full"
-                  />
-                ))}
-              </div>
-            </div>
-          </motion.div>
-        </motion.div>
+        </div>
       </div>
     </section>
   );
-};
+}
