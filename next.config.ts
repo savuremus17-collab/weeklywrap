@@ -13,6 +13,23 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+
+  async redirects() {
+    return [
+      // www → non-www (301)
+      {
+        source: "/:path*",
+        has: [
+          {
+            type: "host",
+            value: "www.theweeklywrap.online",
+          },
+        ],
+        destination: "https://theweeklywrap.online/:path*",
+        permanent: true,
+      },
+    ];
+  },
 };
 
 export default nextConfig;
