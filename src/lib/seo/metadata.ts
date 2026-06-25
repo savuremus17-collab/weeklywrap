@@ -3,8 +3,8 @@ import { Metadata } from 'next';
 const siteConfig = {
   name: 'WeeklyWrap',
   description: 'AI-powered weekly reports and productivity intelligence for creators and professionals.',
-  url: 'https://theweeklywrap.online', // ✅ fix: era weeklywrap.ai
-  ogImage: 'https://theweeklywrap.online/og-image.jpg', // ✅ fix: era weeklywrap.ai
+  url: 'https://theweeklywrap.online',
+  ogImage: 'https://theweeklywrap.online/og-image.jpg',
   links: {
     twitter: 'https://twitter.com/weeklywrap',
     github: 'https://github.com/weeklywrap',
@@ -33,11 +33,7 @@ export function constructMetadata({
     openGraph: {
       title,
       description,
-      images: [
-        {
-          url: image,
-        },
-      ],
+      images: [{ url: image }],
       type: 'website',
       siteName: siteConfig.name,
     },
@@ -51,15 +47,11 @@ export function constructMetadata({
     icons,
     metadataBase: new URL(siteConfig.url),
     ...(noIndex && {
-      robots: {
-        index: false,
-        follow: false,
-      },
+      robots: { index: false, follow: false },
     }),
     alternates: {
-      canonical: siteConfig.url, // ✅ fix: era './'
+      canonical: siteConfig.url,
     },
-    // ✅ Google Search Console verification
     verification: {
       google: '34a177c67c97d519',
     },
