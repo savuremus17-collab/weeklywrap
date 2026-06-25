@@ -3,8 +3,8 @@ import { Metadata } from 'next';
 const siteConfig = {
   name: 'WeeklyWrap',
   description: 'AI-powered weekly reports and productivity intelligence for creators and professionals.',
-  url: 'https://weeklywrap.ai',
-  ogImage: 'https://weeklywrap.ai/og-image.jpg',
+  url: 'https://theweeklywrap.online', // ✅ fix: era weeklywrap.ai
+  ogImage: 'https://theweeklywrap.online/og-image.jpg', // ✅ fix: era weeklywrap.ai
   links: {
     twitter: 'https://twitter.com/weeklywrap',
     github: 'https://github.com/weeklywrap',
@@ -57,7 +57,11 @@ export function constructMetadata({
       },
     }),
     alternates: {
-      canonical: './',
+      canonical: siteConfig.url, // ✅ fix: era './'
+    },
+    // ✅ Google Search Console verification
+    verification: {
+      google: '34a177c67c97d519',
     },
   };
 }
