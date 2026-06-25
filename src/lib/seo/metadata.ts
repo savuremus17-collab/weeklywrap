@@ -53,7 +53,7 @@ export function constructMetadata({
       canonical: siteConfig.url,
     },
     verification: {
-      google: '34a177c67c97d519',
+      google: 'reJign_qKd0wbMhzZTOBeDpcLbLBtmH1lE99GkoX-TY',
     },
   };
 }
