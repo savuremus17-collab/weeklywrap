@@ -3,7 +3,7 @@ import { getSortedPostsData } from '@/lib/blog';
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const posts = await getSortedPostsData();
-  const baseUrl = 'https://weeklywrap.ai';
+  const baseUrl = 'https://theweeklywrap.online';
 
   const blogPosts = posts.map((post) => ({
     url: `${baseUrl}/blog/${post.slug}`,
