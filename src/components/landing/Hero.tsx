@@ -43,12 +43,6 @@ export function Hero() {
             Start Free — No Card Needed
             <span className="group-hover:translate-x-1 transition-transform">→</span>
           </Link>
-          <Link
-            href="#demo"
-            className="text-white/70 hover:text-white font-medium px-6 py-4 rounded-xl border border-white/10 hover:border-white/20 transition-all text-base flex items-center gap-2"
-          >
-            <span>▶</span> Watch 2-min Demo
-          </Link>
         </div>
 
         {/* Trust signals */}
@@ -69,13 +63,13 @@ export function Hero() {
           <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a1a] via-transparent to-transparent z-10 pointer-events-none" style={{ top: "60%" }} />
           <div className="bg-white/5 border border-white/10 rounded-2xl p-1 shadow-2xl shadow-black/50">
             <div className="bg-[#0f0f23] rounded-xl p-6">
-              {/* Fake browser bar */}
+              {/* Browser bar */}
               <div className="flex items-center gap-2 mb-4">
                 <div className="w-3 h-3 rounded-full bg-red-500/70" />
                 <div className="w-3 h-3 rounded-full bg-yellow-500/70" />
                 <div className="w-3 h-3 rounded-full bg-green-500/70" />
                 <div className="flex-1 mx-4 bg-white/5 rounded px-3 py-1 text-white/30 text-xs text-center">
-                  app.theweeklywrap.online
+                  theweeklywrap.online
                 </div>
               </div>
               {/* Mock dashboard content */}
@@ -92,7 +86,7 @@ export function Hero() {
                   </div>
                 ))}
               </div>
-              {/* Fake chart bar */}
+              {/* Chart */}
               <div className="bg-white/5 rounded-lg p-4">
                 <p className="text-white/40 text-xs mb-3">Weekly Output</p>
                 <div className="flex items-end gap-2 h-16">
