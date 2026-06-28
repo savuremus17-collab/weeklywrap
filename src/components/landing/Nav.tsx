@@ -14,7 +14,7 @@ export function Nav() {
 
   return (
     <>
-      
+      <a
         href="https://buy.stripe.com/test_bJecN6cRPd6qdzgg248Zq05"
         target="_blank"
         rel="noopener noreferrer"
@@ -23,8 +23,7 @@ export function Nav() {
         <span className="flex items-center justify-center gap-2">
           <Zap size={14} />
           <span>
-            <strong>Founding Member Deal</strong> — Lifetime access for $79 (was $499).
-            Only <strong>12 spots</strong> left.
+            <strong>Founding Member Deal</strong> — Lifetime access for $79 (was $499). Only <strong>12 spots</strong> left.
           </span>
           <span className="underline ml-1">Claim yours →</span>
         </span>
