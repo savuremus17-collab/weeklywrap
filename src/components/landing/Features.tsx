@@ -1,57 +1,56 @@
 "use client";
-
 import { motion } from "framer-motion";
 import { 
   Zap, 
   BarChart3, 
   Shield, 
   Sparkles, 
-  Clock, 
+  Send,
   Smartphone,
   Share2,
-  Settings
+  User
 } from "lucide-react";
 
 const features = [
   {
     title: "AI Report Generation",
-    description: "Turn your raw data into professional, client-ready reports in seconds using advanced AI models.",
+    description: "Turn your weekly work into professional, client-ready reports in seconds. No blank page. No formatting. Just review and send.",
     icon: <Zap className="w-6 h-6 text-primary" />,
   },
   {
-    title: "Deep Analytics",
-    description: "Visualize your growth with interactive charts and gain insights into your performance trends.",
+    title: "Performance Analytics",
+    description: "Visualize your weekly output with interactive charts — tasks completed, hours logged, quality scores, and productivity trends.",
     icon: <BarChart3 className="w-6 h-6 text-primary" />,
   },
   {
-    title: "Client-Ready Branding",
-    description: "White-label your reports with your own logo, colors, and custom domains for a premium feel.",
+    title: "Custom Branding per Client",
+    description: "Send reports with your own logo and colors. Every client gets a branded experience that looks like you built it from scratch.",
     icon: <Shield className="w-6 h-6 text-primary" />,
   },
   {
-    title: "AI Insights",
-    description: "Our AI doesn't just show data; it tells you what to do next to optimize your productivity.",
+    title: "AI Insights & Recommendations",
+    description: "WeeklyWrap doesn't just show data — it tells you when your productivity peaks, what patterns to leverage, and what to improve.",
     icon: <Sparkles className="w-6 h-6 text-primary" />,
   },
   {
-    title: "Time Tracking Sync",
-    description: "Automatically sync with your favorite time tracking tools to include billable hours in reports.",
-    icon: <Clock className="w-6 h-6 text-primary" />,
+    title: "One-Click Email Delivery",
+    description: "Send the report directly to your client's inbox with one click. Real email delivery via Resend — no copy-paste, no attachments.",
+    icon: <Send className="w-6 h-6 text-primary" />,
   },
   {
-    title: "Mobile Optimized",
-    description: "Access your dashboard and reports on the go with our fully responsive mobile experience.",
+    title: "Mobile Friendly",
+    description: "Access your dashboard and reports from any device. Fully responsive — works on desktop, tablet, and mobile.",
     icon: <Smartphone className="w-6 h-6 text-primary" />,
   },
   {
-    title: "One-Click Sharing",
-    description: "Share reports via secure links or export to PDF, CSV, and PNG with a single click.",
+    title: "Client Portal",
+    description: "Every client gets a private link with their full report history. No login needed. No more 'can you resend that report?' emails.",
     icon: <Share2 className="w-6 h-6 text-primary" />,
   },
   {
-    title: "Custom Automations",
-    description: "Set up recurring reports that go out to your clients automatically every Monday morning.",
-    icon: <Settings className="w-6 h-6 text-primary" />,
+    title: "Profile & Preferences",
+    description: "Set your timezone, currency, notifications, and avatar. WeeklyWrap adapts to how you work — not the other way around.",
+    icon: <User className="w-6 h-6 text-primary" />,
   },
 ];
 
@@ -61,14 +60,14 @@ export const Features = () => {
       <div className="container mx-auto px-4 md:px-6">
         <div className="text-center max-w-3xl mx-auto mb-16">
           <h2 className="text-3xl md:text-5xl font-bold mb-6 tracking-tight">
-            Everything you need to <span className="text-primary">supercharge</span> your reporting
+            Everything freelancers need to send{" "}
+            <span className="text-primary">professional client reports</span>
           </h2>
           <p className="text-lg text-muted-foreground">
-            Stop wasting hours on manual spreadsheets. WeeklyWrap automates the boring stuff 
-            so you can focus on what actually moves the needle.
+            Stop wasting Friday afternoons on manual updates. WeeklyWrap generates,
+            brands, and delivers your client reports automatically.
           </p>
         </div>
-
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {features.map((feature, index) => (
             <motion.div
