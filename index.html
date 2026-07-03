@@ -1,15 +1,15 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ro">
 <head>
 <meta charset="UTF-8">
-<title>Teanc — free PDF tools, no upload</title>
-<meta name="description" content="Turn images into a PDF, merge multiple PDFs, compress them, or export pages as JPG. Everything runs in your browser — no upload, no account.">
-<meta property="og:title" content="Teanc — free PDF tools, no upload">
-<meta property="og:description" content="Images → PDF, merge PDFs, compress them, or export pages as JPG. No server, no account.">
+<title>Teanc — unelte PDF gratuite, fără upload</title>
+<meta name="description" content="Transformă imagini în PDF, unește mai multe PDF-uri, comprimă-le sau exportă paginile ca JPG. Totul rulează în browserul tău — fără upload, fără cont.">
+<meta property="og:title" content="Teanc — unelte PDF gratuite, fără upload">
+<meta property="og:description" content="Imagini → PDF, unește PDF-uri, comprimă-le sau exportă paginile ca JPG. Fără server, fără cont.">
 <meta property="og:type" content="website">
-<meta property="og:url" content="https://theweeklywrap.online/en/">
+<meta property="og:url" content="https://theweeklywrap.online/">
 <meta name="twitter:card" content="summary">
-<link rel="canonical" href="https://theweeklywrap.online/en/">
+<link rel="canonical" href="https://theweeklywrap.online/">
 <link rel="alternate" hreflang="ro" href="https://theweeklywrap.online/">
 <link rel="alternate" hreflang="en" href="https://theweeklywrap.online/en/">
 <link rel="alternate" hreflang="x-default" href="https://theweeklywrap.online/">
@@ -19,8 +19,8 @@
   "@context": "https://schema.org",
   "@type": "WebApplication",
   "name": "Teanc",
-  "url": "https://theweeklywrap.online/en/",
-  "description": "Turn images into a PDF, merge multiple PDFs, compress them, or export pages as JPG, right in your browser.",
+  "url": "https://theweeklywrap.online/",
+  "description": "Transformă imagini în PDF, unește mai multe PDF-uri, comprimă-le sau exportă paginile ca JPG, direct în browser.",
   "applicationCategory": "UtilitiesApplication",
   "operatingSystem": "Any (runs in browser)",
   "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
@@ -34,28 +34,28 @@
   "mainEntity": [
     {
       "@type": "Question",
-      "name": "How do I compress a PDF for free, online?",
-      "acceptedAnswer": { "@type": "Answer", "text": "Open the Compress PDF tab, drop your file, pick a compression level, and click the button. You will see exactly how much smaller it got before you download." }
+      "name": "Cum comprim un PDF gratuit, online?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Deschide fila „Comprimă PDF”, adaugă fișierul, alege un nivel de compresie și apasă butonul. Vei vedea exact cu cât s-a micșorat înainte să-l descarci." }
     },
     {
       "@type": "Question",
-      "name": "How do I merge multiple PDFs into one?",
-      "acceptedAnswer": { "@type": "Answer", "text": "In the Merge PDFs tab, upload your files, drag them into the order you want, then click Merge the PDFs." }
+      "name": "Cum unesc mai multe PDF-uri într-unul singur?",
+      "acceptedAnswer": { "@type": "Answer", "text": "În fila „Unește PDF-uri”, încarcă fișierele, trage-le în ordinea dorită, apoi apasă „Unește PDF-urile”." }
     },
     {
       "@type": "Question",
-      "name": "How do I turn an image into a PDF?",
-      "acceptedAnswer": { "@type": "Answer", "text": "In the Images to PDF tab, upload one or more images. Each becomes a page, reorderable by dragging." }
+      "name": "Cum transform o imagine într-un PDF?",
+      "acceptedAnswer": { "@type": "Answer", "text": "În fila „Imagini → PDF”, încarcă una sau mai multe imagini. Fiecare devine o pagină, iar ordinea se poate schimba prin tragere." }
     },
     {
       "@type": "Question",
-      "name": "How do I export PDF pages as JPG images?",
-      "acceptedAnswer": { "@type": "Answer", "text": "In the PDF to JPG tab, upload your file and every page is automatically converted to JPG, downloadable individually or as a zip archive." }
+      "name": "Cum exportez paginile unui PDF ca imagini JPG?",
+      "acceptedAnswer": { "@type": "Answer", "text": "În fila „PDF → JPG”, încarcă fișierul, iar fiecare pagină este convertită automat în JPG, descărcabilă individual sau ca arhivă .zip." }
     },
     {
       "@type": "Question",
-      "name": "Does this upload my files to a server?",
-      "acceptedAnswer": { "@type": "Answer", "text": "No. All processing happens locally in the browser, using pdf-lib and pdf.js. Files never leave the device." }
+      "name": "Îmi trimite fișierele pe un server?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Nu. Toată prelucrarea are loc local, în browser, folosind pdf-lib și pdf.js. Fișierele nu părăsesc niciodată dispozitivul." }
     }
   ]
 }
@@ -539,19 +539,19 @@ footer .copy{color: rgba(250,247,240,0.25); margin-top:10px;}
       <rect x="8" y="7" width="16" height="20" rx="1.5" fill="var(--paper)"/>
     </svg>
     <span class="wordmark">Teanc</span>
-    <a class="lang-switch" href="/">RO</a>
+    <a class="lang-switch" href="/en/">EN</a>
   </nav>
 
   <header>
-    <p class="eyebrow">desk tools · no server</p>
-    <h1>Put your papers <em>in order</em>,<br>I turn them into one PDF.</h1>
-    <p class="sub">Turn images into a PDF, merge multiple PDFs, compress them, or export pages as JPG. Everything happens right in this tab — your files never leave your device.</p>
+    <p class="eyebrow">unelte de birou · fără server</p>
+    <h1>Pune-ți hârtiile <em>în ordine</em>,<br>le transform într-un singur PDF.</h1>
+    <p class="sub">Transformă imagini în PDF, unește mai multe PDF-uri, comprimă-le sau exportă paginile ca JPG. Totul se întâmplă chiar în acest tab — fișierele tale nu părăsesc niciodată dispozitivul.</p>
   </header>
 
   <div class="tabs">
-    <button class="tab active" data-tab="img">Images → PDF</button>
-    <button class="tab" data-tab="merge">Merge PDFs</button>
-    <button class="tab" data-tab="compress">Compress PDF</button>
+    <button class="tab active" data-tab="img">Imagini → PDF</button>
+    <button class="tab" data-tab="merge">Unește PDF-uri</button>
+    <button class="tab" data-tab="compress">Comprimă PDF</button>
     <button class="tab" data-tab="topng">PDF → JPG</button>
   </div>
 
@@ -559,23 +559,23 @@ footer .copy{color: rgba(250,247,240,0.25); margin-top:10px;}
   <div class="panel active" id="panel-img">
     <div class="dropzone" id="dz-img">
       <svg class="dz-icon" viewBox="0 0 24 24" fill="none" stroke="#faf7f0" stroke-width="1.4"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
-      <p class="dz-title">Drop your images here</p>
-      <p class="dz-sub">or click to browse · JPG, PNG, WEBP</p>
+      <p class="dz-title">Adaugă imaginile aici</p>
+      <p class="dz-sub">sau apasă pentru a alege · JPG, PNG, WEBP</p>
       <input type="file" id="input-img" accept="image/*" multiple>
     </div>
     <div class="stack" id="stack-img"></div>
     <div class="hint-row" id="hint-img" style="display:none;">
-      <span>drag the cards to reorder the pages</span>
+      <span>trage cardurile pentru a reordona paginile</span>
       <span id="count-img"></span>
     </div>
     <div class="actions">
-      <button class="primary" id="btn-img" disabled>Create PDF</button>
-      <button class="ghost" id="clear-img" style="display:none;">Clear</button>
+      <button class="primary" id="btn-img" disabled>Creează PDF</button>
+      <button class="ghost" id="clear-img" style="display:none;">Golește</button>
       <span class="status" id="status-img"></span>
     </div>
     <div class="result" id="result-img">
       <span class="rname" id="rname-img"></span>
-      <a id="dl-img" download>Download PDF</a>
+      <a id="dl-img" download>Descarcă PDF</a>
     </div>
   </div>
 
@@ -583,23 +583,23 @@ footer .copy{color: rgba(250,247,240,0.25); margin-top:10px;}
   <div class="panel" id="panel-merge">
     <div class="dropzone" id="dz-merge">
       <svg class="dz-icon" viewBox="0 0 24 24" fill="none" stroke="#faf7f0" stroke-width="1.4"><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><path d="M14 3v6h6"/></svg>
-      <p class="dz-title">Drop your PDFs here</p>
-      <p class="dz-sub">or click to browse · two or more .pdf files</p>
+      <p class="dz-title">Adaugă PDF-urile aici</p>
+      <p class="dz-sub">sau apasă pentru a alege · două sau mai multe fișiere .pdf</p>
       <input type="file" id="input-merge" accept="application/pdf" multiple>
     </div>
     <div class="stack" id="stack-merge"></div>
     <div class="hint-row" id="hint-merge" style="display:none;">
-      <span>drag the cards to reorder the final document</span>
+      <span>trage cardurile pentru a reordona documentul final</span>
       <span id="count-merge"></span>
     </div>
     <div class="actions">
-      <button class="primary" id="btn-merge" disabled>Merge the PDFs</button>
-      <button class="ghost" id="clear-merge" style="display:none;">Clear</button>
+      <button class="primary" id="btn-merge" disabled>Unește PDF-urile</button>
+      <button class="ghost" id="clear-merge" style="display:none;">Golește</button>
       <span class="status" id="status-merge"></span>
     </div>
     <div class="result" id="result-merge">
       <span class="rname" id="rname-merge"></span>
-      <a id="dl-merge" download>Download PDF</a>
+      <a id="dl-merge" download>Descarcă PDF</a>
     </div>
   </div>
 
@@ -607,29 +607,29 @@ footer .copy{color: rgba(250,247,240,0.25); margin-top:10px;}
   <div class="panel" id="panel-compress">
     <div class="dropzone" id="dz-compress">
       <svg class="dz-icon" viewBox="0 0 24 24" fill="none" stroke="#faf7f0" stroke-width="1.4"><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><path d="M14 3v6h6"/><path d="M9 13l1.5 1.5L9 16"/><path d="M15 13l-1.5 1.5L15 16"/></svg>
-      <p class="dz-title">Drop a PDF here</p>
-      <p class="dz-sub">or click to browse · reduces file size</p>
+      <p class="dz-title">Adaugă un PDF aici</p>
+      <p class="dz-sub">sau apasă pentru a alege · reduce dimensiunea fișierului</p>
       <input type="file" id="input-compress" accept="application/pdf">
     </div>
     <div class="stack" id="stack-compress"></div>
 
     <div class="quality-row" id="quality-row" style="display:none;">
-      <span class="q-label">Compression level</span>
+      <span class="q-label">Nivel de compresie</span>
       <div class="q-options">
-        <button class="q-opt" data-q="low">Much smaller<small>lower quality</small></button>
-        <button class="q-opt active" data-q="medium">Balanced<small>recommended</small></button>
-        <button class="q-opt" data-q="high">Slightly smaller<small>quality kept</small></button>
+        <button class="q-opt" data-q="low">Mult mai mic<small>calitate mai mică</small></button>
+        <button class="q-opt active" data-q="medium">Echilibrat<small>recomandat</small></button>
+        <button class="q-opt" data-q="high">Puțin mai mic<small>calitate păstrată</small></button>
       </div>
     </div>
 
     <div class="actions">
-      <button class="primary" id="btn-compress" disabled>Compress PDF</button>
-      <button class="ghost" id="clear-compress" style="display:none;">Clear</button>
+      <button class="primary" id="btn-compress" disabled>Comprimă PDF</button>
+      <button class="ghost" id="clear-compress" style="display:none;">Golește</button>
       <span class="status" id="status-compress"></span>
     </div>
     <div class="result" id="result-compress">
       <span class="rname" id="rname-compress"></span>
-      <a id="dl-compress" download>Download PDF</a>
+      <a id="dl-compress" download>Descarcă PDF</a>
     </div>
   </div>
 
@@ -637,8 +637,8 @@ footer .copy{color: rgba(250,247,240,0.25); margin-top:10px;}
   <div class="panel" id="panel-topng">
     <div class="dropzone" id="dz-topng">
       <svg class="dz-icon" viewBox="0 0 24 24" fill="none" stroke="#faf7f0" stroke-width="1.4"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
-      <p class="dz-title">Drop a PDF here</p>
-      <p class="dz-sub">or click to browse · each page becomes a JPG image</p>
+      <p class="dz-title">Adaugă un PDF aici</p>
+      <p class="dz-sub">sau apasă pentru a alege · fiecare pagină devine o imagine JPG</p>
       <input type="file" id="input-topng" accept="application/pdf">
     </div>
     <div class="stack" id="stack-topng"></div>
@@ -647,42 +647,42 @@ footer .copy{color: rgba(250,247,240,0.25); margin-top:10px;}
       <span></span>
     </div>
     <div class="actions">
-      <button class="primary" id="btn-topng" disabled>Convert to JPG</button>
-      <button class="ghost" id="clear-topng" style="display:none;">Clear</button>
+      <button class="primary" id="btn-topng" disabled>Convertește în JPG</button>
+      <button class="ghost" id="clear-topng" style="display:none;">Golește</button>
       <span class="status" id="status-topng"></span>
     </div>
     <div class="pages-grid" id="pages-grid"></div>
     <div class="actions" id="zip-actions" style="display:none;">
-      <button class="primary" id="btn-zip">Download all (.zip)</button>
+      <button class="primary" id="btn-zip">Descarcă tot (.zip)</button>
     </div>
   </div>
 
   <section class="faq">
-    <h2>Frequently asked questions</h2>
+    <h2>Întrebări frecvente</h2>
 
     <div class="faq-item">
-      <h3>How do I compress a PDF for free, online?</h3>
-      <p>Open the "Compress PDF" tab, drop your file, pick a compression level (Much smaller / Balanced / Slightly smaller), and click the button. You'll see exactly how much smaller it got before you download.</p>
+      <h3>Cum comprim un PDF gratuit, online?</h3>
+      <p>Deschide fila „Comprimă PDF”, adaugă fișierul, alege un nivel de compresie (Mult mai mic / Echilibrat / Puțin mai mic) și apasă butonul. Vei vedea exact cu cât s-a micșorat înainte să-l descarci.</p>
     </div>
 
     <div class="faq-item">
-      <h3>How do I merge multiple PDFs into one?</h3>
-      <p>In the "Merge PDFs" tab, upload your files, drag them into the order you want, then click "Merge the PDFs". You get a single document, ready to download.</p>
+      <h3>Cum unesc mai multe PDF-uri într-unul singur?</h3>
+      <p>În fila „Unește PDF-uri”, încarcă fișierele, trage-le în ordinea dorită, apoi apasă „Unește PDF-urile”. Obții un singur document, gata de descărcat.</p>
     </div>
 
     <div class="faq-item">
-      <h3>How do I turn an image (JPG/PNG) into a PDF?</h3>
-      <p>In the "Images → PDF" tab, upload one or more images — each becomes a page. You can reorder them by dragging before creating the document.</p>
+      <h3>Cum transform o imagine (JPG/PNG) într-un PDF?</h3>
+      <p>În fila „Imagini → PDF”, încarcă una sau mai multe imagini — fiecare devine o pagină. Le poți reordona prin tragere înainte de a crea documentul.</p>
     </div>
 
     <div class="faq-item">
-      <h3>How do I export PDF pages as JPG images?</h3>
-      <p>In the "PDF → JPG" tab, upload your file and every page is automatically converted to JPG, downloadable individually or as a .zip archive.</p>
+      <h3>Cum exportez paginile unui PDF ca imagini JPG?</h3>
+      <p>În fila „PDF → JPG”, încarcă fișierul, iar fiecare pagină este convertită automat în JPG, descărcabilă individual sau ca arhivă .zip.</p>
     </div>
 
     <div class="faq-item">
-      <h3>Does this upload my files to a server?</h3>
-      <p>No. All processing happens locally, in your browser, using the pdf-lib and pdf.js libraries. Your files never leave your device.</p>
+      <h3>Îmi trimite fișierele pe un server?</h3>
+      <p>Nu. Toată prelucrarea are loc local, în browser, cu ajutorul librăriilor pdf-lib și pdf.js. Fișierele tale nu părăsesc niciodată dispozitivul.</p>
     </div>
   </section>
 
@@ -695,8 +695,8 @@ footer .copy{color: rgba(250,247,240,0.25); margin-top:10px;}
       </svg>
       <span class="foot-word">Teanc</span>
     </div>
-    <p><b>Privacy:</b> conversion, merging, compression, and export all happen locally in your browser, using pdf-lib and pdf.js. No file is ever sent to an external server.</p>
-    <p class="copy">© 2026 Teanc · put your papers in order. &nbsp;·&nbsp; <a href="/en/about/" style="color:inherit;">About</a> &nbsp;·&nbsp; <a href="/en/contact/" style="color:inherit;">Contact</a> &nbsp;·&nbsp; <a href="/en/privacy/" style="color:inherit;">Privacy</a></p>
+    <p><b>Confidențialitate:</b> conversia, unirea, comprimarea și exportul au loc local, în browserul tău, folosind pdf-lib și pdf.js. Niciun fișier nu este trimis vreodată către un server extern.</p>
+    <p class="copy">© 2026 Teanc · pune-ți hârtiile în ordine. &nbsp;·&nbsp; <a href="/about/" style="color:inherit;">Despre</a> &nbsp;·&nbsp; <a href="/contact/" style="color:inherit;">Contact</a> &nbsp;·&nbsp; <a href="/privacy/" style="color:inherit;">Confidențialitate</a></p>
   </footer>
 </div>
 
@@ -818,7 +818,7 @@ footer .copy{color: rgba(250,247,240,0.25); margin-top:10px;}
 
       hint.style.display = files.length ? 'flex' : 'none';
       clearBtn.style.display = files.length ? 'inline-block' : 'none';
-      count.textContent = files.length + (cfg.type==='img' ? (files.length===1?' image':' images') : (files.length===1?' file':' files'));
+      count.textContent = files.length + (cfg.type==='img' ? (files.length===1?' imagine':' imagini') : (files.length===1?' fișier':' fișiere'));
       btn.disabled = files.length < cfg.minFiles;
     }
 
@@ -827,7 +827,7 @@ footer .copy{color: rgba(250,247,240,0.25); margin-top:10px;}
     btn.addEventListener('click', async ()=>{
       btn.disabled = true;
       status.classList.remove('err');
-      status.textContent = 'Processing...';
+      status.textContent = 'Se procesează...';
       try{
         const bytes = await cfg.process(files.map(x=>x.file), (msg)=>{ status.textContent = msg; });
         const blob = new Blob([bytes], {type:'application/pdf'});
@@ -836,10 +836,10 @@ footer .copy{color: rgba(250,247,240,0.25); margin-top:10px;}
         dl.download = cfg.outName;
         rname.textContent = cfg.outName;
         result.classList.add('show');
-        status.textContent = 'Done.';
+        status.textContent = 'Gata.';
       }catch(err){
         console.error(err);
-        status.textContent = 'Something went wrong: ' + err.message;
+        status.textContent = 'A apărut o eroare: ' + err.message;
         status.classList.add('err');
       }
       btn.disabled = files.length < cfg.minFiles;
@@ -860,7 +860,7 @@ footer .copy{color: rgba(250,247,240,0.25); margin-top:10px;}
     process: async (fileList, report)=>{
       const pdfDoc = await PDFDocument.create();
       for(let i=0;i<fileList.length;i++){
-        report('Adding ' + (i+1) + ' of ' + fileList.length + '...');
+        report('Se adaugă ' + (i+1) + ' din ' + fileList.length + '...');
         const f = fileList[i];
         const bytes = await f.arrayBuffer();
         let img;
@@ -919,7 +919,7 @@ footer .copy{color: rgba(250,247,240,0.25); margin-top:10px;}
     process: async (fileList, report)=>{
       const outDoc = await PDFDocument.create();
       for(let i=0;i<fileList.length;i++){
-        report('Merging ' + (i+1) + ' of ' + fileList.length + '...');
+        report('Se unește ' + (i+1) + ' din ' + fileList.length + '...');
         const f = fileList[i];
         const bytes = await f.arrayBuffer();
         const srcDoc = await PDFDocument.load(bytes);
@@ -1019,7 +1019,7 @@ footer .copy{color: rgba(250,247,240,0.25); margin-top:10px;}
       if(!file) return;
       btn.disabled = true;
       status.classList.remove('err');
-      status.textContent = 'Loading the PDF...';
+      status.textContent = 'Se încarcă PDF-ul...';
       try{
         const originalSize = file.size;
         const bytes = await file.arrayBuffer();
@@ -1029,7 +1029,7 @@ footer .copy{color: rgba(250,247,240,0.25); margin-top:10px;}
         const outDoc = await PDFLib.PDFDocument.create();
 
         for(let i=1;i<=pdf.numPages;i++){
-          status.textContent = `Compressing page ${i} of ${pdf.numPages}...`;
+          status.textContent = `Se comprimă pagina ${i} din ${pdf.numPages}...`;
           const page = await pdf.getPage(i);
           const { dataUrl, width, height } = await renderPageToJpeg(page, preset.scale, preset.quality);
           const jpgBytes = await bytesFromDataUrl(dataUrl);
@@ -1047,10 +1047,10 @@ footer .copy{color: rgba(250,247,240,0.25); margin-top:10px;}
         const pct = Math.max(0, Math.round((1 - outBytes.length/originalSize)*100));
         rname.innerHTML = `<span>${outName}</span> &nbsp; <span class="size-compare">${fmtBytes(originalSize)} <span class="arrow">→</span> <span class="after">${fmtBytes(outBytes.length)}</span> ${pct>0 ? '· -'+pct+'%' : ''}</span>`;
         result.classList.add('show');
-        status.textContent = 'Done.';
+        status.textContent = 'Gata.';
       }catch(err){
         console.error(err);
-        status.textContent = 'Something went wrong: ' + err.message;
+        status.textContent = 'A apărut o eroare: ' + err.message;
         status.classList.add('err');
       }
       btn.disabled = false;
@@ -1120,14 +1120,14 @@ footer .copy{color: rgba(250,247,240,0.25); margin-top:10px;}
       btn.disabled = true;
       grid.innerHTML=''; pageImages=[];
       status.classList.remove('err');
-      status.textContent = 'Loading the PDF...';
+      status.textContent = 'Se încarcă PDF-ul...';
       try{
         const bytes = await file.arrayBuffer();
         const pdf = await pdfjsLib.getDocument({data: bytes}).promise;
         const baseName = file.name.replace(/\.pdf$/i,'');
 
         for(let i=1;i<=pdf.numPages;i++){
-          status.textContent = `Converting page ${i} of ${pdf.numPages}...`;
+          status.textContent = `Se convertește pagina ${i} din ${pdf.numPages}...`;
           const page = await pdf.getPage(i);
           const { dataUrl } = await renderPageToJpeg(page, 1.8, 0.9);
           const jpgBytes = await bytesFromDataUrl(dataUrl);
@@ -1144,16 +1144,16 @@ footer .copy{color: rgba(250,247,240,0.25); margin-top:10px;}
           const a = document.createElement('a');
           a.href = dataUrl;
           a.download = pageName;
-          a.textContent = 'Download';
+          a.textContent = 'Descarcă';
           pcard.appendChild(img); pcard.appendChild(label); pcard.appendChild(a);
           grid.appendChild(pcard);
         }
 
-        status.textContent = 'Done — ' + pdf.numPages + ' pages converted.';
+        status.textContent = 'Gata — ' + pdf.numPages + ' pagini convertite.';
         if(pdf.numPages > 1) zipActions.style.display='flex';
       }catch(err){
         console.error(err);
-        status.textContent = 'Something went wrong: ' + err.message;
+        status.textContent = 'A apărut o eroare: ' + err.message;
         status.classList.add('err');
       }
       btn.disabled = false;
@@ -1162,7 +1162,7 @@ footer .copy{color: rgba(250,247,240,0.25); margin-top:10px;}
     btnZip.addEventListener('click', async ()=>{
       if(!pageImages.length) return;
       btnZip.disabled = true;
-      btnZip.textContent = 'Zipping...';
+      btnZip.textContent = 'Se arhivează...';
       const zip = new JSZip();
       pageImages.forEach(p=> zip.file(p.name, p.bytes));
       const blob = await zip.generateAsync({type:'blob'});
@@ -1172,7 +1172,7 @@ footer .copy{color: rgba(250,247,240,0.25); margin-top:10px;}
       a.download = (file ? file.name.replace(/\.pdf$/i,'') : 'pages') + '-jpg.zip';
       document.body.appendChild(a); a.click(); a.remove();
       btnZip.disabled = false;
-      btnZip.textContent = 'Download all (.zip)';
+      btnZip.textContent = 'Descarcă tot (.zip)';
     });
   })();
 
