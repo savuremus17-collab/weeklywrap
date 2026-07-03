@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:xhtml="http://www.w3.org/1999/xhtml">
+  <url>
+    <loc>https://theweeklywrap.online/</loc>
+    <xhtml:link rel="alternate" hreflang="ro" href="https://theweeklywrap.online/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://theweeklywrap.online/en/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://theweeklywrap.online/"/>
+  </url>
+  <url>
+    <loc>https://theweeklywrap.online/en/</loc>
+    <xhtml:link rel="alternate" hreflang="ro" href="https://theweeklywrap.online/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://theweeklywrap.online/en/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://theweeklywrap.online/"/>
+  </url>
+  <url>
+    <loc>https://theweeklywrap.online/comprima-pdf/</loc>
+  </url>
+  <url>
+    <loc>https://theweeklywrap.online/uneste-pdf/</loc>
+  </url>
+  <url>
+    <loc>https://theweeklywrap.online/imagini-in-pdf/</loc>
+  </url>
+  <url>
+    <loc>https://theweeklywrap.online/pdf-in-jpg/</loc>
+  </url>
+</urlset>
