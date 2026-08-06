@@ -23,7 +23,7 @@ export async function updateSubscription(
       plan_type: planType,
       current_period_start: currentPeriodStart.toISOString(),
       current_period_end: currentPeriodEnd.toISOString(),
-      founding_member: planType === 'founding',
+      founding_member: false,
       updated_at: new Date().toISOString(),
     }, {
       onConflict: 'stripe_subscription_id',
