@@ -187,13 +187,10 @@ export default function SettingsPage() {
     finally { setLoadingPortal(false) }
   }
 
-  const planIcons: Record<string, any> = { free: Zap, pro: Crown, yearly: Crown, agency: Building2, founding: Star }
+  const planIcons: Record<string, any> = { pro: Crown, yearly: Crown }
   const planColors: Record<string, string> = {
-    free: "from-gray-500/10 to-gray-600/10 border-gray-500/20",
     pro: "from-blue-500/10 to-blue-600/10 border-blue-500/20",
     yearly: "from-blue-500/10 to-purple-600/10 border-blue-500/20",
-    agency: "from-emerald-500/10 to-emerald-600/10 border-emerald-500/20",
-    founding: "from-amber-500/10 to-amber-600/10 border-amber-500/20",
   }
 
   return (
