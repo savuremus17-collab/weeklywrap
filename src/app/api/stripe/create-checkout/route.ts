@@ -50,14 +50,14 @@ export async function POST(req: NextRequest) {
           quantity: 1,
         },
       ],
-      mode: plan.interval === 'lifetime' ? 'payment' : 'subscription',
+      mode: 'subscription',
       success_url: successUrl || `${req.nextUrl.origin}/dashboard?checkout=success`,
       cancel_url: cancelUrl || `${req.nextUrl.origin}/pricing`,
       metadata: {
         supabaseUserId: user.id,
         planType: plan.id,
       },
-      subscription_data: plan.interval === 'lifetime' ? undefined : {
+      subscription_data: {
         metadata: {
           supabaseUserId: user.id,
           planType: plan.id,
