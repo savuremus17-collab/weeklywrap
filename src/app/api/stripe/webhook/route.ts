@@ -93,5 +93,5 @@ export async function POST(req: Request) {
     console.error('Webhook processing error:', error)
   }
 
-  return NextResponse.client({ received: true })
+  return NextResponse.json({ received: true })
 }
