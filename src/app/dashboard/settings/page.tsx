@@ -397,7 +397,7 @@ export default function SettingsPage() {
             <h2 className="text-lg font-semibold mb-2">Available Plans</h2>
             <p className="text-sm text-muted-foreground mb-6">Upgrade or change your plan at any time.</p>
             <div className="grid gap-4 md:grid-cols-2">
-              {PLANS.filter(p => p.id !== "free").map((plan) => {
+              {PLANS.map((plan) => {
                 const Icon = planIcons[plan.id] || Zap
                 const isPopular = plan.metadata?.isMostPopular === "true"
                 return (
