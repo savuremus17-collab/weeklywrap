@@ -2,33 +2,24 @@
 
 import { useState } from "react";
 import { motion } from "framer-motion";
+import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { Check, Sparkles } from "lucide-react";
+import { Check } from "lucide-react";
 
-const baseFeatures = [
+const features = [
   "Unlimited clients & reports",
   "AI-powered insights & recommendations",
   "PDF exports",
   "Custom branding",
   "Email automation",
-];
-
-const yearlyBonusFeatures = [
   "Priority support",
-  "Locked-in pricing for life",
-  "Early access to new features",
 ];
 
 const price = { monthly: 15, yearly: 149 };
-const links = {
-  monthly: "https://buy.stripe.com/test_28E9AUbNL1nIan4cPS8Zq01",
-  yearly: "https://buy.stripe.com/test_fZu28s9FD1nIcvc9DG8Zq02",
-};
 
 export const Pricing = () => {
   const [isYearly, setIsYearly] = useState(false);
   const monthlyEquivalent = (price.yearly / 12).toFixed(2);
-  const features = isYearly ? [...baseFeatures, ...yearlyBonusFeatures] : baseFeatures;
 
   return (
     <section id="pricing" className="py-24 relative">
@@ -38,8 +29,9 @@ export const Pricing = () => {
             Simple, <span className="text-primary">honest</span> pricing
           </h2>
           <p className="text-lg text-muted-foreground mb-10">
-            Every feature included at any tier. Go yearly and unlock a few extras on top — no hidden tiers, no games.
+            One plan. Every feature. Pay monthly or save by paying yearly — no free tier, no hidden tiers, no games.
           </p>
+
           <div className="flex items-center justify-center gap-4 mb-8">
             <span className={`text-sm font-medium ${!isYearly ? 'text-foreground' : 'text-muted-foreground'}`}>Monthly</span>
             <button
@@ -52,10 +44,11 @@ export const Pricing = () => {
               />
             </button>
             <span className={`text-sm font-medium ${isYearly ? 'text-foreground' : 'text-muted-foreground'}`}>
-              Yearly <span className="text-primary text-xs ml-1 font-bold">SAVE 17% + BONUS PERKS</span>
+              Yearly <span className="text-primary text-xs ml-1 font-bold">SAVE 17%</span>
             </span>
           </div>
         </div>
+
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -66,9 +59,7 @@ export const Pricing = () => {
           <div className="mb-8">
             <h3 className="text-xl font-bold mb-2">WeeklyWrap</h3>
             <p className="text-sm text-muted-foreground mb-6">
-              {isYearly
-                ? "Everything in Monthly, plus a few extras for committing to a year."
-                : "Everything you need to automate client reporting."}
+              Everything you need to automate client reporting — no matter how you pay.
             </p>
             <div className="flex items-baseline gap-1">
               <span className="text-5xl font-bold">${isYearly ? price.yearly : price.monthly}</span>
@@ -81,8 +72,8 @@ export const Pricing = () => {
             )}
           </div>
 
-          <div className="space-y-4 mb-2">
-            {baseFeatures.map((feature) => (
+          <div className="space-y-4 mb-8">
+            {features.map((feature) => (
               <div key={feature} className="flex items-start gap-3">
                 <Check size={18} className="text-primary shrink-0 mt-0.5" />
                 <span className="text-sm">{feature}</span>
@@ -90,39 +81,11 @@ export const Pricing = () => {
             ))}
           </div>
 
-          {isYearly && (
-            <motion.div
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: "auto" }}
-              transition={{ duration: 0.3 }}
-              className="mb-4"
-            >
-              <div className="flex items-center gap-2 mt-4 mb-3">
-                <Sparkles size={14} className="text-primary" />
-                <span className="text-xs font-semibold uppercase tracking-wide text-primary">Yearly-only perks</span>
-              </div>
-              <div className="space-y-3">
-                {yearlyBonusFeatures.map((feature) => (
-                  <div key={feature} className="flex items-start gap-3">
-                    <Check size={18} className="text-primary shrink-0 mt-0.5" />
-                    <span className="text-sm font-medium">{feature}</span>
-                  </div>
-                ))}
-              </div>
-            </motion.div>
-          )}
-
-          <div className="mb-8" />
-
-          <a
-            href={isYearly ? links.yearly : links.monthly}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
+          <Link href={`/signup?plan=${isYearly ? "yearly" : "monthly"}`}>
             <Button className="w-full h-12">
               Get Started
             </Button>
-          </a>
+          </Link>
           <p className="text-xs text-center text-muted-foreground mt-4">
             Cancel anytime. No contracts.
           </p>
