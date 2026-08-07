@@ -1,10 +1,10 @@
 "use client";
 
 import { useState } from "react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { Check } from "lucide-react";
+import { Check, Sparkles, Lock, Rocket, Headset } from "lucide-react";
 
 const features = [
   "Unlimited clients & reports",
@@ -12,7 +12,13 @@ const features = [
   "PDF exports",
   "Custom branding",
   "Email automation",
-  "Priority support",
+];
+
+const yearlyPerks = [
+  { icon: Sparkles, label: "Year in Review report", desc: "An AI-generated year-end summary of every client's progress" },
+  { icon: Lock, label: "Price locked for life", desc: "Your $149/yr rate never goes up, even if we raise prices later" },
+  { icon: Rocket, label: "Early access to new features", desc: "Try new tools before they roll out to everyone else" },
+  { icon: Headset, label: "Priority support", desc: "Jump the queue when you need help" },
 ];
 
 const price = { monthly: 15, yearly: 149 };
@@ -72,7 +78,7 @@ export const Pricing = () => {
             )}
           </div>
 
-          <div className="space-y-4 mb-8">
+          <div className="space-y-4 mb-6">
             {features.map((feature) => (
               <div key={feature} className="flex items-start gap-3">
                 <Check size={18} className="text-primary shrink-0 mt-0.5" />
@@ -80,6 +86,35 @@ export const Pricing = () => {
               </div>
             ))}
           </div>
+
+          <AnimatePresence mode="wait">
+            {isYearly && (
+              <motion.div
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: "auto" }}
+                exit={{ opacity: 0, height: 0 }}
+                transition={{ duration: 0.25 }}
+                className="overflow-hidden"
+              >
+                <div className="rounded-xl border border-primary/30 bg-primary/10 p-4 mb-6">
+                  <p className="text-xs font-bold text-primary uppercase tracking-wide mb-3">
+                    Only with Yearly
+                  </p>
+                  <div className="space-y-3">
+                    {yearlyPerks.map((perk) => (
+                      <div key={perk.label} className="flex items-start gap-3">
+                        <perk.icon size={16} className="text-primary shrink-0 mt-0.5" />
+                        <div>
+                          <p className="text-sm font-medium">{perk.label}</p>
+                          <p className="text-xs text-muted-foreground">{perk.desc}</p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
 
           <Link href={`/signup?plan=${isYearly ? "yearly" : "monthly"}`}>
             <Button className="w-full h-12">
