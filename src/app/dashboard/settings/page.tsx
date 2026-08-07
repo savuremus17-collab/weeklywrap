@@ -12,7 +12,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Separator } from "@/components/ui/separator"
 import {
   User, Bell, Palette, Key, CreditCard, Globe, LogOut, Save,
-  Check, Loader2, Trash2, AlertTriangle, Zap, Crown, Building2, Star,
+  Check, Loader2, Trash2, AlertTriangle, Zap, Crown,
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { PLANS } from "@/lib/stripe/plans"
@@ -188,7 +188,7 @@ export default function SettingsPage() {
   }
 
   const planIcons: Record<string, any> = { pro: Crown, yearly: Crown }
-  const planColors: Record<string, string> = {
+const planColors: Record<string, string> = {
     pro: "from-blue-500/10 to-blue-600/10 border-blue-500/20",
     yearly: "from-blue-500/10 to-purple-600/10 border-blue-500/20",
   }
