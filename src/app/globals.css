@@ -163,6 +163,17 @@
   body {
     @apply bg-background text-foreground antialiased selection:bg-primary/30 selection:text-primary;
   }
+  /* Native <select> dropdowns don't inherit theme CSS variables for their
+     popup list in most browsers, so force a dark background + light text
+     on the options explicitly to avoid invisible (white-on-white) rows. */
+  select {
+    color-scheme: dark;
+  }
+  select option,
+  select optgroup {
+    background-color: #0a0a0f;
+    color: #fafafa;
+  }
 }
 
 @layer utilities {
