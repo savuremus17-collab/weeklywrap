@@ -61,7 +61,7 @@ export function DashboardSidebar({
           .from("users")
           .select("name")
           .eq("id", user.id)
-          .single()
+          .maybeSingle()
 
         const { data: { publicUrl } } = supabase.storage
           .from("avatars")
@@ -72,12 +72,11 @@ export function DashboardSidebar({
           avatarUrl: publicUrl || null,
         })
       } catch (e) {
-        // silently fail
+        console.error("Failed to load sidebar profile:", e)
       }
     }
     loadProfile()
   }, [])
-
   if (!mounted) {
     return (
       <div
