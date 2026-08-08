@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server'
 import { stripe } from '../../../../lib/stripe/server'
 import { createClient } from '@supabase/supabase-js'
 
-let _supabase: ReturnType<typeof createClient> | null = null
+let _supabase: any = null
 
 // Lazily create the admin client on first use instead of at module-import
 // time, so a missing env var during build-time page-data collection can't
