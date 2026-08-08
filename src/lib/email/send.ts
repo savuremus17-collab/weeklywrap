@@ -1,4 +1,4 @@
-import { resend } from '@/lib/resend';
+import { getResend } from '@/lib/resend';
 import WelcomeEmail from './templates/welcome';
 import MagicLinkEmail from './templates/magic-link';
 import WeeklyReportEmail from './templates/weekly-report';
@@ -9,7 +9,7 @@ const FROM_EMAIL = process.env.FROM_EMAIL || 'WeeklyWrap <hello@weeklywrap.ai>';
 
 export async function sendWelcomeEmail(email: string, firstName: string) {
   try {
-    const { data, error } = await resend.emails.send({
+    const { data, error } = await getResend().emails.send({
       from: FROM_EMAIL,
       to: email,
       subject: 'Welcome to WeeklyWrap!',
@@ -30,7 +30,7 @@ export async function sendWelcomeEmail(email: string, firstName: string) {
 
 export async function sendMagicLinkEmail(email: string, url: string) {
   try {
-    const { data, error } = await resend.emails.send({
+    const { data, error } = await getResend().emails.send({
       from: FROM_EMAIL,
       to: email,
       subject: 'Your Magic Link for WeeklyWrap',
@@ -59,7 +59,7 @@ interface WeeklyReportData {
 
 export async function sendWeeklyReportEmail(email: string, reportData: WeeklyReportData) {
   try {
-    const { data, error } = await resend.emails.send({
+    const { data, error } = await getResend().emails.send({
       from: FROM_EMAIL,
       to: email,
       subject: `Your Weekly Wrap is ready - ${reportData.reportDate}`,
@@ -89,7 +89,7 @@ interface ClientReportData {
 
 export async function sendClientReportEmail(reportData: ClientReportData) {
   try {
-    const { data, error } = await resend.emails.send({
+    const { data, error } = await getResend().emails.send({
       from: FROM_EMAIL,
       to: reportData.clientEmail,
       subject: `Progress Report: ${reportData.reportPeriod} - ${reportData.professionalName}`,
