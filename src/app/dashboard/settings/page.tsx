@@ -113,7 +113,10 @@ export default function SettingsPage() {
     try {
       const { supabase } = await import("@/lib/supabase/client")
       const { data: { user } } = await supabase.auth.getUser()
-      if (!user) return
+     if (!user) {
+        alert("You're not signed in. Please sign out and sign back in, then try again.")
+        return
+      }
       const { error } = await supabase.from("users").upsert({
         id: user.id,
         name: `${firstName} ${lastName}`.trim(),
