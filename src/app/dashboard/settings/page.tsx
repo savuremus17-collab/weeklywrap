@@ -115,6 +115,7 @@ export default function SettingsPage() {
       const { data: { user } } = await supabase.auth.getUser()
      if (!user) {
         alert("You're not signed in. Please sign out and sign back in, then try again.")
+       setSaving(false)
         return
       }
       const { error } = await supabase.from("users").upsert({
