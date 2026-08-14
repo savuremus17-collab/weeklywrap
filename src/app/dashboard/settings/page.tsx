@@ -62,12 +62,11 @@ export default function SettingsPage() {
   const [showDeleteModal, setShowDeleteModal] = useState(false)
   const [deleteConfirm, setDeleteConfirm] = useState("")
   const [accentColor, setAccentColor] = useState("#3b82f6")
-const [darkMode, setDarkMode] = useState(true)
-const [compactMode, setCompactMode] = useState(false)
-
-const [loadingPlan, setLoadingPlan] = useState<string | null>(null)
-const [loadingPortal, setLoadingPortal] = useState(false)
-const [savingAppearance, setSavingAppearance] = useState(false)
+  const [darkMode, setDarkMode] = useState(true)
+  const [compactMode, setCompactMode] = useState(false)
+  const [loadingPlan, setLoadingPlan] = useState<string | null>(null)
+  const [loadingPortal, setLoadingPortal] = useState(false)
+  const [savingAppearance, setSavingAppearance] = useState(false)
 
   useEffect(() => {
     const loadUser = async () => {
@@ -82,99 +81,47 @@ const [savingAppearance, setSavingAppearance] = useState(false)
             .eq("id", user.id)
             .maybeSingle()
           if (data) {
-  const parts = (data.name || "").split(" ")
+            const parts = (data.name || "").split(" ")
+            setFirstName(parts[0] || "")
+            setLastName(parts.slice(1).join(" ") || "")
+            setEmail(data.email || user.email || "")
+            setCompany(data.company || "")
+            if (data.timezone) setTimezone(data.timezone)
+            if (data.currency) setCurrency(data.currency)
+            if (data.notifications) setNotifications({ ...DEFAULT_NOTIFICATIONS, ...data.notifications })
 
-  setFirstName(parts[0] || "")
-  setLastName(parts.slice(1).join(" ") || "")
-  setEmail(data.email || user.email || "")
-  setCompany(data.company || "")
+            const appearance = data.appearance || {}
 
-  if (data.timezone) {
-    setTimezone(data.timezone)
-  }
+            const loadedDarkMode =
+              typeof appearance.darkMode === "boolean"
+                ? appearance.darkMode
+                : true
 
-  if (data.currency) {
-    setCurrency(data.currency)
-  }
+            const loadedAccentColor =
+              typeof appearance.accentColor === "string"
+                ? appearance.accentColor
+                : "#3b82f6"
 
-  if (data.notifications) {
-    setNotifications({
-      ...DEFAULT_NOTIFICATIONS,
-      ...data.notifications,
-    })
-  }
+            const loadedCompactMode =
+              typeof appearance.compactMode === "boolean"
+                ? appearance.compactMode
+                : false
 
-  const appearance = data.appearance || {}
+            setDarkMode(loadedDarkMode)
+            setAccentColor(loadedAccentColor)
+            setCompactMode(loadedCompactMode)
 
-  const loadedDarkMode =
-    typeof appearance.darkMode === "boolean"
-      ? appearance.darkMode
-      : true
+            if (loadedDarkMode) {
+              document.documentElement.classList.add("dark")
+            } else {
+              document.documentElement.classList.remove("dark")
+            }
 
-  const loadedAccentColor =
-    typeof appearance.accentColor === "string"
-      ? appearance.accentColor
-      : "#3b82f6"
-
-  const loadedCompactMode =
-    typeof appearance.compactMode === "boolean"
-      ? appearance.compactMode
-      : false
-
-  setDarkMode(loadedDarkMode)
-  setAccentColor(loadedAccentColor)
-  setCompactMode(loadedCompactMode)
-
-  if (loadedDarkMode) {
-    document.documentElement.classList.add("dark")
-  } else {
-    document.documentElement.classList.remove("dark")
-  }
-
-  document.documentElement.style.setProperty(
-    "--primary",
-    loadedAccentColor
-  )
-
-  document.documentElement.style.setProperty(
-    "--ring",
-    loadedAccentColor
-  )
-
-  document.documentElement.style.setProperty(
-    "--sidebar-primary",
-    loadedAccentColor
-  )
-}
-
-const loadedDarkMode =
-  typeof appearance.darkMode === "boolean"
-    ? appearance.darkMode
-    : true
-
-const loadedAccentColor =
-  typeof appearance.accentColor === "string"
-    ? appearance.accentColor
-    : "#3b82f6"
-
-const loadedCompactMode =
-  typeof appearance.compactMode === "boolean"
-    ? appearance.compactMode
-    : false
-
-setDarkMode(loadedDarkMode)
-setAccentColor(loadedAccentColor)
-setCompactMode(loadedCompactMode)
-
-if (loadedDarkMode) {
-  document.documentElement.classList.add("dark")
-} else {
-  document.documentElement.classList.remove("dark")
-}
-
-document.documentElement.style.setProperty("--primary", loadedAccentColor)
-document.documentElement.style.setProperty("--ring", loadedAccentColor)
-document.documentElement.style.setProperty("--sidebar-primary", loadedAccentColor)
+            document.documentElement.style.setProperty("--primary", loadedAccentColor)
+            document.documentElement.style.setProperty("--ring", loadedAccentColor)
+            document.documentElement.style.setProperty("--sidebar-primary", loadedAccentColor)
+            document.documentElement.classList.toggle("compact-mode", loadedCompactMode)
+          }
           const { data: { publicUrl } } = supabase.storage.from("avatars").getPublicUrl(`avatars/${user.id}.jpg`)
           if (publicUrl) setAvatarUrl(publicUrl)
         }
@@ -505,14 +452,31 @@ const saveAppearance = async (
             <div className="space-y-4">
               <div className="flex items-center justify-between py-2">
                 <div><p className="text-sm font-medium">Dark Mode</p><p className="text-xs text-muted-foreground">Use dark theme throughout the app</p></div>
-                <Switch checked={darkMode} onCheckedChange={(checked) => { setDarkMode(checked); if (checked) { document.documentElement.classList.add("dark"); localStorage.setItem("darkMode", "true") } else { document.documentElement.classList.remove("dark"); localStorage.setItem("darkMode", "false") } }} />
+                <Switch
+                  checked={darkMode}
+                  disabled={savingAppearance}
+                  onCheckedChange={async (checked) => {
+                    setDarkMode(checked)
+                    document.documentElement.classList.toggle("dark", checked)
+                    await saveAppearance({ darkMode: checked })
+                  }}
+                />
               </div>
               <Separator />
               <div>
                 <label className="text-sm font-medium mb-2 block">Accent Color</label>
                 <div className="flex gap-3">
                   {["#3b82f6", "#10b981", "#8b5cf6", "#f59e0b", "#e11d48"].map((color) => (
-                    <button key={color} onClick={() => { setAccentColor(color); localStorage.setItem("accentColor", color); document.documentElement.style.setProperty("--primary", color); document.documentElement.style.setProperty("--ring", color); document.documentElement.style.setProperty("--sidebar-primary", color) }}
+                    <button
+                      key={color}
+                      disabled={savingAppearance}
+                      onClick={async () => {
+                        setAccentColor(color)
+                        document.documentElement.style.setProperty("--primary", color)
+                        document.documentElement.style.setProperty("--ring", color)
+                        document.documentElement.style.setProperty("--sidebar-primary", color)
+                        await saveAppearance({ accentColor: color })
+                      }}
                       className={cn("h-8 w-8 rounded-full border-2 transition-all hover:scale-110", accentColor === color ? "border-white" : "border-border")}
                       style={{ backgroundColor: color, outline: accentColor === color ? `2px solid ${color}` : "none", outlineOffset: "2px" }} />
                   ))}
@@ -521,7 +485,15 @@ const saveAppearance = async (
               <Separator />
               <div className="flex items-center justify-between py-2">
                 <div><p className="text-sm font-medium">Compact Mode</p><p className="text-xs text-muted-foreground">Reduce padding and spacing</p></div>
-                <Switch />
+                <Switch
+                  checked={compactMode}
+                  disabled={savingAppearance}
+                  onCheckedChange={async (checked) => {
+                    setCompactMode(checked)
+                    document.documentElement.classList.toggle("compact-mode", checked)
+                    await saveAppearance({ compactMode: checked })
+                  }}
+                />
               </div>
             </div>
           </GlassCard>
@@ -569,9 +541,16 @@ const saveAppearance = async (
           <GlassCard intensity="low" className="p-6">
             <h2 className="text-lg font-semibold mb-4">Payment Method</h2>
             <div className="flex items-center gap-3 p-3 rounded-xl border border-border/40">
-              <div className="flex h-10 w-14 items-center justify-center rounded-lg bg-gradient-to-br from-blue-500/20 to-blue-600/20 border border-blue-500/30 text-xs font-bold text-blue-400">VISA</div>
-              <div className="flex-1"><p className="text-sm font-medium">Visa ending in 4242</p><p className="text-xs text-muted-foreground">Expires 12/2026</p></div>
-              <Button variant="ghost" size="sm" className="h-8 text-xs" onClick={handleManageSubscription} disabled={loadingPortal}>Update</Button>
+              <div className="flex h-10 w-14 items-center justify-center rounded-lg bg-gradient-to-br from-blue-500/20 to-blue-600/20 border border-blue-500/30">
+                <CreditCard className="h-5 w-5 text-blue-400" />
+              </div>
+              <div className="flex-1">
+                <p className="text-sm font-medium">Payment method</p>
+                <p className="text-xs text-muted-foreground">Manage your card securely through Stripe.</p>
+              </div>
+              <Button variant="ghost" size="sm" className="h-8 text-xs" onClick={handleManageSubscription} disabled={loadingPortal}>
+                Update
+              </Button>
             </div>
           </GlassCard>
         </TabsContent>
