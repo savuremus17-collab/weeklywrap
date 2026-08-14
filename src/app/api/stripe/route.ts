@@ -1,40 +1,27 @@
-import {
-  NextRequest,
-  NextResponse,
-} from "next/server"
-
+import { NextRequest, NextResponse } from "next/server"
 import { stripe } from "@/lib/stripe/server"
 import { createClient } from "@/lib/supabase/server"
-import { supabaseAdmin } from "@/lib/supabase/admin"
 
-export async function GET(
-  req: NextRequest
-) {
+type SubscriptionRow = {
+  stripe_customer_id: string | null
+}
+
+export async function GET(req: NextRequest) {
   try {
-    const supabase =
-      await createClient()
+    const supabase = await createClient()
 
-    const authHeader =
-      req.headers.get("authorization")
-
-    const accessToken =
-      authHeader?.match(
-        /^Bearer\s+(.+)$/i
-      )?.[1]
-
+    /*
+     * Get authenticated Supabase user.
+     */
     const {
       data: { user },
       error: authError,
-    } = accessToken
-      ? await supabase.auth.getUser(
-          accessToken
-        )
-      : await supabase.auth.getUser()
+    } = await supabase.auth.getUser()
 
     if (authError) {
       console.error(
-        "Payment method auth error:",
-        authError
+        "Payment method authentication error:",
+        authError,
       )
     }
 
@@ -43,56 +30,76 @@ export async function GET(
         {
           error: "Unauthorized",
         },
-        { status: 401 }
+        {
+          status: 401,
+        },
       )
     }
 
+    /*
+     * Find the Stripe customer belonging
+     * to the authenticated user.
+     */
     const {
-      data: subscription,
-      error,
-    } = await supabaseAdmin
+      data: subscriptionData,
+      error: subscriptionError,
+    } = await supabase
       .from("subscriptions")
-      .select(
-        "stripe_customer_id"
-      )
-      .eq(
-        "user_id",
-        user.id
-      )
+      .select("stripe_customer_id")
+      .eq("user_id", user.id)
       .maybeSingle()
 
-    if (error) {
+    if (subscriptionError) {
+      console.error(
+        "Payment method subscription lookup error:",
+        subscriptionError,
+      )
+
       return NextResponse.json(
         {
-          error: error.message,
+          error:
+            "Unable to load subscription information",
+          details:
+            subscriptionError.message,
         },
-        { status: 500 }
+        {
+          status: 500,
+        },
       )
     }
 
-    if (
-      !subscription
-        ?.stripe_customer_id
-    ) {
+    /*
+     * Explicit type prevents TypeScript
+     * from resolving the Supabase result
+     * to `never`.
+     */
+    const subscription =
+      subscriptionData as
+        | SubscriptionRow
+        | null
+
+    const customerId =
+      subscription?.stripe_customer_id || null
+
+    if (!customerId) {
       return NextResponse.json({
         paymentMethod: null,
       })
     }
 
+    /*
+     * Retrieve the Stripe customer payment methods.
+     */
     const paymentMethods =
-      await stripe.paymentMethods.list(
-        {
-          customer:
-            subscription.stripe_customer_id,
+      await stripe.paymentMethods.list({
+        customer: customerId,
+        type: "card",
+      })
 
-          type: "card",
-        }
-      )
+    const paymentMethod =
+      paymentMethods.data[0]
 
-    const card =
-      paymentMethods.data[0]?.card
-
-    if (!card) {
+    if (!paymentMethod) {
       return NextResponse.json({
         paymentMethod: null,
       })
@@ -101,28 +108,41 @@ export async function GET(
     return NextResponse.json({
       paymentMethod: {
         brand:
-          card.brand,
+          paymentMethod.card?.brand ||
+          "card",
+
         last4:
-          card.last4,
+          paymentMethod.card?.last4 ||
+          "",
+
         expMonth:
-          card.exp_month,
+          paymentMethod.card?.exp_month ||
+          0,
+
         expYear:
-          card.exp_year,
+          paymentMethod.card?.exp_year ||
+          0,
       },
     })
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error(
-      "Payment method error:",
-      error
+      "Error loading payment method:",
+      error,
     )
+
+    const message =
+      error instanceof Error
+        ? error.message
+        : "Unable to load payment method"
 
     return NextResponse.json(
       {
-        error:
-          error?.message ||
-          "Unable to load payment method",
+        error: message,
+        paymentMethod: null,
       },
-      { status: 500 }
+      {
+        status: 500,
+      },
     )
   }
 }
