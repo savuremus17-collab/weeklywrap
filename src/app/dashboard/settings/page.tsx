@@ -66,14 +66,6 @@ const [darkMode, setDarkMode] = useState(true)
 const [compactMode, setCompactMode] = useState(false)
 
 const [loadingPlan, setLoadingPlan] = useState<string | null>(null)
-  const [paymentMethod, setPaymentMethod] = useState<{
-  brand: string
-  last4: string
-  expMonth: number
-  expYear: number
-} | null>(null)
-
-const [loadingPaymentMethod, setLoadingPaymentMethod] = useState(false)
 const [loadingPortal, setLoadingPortal] = useState(false)
 const [savingAppearance, setSavingAppearance] = useState(false)
 
@@ -100,23 +92,6 @@ const [savingAppearance, setSavingAppearance] = useState(false)
             if (data.notifications) setNotifications({ ...DEFAULT_NOTIFICATIONS, ...data.notifications })
           }
           const appearance = data.appearance || {}
-          const loadPaymentMethod = async () => {
-  try {
-    setLoadingPaymentMethod(true)
-
-    const response = await fetch("/api/stripe/payment-method")
-    const data = await response.json()
-
-    if (response.ok) {
-      setPaymentMethod(data.paymentMethod || null)
-    }
-  } catch (error) {
-    console.error("Failed to load payment method:", error)
-  } finally {
-    setLoadingPaymentMethod(false)
-    loadPaymentMethod()
-  }
-}
 
 const loadedDarkMode =
   typeof appearance.darkMode === "boolean"
@@ -540,64 +515,10 @@ const saveAppearance = async (
           <GlassCard intensity="low" className="p-6">
             <h2 className="text-lg font-semibold mb-4">Payment Method</h2>
             <div className="flex items-center gap-3 p-3 rounded-xl border border-border/40">
-  {loadingPaymentMethod ? (
-    <>
-      <Loader2 className="h-5 w-5 animate-spin" />
-      <p className="text-sm text-muted-foreground">
-        Loading payment method...
-      </p>
-    </>
-  ) : paymentMethod ? (
-    <>
-      <div className="flex h-10 w-14 items-center justify-center rounded-lg bg-gradient-to-br from-blue-500/20 to-blue-600/20 border border-blue-500/30 text-xs font-bold uppercase text-blue-400">
-        {paymentMethod.brand}
-      </div>
-
-      <div className="flex-1">
-        <p className="text-sm font-medium">
-          {paymentMethod.brand} ending in {paymentMethod.last4}
-        </p>
-
-        <p className="text-xs text-muted-foreground">
-          Expires {String(paymentMethod.expMonth).padStart(2, "0")}/
-          {paymentMethod.expYear}
-        </p>
-      </div>
-
-      <Button
-        variant="ghost"
-        size="sm"
-        className="h-8 text-xs"
-        onClick={handleManageSubscription}
-        disabled={loadingPortal}
-      >
-        Update
-      </Button>
-    </>
-  ) : (
-    <>
-      <div className="flex-1">
-        <p className="text-sm font-medium">
-          No payment method
-        </p>
-
-        <p className="text-xs text-muted-foreground">
-          Add a payment method through Stripe.
-        </p>
-      </div>
-
-      <Button
-        variant="outline"
-        size="sm"
-        className="h-8 text-xs"
-        onClick={handleManageSubscription}
-        disabled={loadingPortal}
-      >
-        Add Payment Method
-      </Button>
-    </>
-  )}
-</div>
+              <div className="flex h-10 w-14 items-center justify-center rounded-lg bg-gradient-to-br from-blue-500/20 to-blue-600/20 border border-blue-500/30 text-xs font-bold text-blue-400">VISA</div>
+              <div className="flex-1"><p className="text-sm font-medium">Visa ending in 4242</p><p className="text-xs text-muted-foreground">Expires 12/2026</p></div>
+              <Button variant="ghost" size="sm" className="h-8 text-xs" onClick={handleManageSubscription} disabled={loadingPortal}>Update</Button>
+            </div>
           </GlassCard>
         </TabsContent>
 
