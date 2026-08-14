@@ -1,23 +1,35 @@
-import { NextRequest, NextResponse } from "next/server"
+import {
+  NextRequest,
+  NextResponse,
+} from "next/server"
+
 import { stripe } from "@/lib/stripe/server"
 import { createClient } from "@/lib/supabase/server"
+import { supabaseAdmin } from "@/lib/supabase/admin"
 import { PLANS } from "@/lib/stripe/plans"
 
-export async function POST(req: NextRequest) {
+export async function POST(
+  req: NextRequest
+) {
   try {
-    const { priceId, successUrl, cancelUrl } =
-      await req.json()
+    const {
+      priceId,
+      successUrl,
+      cancelUrl,
+    } = await req.json()
 
     if (!priceId) {
       return NextResponse.json(
-        { error: "Price ID is required" },
+        {
+          error: "Price ID is required",
+        },
         { status: 400 }
       )
     }
 
-    const supabase = await createClient()
+    const supabase =
+      await createClient()
 
-    // Get token sent by the browser
     const authHeader =
       req.headers.get("authorization")
 
@@ -26,8 +38,6 @@ export async function POST(req: NextRequest) {
         /^Bearer\s+(.+)$/i
       )?.[1]
 
-    // Authenticate using the browser token
-    // when available, otherwise use cookies
     const {
       data: { user },
       error: authError,
@@ -46,7 +56,9 @@ export async function POST(req: NextRequest) {
 
     if (!user) {
       return NextResponse.json(
-        { error: "Unauthorized" },
+        {
+          error: "Unauthorized",
+        },
         { status: 401 }
       )
     }
@@ -58,101 +70,122 @@ export async function POST(req: NextRequest) {
 
     if (!plan) {
       return NextResponse.json(
-        { error: "Invalid plan" },
+        {
+          error: "Invalid plan",
+        },
         { status: 400 }
       )
     }
 
-    // Find existing Stripe customer
     const {
-      data: subscription,
+      data: existingSubscription,
       error: subscriptionError,
-    } = await supabase
-      .from("subscriptions")
-      .select("stripe_customer_id")
-      .eq("user_id", user.id)
-      .maybeSingle()
+    } =
+      await supabaseAdmin
+        .from("subscriptions")
+        .select(
+          "id, stripe_customer_id"
+        )
+        .eq(
+          "user_id",
+          user.id
+        )
+        .maybeSingle()
 
     if (subscriptionError) {
       console.error(
-        "Error fetching subscription:",
+        "Subscription lookup error:",
         subscriptionError
       )
 
       return NextResponse.json(
         {
           error:
-            "Unable to load subscription information",
+            subscriptionError.message,
         },
         { status: 500 }
       )
     }
 
     let customerId =
-      subscription?.stripe_customer_id ||
-      null
+      existingSubscription
+        ?.stripe_customer_id || null
 
-    // Create Stripe customer if needed
     if (!customerId) {
       const customer =
         await stripe.customers.create({
           email:
-            user.email || undefined,
+            user.email ||
+            undefined,
 
           metadata: {
-            supabaseUserId: user.id,
+            supabaseUserId:
+              user.id,
           },
         })
 
-      customerId = customer.id
+      customerId =
+        customer.id
 
       const {
-        error: customerSaveError,
-      } = await supabase
-        .from("subscriptions")
-        .upsert(
-          {
-            user_id: user.id,
-            stripe_customer_id:
-              customerId,
-            plan_type: "free",
-            status: "incomplete",
-          },
-          {
-            onConflict: "user_id",
-          }
-        )
+        error: saveError,
+      } =
+        existingSubscription
+          ? await supabaseAdmin
+              .from("subscriptions")
+              .update({
+                stripe_customer_id:
+                  customerId,
+              })
+              .eq(
+                "id",
+                existingSubscription.id
+              )
+          : await supabaseAdmin
+              .from("subscriptions")
+              .insert({
+                user_id:
+                  user.id,
+                stripe_customer_id:
+                  customerId,
+                plan_type:
+                  "free",
+                status:
+                  "incomplete",
+              })
 
-      if (customerSaveError) {
+      if (saveError) {
         console.error(
-          "Error saving Stripe customer:",
-          customerSaveError
+          "Stripe customer save error:",
+          saveError
         )
 
         return NextResponse.json(
           {
             error:
-              "Unable to save Stripe customer",
+              saveError.message,
           },
           { status: 500 }
         )
       }
     }
 
-    // Create Stripe Checkout session
     const session =
       await stripe.checkout.sessions.create(
         {
-          customer: customerId,
+          customer:
+            customerId,
 
           line_items: [
             {
-              price: priceId,
+              price:
+                priceId,
               quantity: 1,
             },
           ],
 
-          mode: "subscription",
+          mode:
+            "subscription",
 
           success_url:
             successUrl ||
@@ -163,26 +196,33 @@ export async function POST(req: NextRequest) {
             `${req.nextUrl.origin}/dashboard/settings`,
 
           metadata: {
-            supabaseUserId: user.id,
-            planType: plan.id,
+            supabaseUserId:
+              user.id,
+            planType:
+              plan.id,
           },
 
           subscription_data: {
             metadata: {
-              supabaseUserId: user.id,
-              planType: plan.id,
+              supabaseUserId:
+                user.id,
+              planType:
+                plan.id,
             },
           },
         }
       )
 
     return NextResponse.json({
-      sessionId: session.id,
-      url: session.url,
+      sessionId:
+        session.id,
+
+      url:
+        session.url,
     })
   } catch (error: any) {
     console.error(
-      "Error creating checkout session:",
+      "Create checkout error:",
       error
     )
 
