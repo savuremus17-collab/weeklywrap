@@ -1,9 +1,7 @@
 import { createServerClient } from "@supabase/ssr"
 import { NextResponse, type NextRequest } from "next/server"
 
-export async function middleware(
-  request: NextRequest
-) {
+export async function middleware(request: NextRequest) {
   let response = NextResponse.next({
     request,
   })
@@ -20,10 +18,7 @@ export async function middleware(
         setAll(cookiesToSet) {
           cookiesToSet.forEach(
             ({ name, value, options }) => {
-              request.cookies.set(
-                name,
-                value
-              )
+              request.cookies.set(name, value)
 
               response.cookies.set(
                 name,
@@ -37,28 +32,16 @@ export async function middleware(
     }
   )
 
-  /*
-   * IMPORTANT:
-   * This refreshes the Supabase session and
-   * keeps the authentication cookies synchronized
-   * between the browser and the server.
-   */
   const {
     data: { user },
   } = await supabase.auth.getUser()
 
   const { pathname } = request.nextUrl
 
-  /*
-   * Auth callback routes
-   */
   if (pathname.startsWith("/auth/")) {
     return response
   }
 
-  /*
-   * Protected dashboard
-   */
   if (
     pathname.startsWith("/dashboard") &&
     !user
@@ -70,10 +53,6 @@ export async function middleware(
     return NextResponse.redirect(url)
   }
 
-  /*
-   * Prevent logged-in users from returning
-   * to login/signup pages.
-   */
   if (
     user &&
     [
