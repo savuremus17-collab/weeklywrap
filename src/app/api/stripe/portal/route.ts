@@ -1,12 +1,19 @@
-import { NextRequest, NextResponse } from "next/server"
+import {
+  NextRequest,
+  NextResponse,
+} from "next/server"
+
 import { stripe } from "@/lib/stripe/server"
 import { createClient } from "@/lib/supabase/server"
+import { supabaseAdmin } from "@/lib/supabase/admin"
 
-export async function POST(req: NextRequest) {
+export async function POST(
+  req: NextRequest
+) {
   try {
-    const supabase = await createClient()
+    const supabase =
+      await createClient()
 
-    // Get token sent by the browser
     const authHeader =
       req.headers.get("authorization")
 
@@ -26,44 +33,46 @@ export async function POST(req: NextRequest) {
 
     if (authError) {
       console.error(
-        "Billing portal authentication error:",
+        "Portal auth error:",
         authError
       )
     }
 
     if (!user) {
       return NextResponse.json(
-        { error: "Unauthorized" },
+        {
+          error: "Unauthorized",
+        },
         { status: 401 }
       )
     }
 
     const {
       data: subscription,
-      error: subscriptionError,
-    } = await supabase
+      error,
+    } = await supabaseAdmin
       .from("subscriptions")
-      .select("stripe_customer_id")
-      .eq("user_id", user.id)
+      .select(
+        "stripe_customer_id"
+      )
+      .eq(
+        "user_id",
+        user.id
+      )
       .maybeSingle()
 
-    if (subscriptionError) {
-      console.error(
-        "Error fetching subscription:",
-        subscriptionError
-      )
-
+    if (error) {
       return NextResponse.json(
         {
-          error:
-            subscriptionError.message,
+          error: error.message,
         },
         { status: 500 }
       )
     }
 
     if (
-      !subscription?.stripe_customer_id
+      !subscription
+        ?.stripe_customer_id
     ) {
       return NextResponse.json(
         {
@@ -90,7 +99,7 @@ export async function POST(req: NextRequest) {
     })
   } catch (error: any) {
     console.error(
-      "Error creating portal session:",
+      "Billing portal error:",
       error
     )
 
