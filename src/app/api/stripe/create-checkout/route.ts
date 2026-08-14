@@ -41,14 +41,41 @@ if (subscriptionError) {
     let customerId = subscription?.stripe_customer_id;
 
     if (!customerId) {
-      const customer = await stripe.customers.create({
-        email: user.email,
-        metadata: {
-          supabaseUserId: user.id,
-        },
-      });
-      customerId = customer.id;
-    }
+  const customer = await stripe.customers.create({
+    email: user.email || undefined,
+    metadata: {
+      supabaseUserId: user.id,
+    },
+  })
+
+  customerId = customer.id
+
+  const { error: customerSaveError } = await supabase
+    .from("subscriptions")
+    .upsert(
+      {
+        user_id: user.id,
+        stripe_customer_id: customerId,
+        status: "incomplete",
+        plan_type: "free",
+      },
+      {
+        onConflict: "user_id",
+      }
+    )
+
+  if (customerSaveError) {
+    console.error(
+      "Error saving Stripe customer:",
+      customerSaveError
+    )
+
+    return NextResponse.json(
+      { error: "Unable to save Stripe customer" },
+      { status: 500 }
+    )
+  }
+}
 
     const session = await stripe.checkout.sessions.create({
       customer: customerId,
