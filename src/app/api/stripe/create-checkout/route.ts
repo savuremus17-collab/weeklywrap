@@ -24,11 +24,19 @@ export async function POST(req: NextRequest) {
     }
 
     // Get or create customer
-    const { data: subscription } = await supabase
-      .from('subscriptions')
-      .select('stripe_customer_id')
-      .eq('user_id', user.id)
-      .single();
+    const { data: subscription, error: subscriptionError } = await supabase
+  .from('subscriptions')
+  .select('stripe_customer_id')
+  .eq('user_id', user.id)
+  .maybeSingle();
+
+if (subscriptionError) {
+  console.error('Error fetching subscription:', subscriptionError);
+  return NextResponse.json(
+    { error: 'Unable to load subscription information' },
+    { status: 500 }
+  );
+}
 
     let customerId = subscription?.stripe_customer_id;
 
