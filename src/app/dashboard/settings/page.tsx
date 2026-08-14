@@ -484,12 +484,17 @@ export default function SettingsPage() {
         }
 
         const { error } =
-          await supabase
-            .from("users")
-            .upsert({
-              id: user.id,
-              notifications,
-            })
+  await supabase
+    .from("users")
+    .update({
+      name:
+        `${firstName} ${lastName}`.trim(),
+      email,
+      company,
+      timezone,
+      currency,
+    })
+    .eq("id", user.id)
 
         if (error) {
           throw error
