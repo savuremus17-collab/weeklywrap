@@ -82,16 +82,70 @@ const [savingAppearance, setSavingAppearance] = useState(false)
             .eq("id", user.id)
             .maybeSingle()
           if (data) {
-            const parts = (data.name || "").split(" ")
-            setFirstName(parts[0] || "")
-            setLastName(parts.slice(1).join(" ") || "")
-            setEmail(data.email || user.email || "")
-            setCompany(data.company || "")
-            if (data.timezone) setTimezone(data.timezone)
-            if (data.currency) setCurrency(data.currency)
-            if (data.notifications) setNotifications({ ...DEFAULT_NOTIFICATIONS, ...data.notifications })
-          }
-          const appearance = data.appearance || {}
+  const parts = (data.name || "").split(" ")
+
+  setFirstName(parts[0] || "")
+  setLastName(parts.slice(1).join(" ") || "")
+  setEmail(data.email || user.email || "")
+  setCompany(data.company || "")
+
+  if (data.timezone) {
+    setTimezone(data.timezone)
+  }
+
+  if (data.currency) {
+    setCurrency(data.currency)
+  }
+
+  if (data.notifications) {
+    setNotifications({
+      ...DEFAULT_NOTIFICATIONS,
+      ...data.notifications,
+    })
+  }
+
+  const appearance = data.appearance || {}
+
+  const loadedDarkMode =
+    typeof appearance.darkMode === "boolean"
+      ? appearance.darkMode
+      : true
+
+  const loadedAccentColor =
+    typeof appearance.accentColor === "string"
+      ? appearance.accentColor
+      : "#3b82f6"
+
+  const loadedCompactMode =
+    typeof appearance.compactMode === "boolean"
+      ? appearance.compactMode
+      : false
+
+  setDarkMode(loadedDarkMode)
+  setAccentColor(loadedAccentColor)
+  setCompactMode(loadedCompactMode)
+
+  if (loadedDarkMode) {
+    document.documentElement.classList.add("dark")
+  } else {
+    document.documentElement.classList.remove("dark")
+  }
+
+  document.documentElement.style.setProperty(
+    "--primary",
+    loadedAccentColor
+  )
+
+  document.documentElement.style.setProperty(
+    "--ring",
+    loadedAccentColor
+  )
+
+  document.documentElement.style.setProperty(
+    "--sidebar-primary",
+    loadedAccentColor
+  )
+}
 
 const loadedDarkMode =
   typeof appearance.darkMode === "boolean"
