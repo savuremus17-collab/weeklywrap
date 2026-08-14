@@ -61,22 +61,15 @@ export default function SettingsPage() {
   const [showSignOutModal, setShowSignOutModal] = useState(false)
   const [showDeleteModal, setShowDeleteModal] = useState(false)
   const [deleteConfirm, setDeleteConfirm] = useState("")
-  const [accentColor, setAccentColor] = useState(() => typeof window !== "undefined" ? localStorage.getItem("accentColor") || "#3b82f6" : "#3b82f6")
-  const [loadingPlan, setLoadingPlan] = useState<string | null>(null)
-  const [loadingPortal, setLoadingPortal] = useState(false)
-  const [darkMode, setDarkMode] = useState(() => typeof window !== "undefined" ? localStorage.getItem("darkMode") !== "false" : true)
+  const [accentColor, setAccentColor] = useState("#3b82f6")
+const [darkMode, setDarkMode] = useState(true)
+const [compactMode, setCompactMode] = useState(false)
+
+const [loadingPlan, setLoadingPlan] = useState<string | null>(null)
+const [loadingPortal, setLoadingPortal] = useState(false)
+const [savingAppearance, setSavingAppearance] = useState(false)
 
   useEffect(() => {
-    const savedColor = localStorage.getItem("accentColor")
-    if (savedColor) {
-      document.documentElement.style.setProperty("--primary", savedColor)
-      document.documentElement.style.setProperty("--ring", savedColor)
-      document.documentElement.style.setProperty("--sidebar-primary", savedColor)
-    }
-    const savedDark = localStorage.getItem("darkMode")
-    if (savedDark === "false") document.documentElement.classList.remove("dark")
-    else document.documentElement.classList.add("dark")
-
     const loadUser = async () => {
       try {
         const { supabase } = await import("@/lib/supabase/client")
@@ -85,7 +78,7 @@ export default function SettingsPage() {
           setEmail(user.email || "")
           const { data } = await supabase
             .from("users")
-            .select("name, email, company, timezone, currency, notifications")
+            .select("name, email, company, timezone, currency, notifications, appearance")
             .eq("id", user.id)
             .maybeSingle()
           if (data) {
@@ -98,6 +91,36 @@ export default function SettingsPage() {
             if (data.currency) setCurrency(data.currency)
             if (data.notifications) setNotifications({ ...DEFAULT_NOTIFICATIONS, ...data.notifications })
           }
+          const appearance = data.appearance || {}
+
+const loadedDarkMode =
+  typeof appearance.darkMode === "boolean"
+    ? appearance.darkMode
+    : true
+
+const loadedAccentColor =
+  typeof appearance.accentColor === "string"
+    ? appearance.accentColor
+    : "#3b82f6"
+
+const loadedCompactMode =
+  typeof appearance.compactMode === "boolean"
+    ? appearance.compactMode
+    : false
+
+setDarkMode(loadedDarkMode)
+setAccentColor(loadedAccentColor)
+setCompactMode(loadedCompactMode)
+
+if (loadedDarkMode) {
+  document.documentElement.classList.add("dark")
+} else {
+  document.documentElement.classList.remove("dark")
+}
+
+document.documentElement.style.setProperty("--primary", loadedAccentColor)
+document.documentElement.style.setProperty("--ring", loadedAccentColor)
+document.documentElement.style.setProperty("--sidebar-primary", loadedAccentColor)
           const { data: { publicUrl } } = supabase.storage.from("avatars").getPublicUrl(`avatars/${user.id}.jpg`)
           if (publicUrl) setAvatarUrl(publicUrl)
         }
@@ -155,7 +178,72 @@ export default function SettingsPage() {
     await supabase.auth.signOut()
     window.location.href = "/"
   }
+const saveAppearance = async (
+  changes: Partial<{
+    darkMode: boolean
+    accentColor: string
+    compactMode: boolean
+  }>
+) => {
+  setSavingAppearance(true)
 
+  try {
+    const { supabase } = await import("@/lib/supabase/client")
+
+    const {
+      data: { user },
+    } = await supabase.auth.getUser()
+
+    if (!user) {
+      throw new Error("You are not signed in.")
+    }
+
+    const { data: currentUser, error: fetchError } = await supabase
+      .from("users")
+      .select("appearance")
+      .eq("id", user.id)
+      .maybeSingle()
+
+    if (fetchError) throw fetchError
+
+    const currentAppearance = currentUser?.appearance || {}
+
+    const newAppearance = {
+      darkMode:
+        changes.darkMode !== undefined
+          ? changes.darkMode
+          : currentAppearance.darkMode ?? true,
+
+      accentColor:
+        changes.accentColor !== undefined
+          ? changes.accentColor
+          : currentAppearance.accentColor ?? "#3b82f6",
+
+      compactMode:
+        changes.compactMode !== undefined
+          ? changes.compactMode
+          : currentAppearance.compactMode ?? false,
+    }
+
+    const { error } = await supabase
+      .from("users")
+      .update({
+        appearance: newAppearance,
+      })
+      .eq("id", user.id)
+
+    if (error) throw error
+
+    setAccentColor(newAppearance.accentColor)
+    setDarkMode(newAppearance.darkMode)
+    setCompactMode(newAppearance.compactMode)
+  } catch (error: any) {
+    console.error("Error saving appearance:", error)
+    alert("Error saving appearance: " + error.message)
+  } finally {
+    setSavingAppearance(false)
+  }
+}
   const handleDeleteAccount = async () => {
   if (deleteConfirm !== "DELETE") return
   try {
