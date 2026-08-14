@@ -7,9 +7,19 @@ import { GradientBadge } from "@/components/ui/premium/gradient-badge"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Switch } from "@/components/ui/switch"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from "@/components/ui/tabs"
+import {
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+} from "@/components/ui/avatar"
 import { Separator } from "@/components/ui/separator"
+
 import {
   User,
   Bell,
@@ -26,6 +36,7 @@ import {
   Zap,
   Crown,
 } from "lucide-react"
+
 import { cn } from "@/lib/utils"
 import { PLANS } from "@/lib/stripe/plans"
 
@@ -164,7 +175,7 @@ const NOTIFICATION_ITEMS = [
     label: "Marketing Emails",
     desc: "Product updates, tips, and promotional content",
   },
-]
+] as const
 
 type AppearanceSettings = {
   darkMode: boolean
@@ -194,8 +205,9 @@ export default function SettingsPage() {
     "EUR (€) - Euro"
   )
 
-  const [notifications, setNotifications] =
-    useState(DEFAULT_NOTIFICATIONS)
+  const [notifications, setNotifications] = useState(
+    DEFAULT_NOTIFICATIONS
+  )
 
   const [showSignOutModal, setShowSignOutModal] =
     useState(false)
@@ -203,14 +215,12 @@ export default function SettingsPage() {
   const [showDeleteModal, setShowDeleteModal] =
     useState(false)
 
-  const [deleteConfirm, setDeleteConfirm] =
-    useState("")
+  const [deleteConfirm, setDeleteConfirm] = useState("")
 
   const [accentColor, setAccentColor] =
     useState("#3b82f6")
 
-  const [darkMode, setDarkMode] =
-    useState(true)
+  const [darkMode, setDarkMode] = useState(true)
 
   const [compactMode, setCompactMode] =
     useState(false)
@@ -235,6 +245,9 @@ export default function SettingsPage() {
   const [loadingPaymentMethod, setLoadingPaymentMethod] =
     useState(false)
 
+  /*
+   * LOAD USER DATA
+   */
   useEffect(() => {
     const loadUser = async () => {
       try {
@@ -243,15 +256,28 @@ export default function SettingsPage() {
 
         const {
           data: { user },
+          error: authError,
         } = await supabase.auth.getUser()
 
+        if (authError) {
+          console.error(
+            "Authentication error:",
+            authError
+          )
+          return
+        }
+
         if (!user) {
+          console.error("No authenticated user")
           return
         }
 
         setEmail(user.email || "")
 
-        const { data, error } = await supabase
+        const {
+          data,
+          error,
+        } = await supabase
           .from("users")
           .select(
             "name, email, company, timezone, currency, notifications, appearance"
@@ -267,7 +293,10 @@ export default function SettingsPage() {
         }
 
         if (data) {
-          const parts = (data.name || "").split(" ")
+          const parts = (data.name || "")
+            .trim()
+            .split(/\s+/)
+            .filter(Boolean)
 
           setFirstName(parts[0] || "")
           setLastName(
@@ -298,37 +327,40 @@ export default function SettingsPage() {
           }
 
           const appearance =
-            (data.appearance as Partial<AppearanceSettings> | null) ||
-            {}
+            (data.appearance as
+              | Partial<AppearanceSettings>
+              | null) || {}
 
           const loadedDarkMode =
-            typeof appearance.darkMode === "boolean"
+            typeof appearance.darkMode ===
+            "boolean"
               ? appearance.darkMode
               : true
 
           const loadedAccentColor =
-            typeof appearance.accentColor === "string"
+            typeof appearance.accentColor ===
+            "string"
               ? appearance.accentColor
               : "#3b82f6"
 
           const loadedCompactMode =
-            typeof appearance.compactMode === "boolean"
+            typeof appearance.compactMode ===
+            "boolean"
               ? appearance.compactMode
               : false
 
           setDarkMode(loadedDarkMode)
-          setAccentColor(loadedAccentColor)
-          setCompactMode(loadedCompactMode)
+          setAccentColor(
+            loadedAccentColor
+          )
+          setCompactMode(
+            loadedCompactMode
+          )
 
-          if (loadedDarkMode) {
-            document.documentElement.classList.add(
-              "dark"
-            )
-          } else {
-            document.documentElement.classList.remove(
-              "dark"
-            )
-          }
+          document.documentElement.classList.toggle(
+            "dark",
+            loadedDarkMode
+          )
 
           document.documentElement.style.setProperty(
             "--primary",
@@ -351,24 +383,40 @@ export default function SettingsPage() {
           )
         }
 
-        const { data: avatarData } =
-          supabase.storage
+        /*
+         * LOAD AVATAR
+         */
+        try {
+          const {
+            data: avatarData,
+          } = supabase.storage
             .from("avatars")
             .getPublicUrl(
               `avatars/${user.id}.jpg`
             )
 
-        if (avatarData?.publicUrl) {
-          setAvatarUrl(
-            avatarData.publicUrl
+          if (avatarData?.publicUrl) {
+            setAvatarUrl(
+              `${avatarData.publicUrl}?t=${Date.now()}`
+            )
+          }
+        } catch (avatarError) {
+          console.error(
+            "Failed to load avatar:",
+            avatarError
           )
         }
 
+        /*
+         * LOAD PAYMENT METHOD
+         */
         try {
           setLoadingPaymentMethod(true)
 
           const {
-            data: { session },
+            data: {
+              session,
+            },
           } = await supabase.auth.getSession()
 
           if (session?.access_token) {
@@ -392,6 +440,11 @@ export default function SettingsPage() {
                 paymentData.paymentMethod ||
                   null
               )
+            } else {
+              console.error(
+                "Payment method error:",
+                paymentData.error
+              )
             }
           }
         } catch (paymentError) {
@@ -413,6 +466,9 @@ export default function SettingsPage() {
     loadUser()
   }, [])
 
+  /*
+   * SAVE PROFILE
+   */
   const handleSave = async () => {
     setSaving(true)
 
@@ -422,31 +478,39 @@ export default function SettingsPage() {
 
       const {
         data: { user },
+        error: authError,
       } = await supabase.auth.getUser()
+
+      if (authError) {
+        throw authError
+      }
 
       if (!user) {
         alert(
-          "You're not signed in. Please sign out and sign back in, then try again."
+          "You're not signed in. Please sign out and sign back in."
         )
-
-        setSaving(false)
         return
       }
 
-      const { error } =
-        await supabase
-          .from("users")
-          .upsert({
-            id: user.id,
-            name:
-              `${firstName} ${lastName}`.trim(),
-            email,
-            company,
-            timezone,
-            currency,
-          })
+      const {
+        error,
+      } = await supabase
+        .from("users")
+        .update({
+          name:
+            `${firstName} ${lastName}`.trim(),
+          email,
+          company,
+          timezone,
+          currency,
+        })
+        .eq("id", user.id)
 
       if (error) {
+        console.error(
+          "Profile save error:",
+          error
+        )
         throw error
       }
 
@@ -456,15 +520,24 @@ export default function SettingsPage() {
         setSaved(false)
       }, 2000)
     } catch (error: any) {
+      console.error(
+        "Error saving profile:",
+        error
+      )
+
       alert(
-        "Error saving: " +
-          error.message
+        "Error saving profile: " +
+          (error?.message ||
+            "Unable to save your profile.")
       )
     } finally {
       setSaving(false)
     }
   }
 
+  /*
+   * SAVE NOTIFICATIONS
+   */
   const handleSaveNotifications =
     async () => {
       setSavingNotif(true)
@@ -477,26 +550,35 @@ export default function SettingsPage() {
 
         const {
           data: { user },
-        } = await supabase.auth.getUser()
+          error: authError,
+        } =
+          await supabase.auth.getUser()
+
+        if (authError) {
+          throw authError
+        }
 
         if (!user) {
+          alert(
+            "You're not signed in. Please sign out and sign back in."
+          )
           return
         }
 
-        const { error } =
-  await supabase
-    .from("users")
-    .update({
-      name:
-        `${firstName} ${lastName}`.trim(),
-      email,
-      company,
-      timezone,
-      currency,
-    })
-    .eq("id", user.id)
+        const {
+          error,
+        } = await supabase
+          .from("users")
+          .update({
+            notifications,
+          })
+          .eq("id", user.id)
 
         if (error) {
+          console.error(
+            "Notification save error:",
+            error
+          )
           throw error
         }
 
@@ -506,15 +588,24 @@ export default function SettingsPage() {
           setSavedNotif(false)
         }, 2000)
       } catch (error: any) {
+        console.error(
+          "Error saving notifications:",
+          error
+        )
+
         alert(
           "Error saving notifications: " +
-            error.message
+            (error?.message ||
+              "Unable to save notification settings.")
         )
       } finally {
         setSavingNotif(false)
       }
     }
 
+  /*
+   * SAVE APPEARANCE
+   */
   const saveAppearance = async (
     changes: Partial<AppearanceSettings>
   ) => {
@@ -528,7 +619,13 @@ export default function SettingsPage() {
 
       const {
         data: { user },
-      } = await supabase.auth.getUser()
+        error: authError,
+      } =
+        await supabase.auth.getUser()
+
+      if (authError) {
+        throw authError
+      }
 
       if (!user) {
         throw new Error(
@@ -550,37 +647,43 @@ export default function SettingsPage() {
       }
 
       const currentAppearance =
-        (currentUser?.appearance as Partial<AppearanceSettings> | null) ||
-        {}
+        (currentUser?.appearance as
+          | Partial<AppearanceSettings>
+          | null) || {}
 
-      const newAppearance: AppearanceSettings = {
-        darkMode:
-          changes.darkMode !== undefined
-            ? changes.darkMode
-            : currentAppearance.darkMode ??
-              true,
+      const newAppearance: AppearanceSettings =
+        {
+          darkMode:
+            changes.darkMode !==
+            undefined
+              ? changes.darkMode
+              : currentAppearance.darkMode ??
+                true,
 
-        accentColor:
-          changes.accentColor !== undefined
-            ? changes.accentColor
-            : currentAppearance.accentColor ??
-              "#3b82f6",
+          accentColor:
+            changes.accentColor !==
+            undefined
+              ? changes.accentColor
+              : currentAppearance.accentColor ??
+                "#3b82f6",
 
-        compactMode:
-          changes.compactMode !== undefined
-            ? changes.compactMode
-            : currentAppearance.compactMode ??
-              false,
-      }
+          compactMode:
+            changes.compactMode !==
+            undefined
+              ? changes.compactMode
+              : currentAppearance.compactMode ??
+                false,
+        }
 
-      const { error } =
-        await supabase
-          .from("users")
-          .update({
-            appearance:
-              newAppearance,
-          })
-          .eq("id", user.id)
+      const {
+        error,
+      } = await supabase
+        .from("users")
+        .update({
+          appearance:
+            newAppearance,
+        })
+        .eq("id", user.id)
 
       if (error) {
         throw error
@@ -630,24 +733,38 @@ export default function SettingsPage() {
 
       alert(
         "Error saving appearance: " +
-          error.message
+          (error?.message ||
+            "Unable to save appearance.")
       )
     } finally {
       setSavingAppearance(false)
     }
   }
 
+  /*
+   * SIGN OUT
+   */
   const handleSignOut = async () => {
-    const { supabase } =
-      await import(
-        "@/lib/supabase/client"
+    try {
+      const { supabase } =
+        await import(
+          "@/lib/supabase/client"
+        )
+
+      await supabase.auth.signOut()
+
+      window.location.href = "/"
+    } catch (error: any) {
+      alert(
+        "Unable to sign out: " +
+          (error?.message || "")
       )
-
-    await supabase.auth.signOut()
-
-    window.location.href = "/"
+    }
   }
 
+  /*
+   * DELETE ACCOUNT
+   */
   const handleDeleteAccount =
     async () => {
       if (deleteConfirm !== "DELETE") {
@@ -682,16 +799,22 @@ export default function SettingsPage() {
       } catch (error: any) {
         alert(
           "Something went wrong: " +
-            error.message
+            (error?.message || "")
         )
       }
     }
 
+  /*
+   * STRIPE CHECKOUT
+   */
   const handleCheckout = async (
     priceId: string,
     planId: string
   ) => {
     if (!priceId) {
+      alert(
+        "This plan is not configured with a Stripe Price ID."
+      )
       return
     }
 
@@ -704,14 +827,15 @@ export default function SettingsPage() {
         )
 
       const {
-        data: { session },
+        data: {
+          session,
+        },
       } = await supabase.auth.getSession()
 
       if (!session?.access_token) {
         alert(
           "Your session has expired. Please sign out and sign in again."
         )
-
         return
       }
 
@@ -732,7 +856,7 @@ export default function SettingsPage() {
             priceId,
 
             successUrl:
-              `${window.location.origin}/dashboard?checkout=success`,
+              `${window.location.origin}/dashboard/settings?checkout=success`,
 
             cancelUrl:
               `${window.location.origin}/dashboard/settings`,
@@ -742,16 +866,21 @@ export default function SettingsPage() {
 
       const data = await res.json()
 
-      if (data.url) {
-        window.location.href =
-          data.url
-      } else {
-        alert(
-          "Error: " +
-            (data.error ||
-              "Unable to create checkout session")
+      if (!res.ok) {
+        throw new Error(
+          data?.error ||
+            "Unable to create checkout session."
         )
       }
+
+      if (!data?.url) {
+        throw new Error(
+          "Stripe did not return a checkout URL."
+        )
+      }
+
+      window.location.href =
+        data.url
     } catch (error: any) {
       console.error(
         "Checkout error:",
@@ -759,7 +888,7 @@ export default function SettingsPage() {
       )
 
       alert(
-        "Something went wrong: " +
+        "Checkout error: " +
           (error?.message ||
             "Please try again.")
       )
@@ -768,6 +897,9 @@ export default function SettingsPage() {
     }
   }
 
+  /*
+   * STRIPE BILLING PORTAL
+   */
   const handleManageSubscription =
     async () => {
       setLoadingPortal(true)
@@ -779,14 +911,15 @@ export default function SettingsPage() {
           )
 
         const {
-          data: { session },
+          data: {
+            session,
+          },
         } = await supabase.auth.getSession()
 
         if (!session?.access_token) {
           alert(
             "Your session has expired. Please sign out and sign in again."
           )
-
           return
         }
 
@@ -796,6 +929,9 @@ export default function SettingsPage() {
             method: "POST",
 
             headers: {
+              "Content-Type":
+                "application/json",
+
               Authorization:
                 `Bearer ${session.access_token}`,
             },
@@ -804,16 +940,21 @@ export default function SettingsPage() {
 
         const data = await res.json()
 
-        if (data.url) {
-          window.location.href =
-            data.url
-        } else {
-          alert(
-            "Error: " +
-              (data.error ||
-                "Unable to open billing portal")
+        if (!res.ok) {
+          throw new Error(
+            data?.error ||
+              "Unable to open billing portal."
           )
         }
+
+        if (!data?.url) {
+          throw new Error(
+            "Stripe did not return a billing portal URL."
+          )
+        }
+
+        window.location.href =
+          data.url
       } catch (error: any) {
         console.error(
           "Billing portal error:",
@@ -821,7 +962,7 @@ export default function SettingsPage() {
         )
 
         alert(
-          "Something went wrong: " +
+          "Billing error: " +
             (error?.message ||
               "Please try again.")
         )
@@ -891,7 +1032,9 @@ export default function SettingsPage() {
                   variant="outline"
                   className="flex-1"
                   onClick={() =>
-                    setShowSignOutModal(false)
+                    setShowSignOutModal(
+                      false
+                    )
                   }
                 >
                   Cancel
@@ -1055,6 +1198,8 @@ export default function SettingsPage() {
           </TabsTrigger>
         </TabsList>
 
+        {/* PROFILE */}
+
         <TabsContent
           value="profile"
           className="space-y-6"
@@ -1087,13 +1232,23 @@ export default function SettingsPage() {
                 <input
                   type="file"
                   id="avatar-upload"
-                  accept="image/*"
+                  accept="image/jpeg,image/png,image/gif,image/webp"
                   className="hidden"
                   onChange={async (e) => {
                     const file =
                       e.target.files?.[0]
 
                     if (!file) {
+                      return
+                    }
+
+                    if (
+                      file.size >
+                      2 * 1024 * 1024
+                    ) {
+                      alert(
+                        "Avatar must be smaller than 2MB."
+                      )
                       return
                     }
 
@@ -1114,20 +1269,17 @@ export default function SettingsPage() {
 
                       if (!user) {
                         alert(
-                          "Not logged in"
+                          "Not logged in."
                         )
                         return
                       }
 
-                      const fileExt =
-                        file.name
-                          .split(".")
-                          .pop()
-
                       const filePath =
-                        `avatars/${user.id}.${fileExt}`
+                        `avatars/${user.id}.jpg`
 
-                      const { error } =
+                      const {
+                        error,
+                      } =
                         await supabase.storage
                           .from(
                             "avatars"
@@ -1137,6 +1289,10 @@ export default function SettingsPage() {
                             file,
                             {
                               upsert: true,
+                              contentType:
+                                file.type,
+                              cacheControl:
+                                "3600",
                             }
                           )
 
@@ -1158,14 +1314,20 @@ export default function SettingsPage() {
                           )
 
                       setAvatarUrl(
-                        publicUrl
+                        `${publicUrl}?t=${Date.now()}`
                       )
                     } catch (
                       error: any
                     ) {
+                      console.error(
+                        "Avatar upload error:",
+                        error
+                      )
+
                       alert(
                         "Error uploading avatar: " +
-                          error.message
+                          (error?.message ||
+                            "Upload failed.")
                       )
                     }
                   }}
@@ -1258,6 +1420,7 @@ export default function SettingsPage() {
             <div className="mt-6 pt-4 border-t border-border/30">
               <div className="flex items-center gap-2 mb-4">
                 <Globe className="h-4 w-4 text-muted-foreground" />
+
                 <span className="text-sm font-medium">
                   Timezone & Locale
                 </span>
@@ -1420,6 +1583,8 @@ export default function SettingsPage() {
           </GlassCard>
         </TabsContent>
 
+        {/* NOTIFICATIONS */}
+
         <TabsContent
           value="notifications"
           className="space-y-6"
@@ -1452,7 +1617,7 @@ export default function SettingsPage() {
                     <Switch
                       checked={
                         notifications[
-                          item.key as keyof typeof notifications
+                          item.key
                         ]
                       }
                       onCheckedChange={(
@@ -1497,6 +1662,8 @@ export default function SettingsPage() {
             </Button>
           </div>
         </TabsContent>
+
+        {/* APPEARANCE */}
 
         <TabsContent
           value="appearance"
@@ -1565,6 +1732,7 @@ export default function SettingsPage() {
                     (color) => (
                       <button
                         key={color}
+                        type="button"
                         disabled={
                           savingAppearance
                         }
@@ -1662,6 +1830,8 @@ export default function SettingsPage() {
           </GlassCard>
         </TabsContent>
 
+        {/* BILLING */}
+
         <TabsContent
           value="billing"
           className="space-y-6"
@@ -1698,7 +1868,7 @@ export default function SettingsPage() {
                   </p>
 
                   <p className="text-xs text-muted-foreground">
-                    Next billing date shown by Stripe
+                    Managed by Stripe
                   </p>
                 </div>
               </div>
@@ -1821,13 +1991,16 @@ export default function SettingsPage() {
 
                     <Button
                       className="w-full h-8 text-xs"
-                      onClick={() =>
-                        plan.stripePriceId &&
-                        handleCheckout(
-                          plan.stripePriceId,
-                          plan.id
-                        )
-                      }
+                      onClick={() => {
+                        if (
+                          plan.stripePriceId
+                        ) {
+                          handleCheckout(
+                            plan.stripePriceId,
+                            plan.id
+                          )
+                        }
+                      }}
                       disabled={
                         loadingPlan ===
                           plan.id ||
@@ -1842,7 +2015,9 @@ export default function SettingsPage() {
                       {loadingPlan ===
                       plan.id
                         ? "Loading..."
-                        : `Get ${plan.name}`}
+                        : !plan.stripePriceId
+                          ? "Unavailable"
+                          : `Get ${plan.name}`}
                     </Button>
                   </div>
                 )
@@ -1936,6 +2111,8 @@ export default function SettingsPage() {
             </div>
           </GlassCard>
         </TabsContent>
+
+        {/* API */}
 
         <TabsContent
           value="api"
