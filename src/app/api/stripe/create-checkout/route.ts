@@ -5,7 +5,8 @@ import { PLANS } from "@/lib/stripe/plans"
 
 export async function POST(req: NextRequest) {
   try {
-    const { priceId, successUrl, cancelUrl } = await req.json()
+    const { priceId, successUrl, cancelUrl } =
+      await req.json()
 
     if (!priceId) {
       return NextResponse.json(
@@ -16,17 +17,24 @@ export async function POST(req: NextRequest) {
 
     const supabase = await createClient()
 
-    // Prefer the access token sent by the browser.
-    // Fall back to the authenticated cookie session.
-    const authHeader = req.headers.get("authorization")
-    const accessToken =
-      authHeader?.match(/^Bearer\s+(.+)$/i)?.[1]
+    // Get token sent by the browser
+    const authHeader =
+      req.headers.get("authorization")
 
+    const accessToken =
+      authHeader?.match(
+        /^Bearer\s+(.+)$/i
+      )?.[1]
+
+    // Authenticate using the browser token
+    // when available, otherwise use cookies
     const {
       data: { user },
       error: authError,
     } = accessToken
-      ? await supabase.auth.getUser(accessToken)
+      ? await supabase.auth.getUser(
+          accessToken
+        )
       : await supabase.auth.getUser()
 
     if (authError) {
@@ -44,7 +52,8 @@ export async function POST(req: NextRequest) {
     }
 
     const plan = PLANS.find(
-      (p) => p.stripePriceId === priceId
+      (p) =>
+        p.stripePriceId === priceId
     )
 
     if (!plan) {
@@ -54,6 +63,7 @@ export async function POST(req: NextRequest) {
       )
     }
 
+    // Find existing Stripe customer
     const {
       data: subscription,
       error: subscriptionError,
@@ -79,33 +89,39 @@ export async function POST(req: NextRequest) {
     }
 
     let customerId =
-      subscription?.stripe_customer_id || null
+      subscription?.stripe_customer_id ||
+      null
 
-    // Create Stripe customer if one does not exist.
+    // Create Stripe customer if needed
     if (!customerId) {
-      const customer = await stripe.customers.create({
-        email: user.email || undefined,
-        metadata: {
-          supabaseUserId: user.id,
-        },
-      })
+      const customer =
+        await stripe.customers.create({
+          email:
+            user.email || undefined,
+
+          metadata: {
+            supabaseUserId: user.id,
+          },
+        })
 
       customerId = customer.id
 
-      const { error: customerSaveError } =
-        await supabase
-          .from("subscriptions")
-          .upsert(
-            {
-              user_id: user.id,
-              stripe_customer_id: customerId,
-              plan_type: "free",
-              status: "incomplete",
-            },
-            {
-              onConflict: "user_id",
-            }
-          )
+      const {
+        error: customerSaveError,
+      } = await supabase
+        .from("subscriptions")
+        .upsert(
+          {
+            user_id: user.id,
+            stripe_customer_id:
+              customerId,
+            plan_type: "free",
+            status: "incomplete",
+          },
+          {
+            onConflict: "user_id",
+          }
+        )
 
       if (customerSaveError) {
         console.error(
@@ -123,39 +139,42 @@ export async function POST(req: NextRequest) {
       }
     }
 
+    // Create Stripe Checkout session
     const session =
-      await stripe.checkout.sessions.create({
-        customer: customerId,
+      await stripe.checkout.sessions.create(
+        {
+          customer: customerId,
 
-        line_items: [
-          {
-            price: priceId,
-            quantity: 1,
-          },
-        ],
+          line_items: [
+            {
+              price: priceId,
+              quantity: 1,
+            },
+          ],
 
-        mode: "subscription",
+          mode: "subscription",
 
-        success_url:
-          successUrl ||
-          `${req.nextUrl.origin}/dashboard?checkout=success`,
+          success_url:
+            successUrl ||
+            `${req.nextUrl.origin}/dashboard?checkout=success`,
 
-        cancel_url:
-          cancelUrl ||
-          `${req.nextUrl.origin}/dashboard/settings`,
+          cancel_url:
+            cancelUrl ||
+            `${req.nextUrl.origin}/dashboard/settings`,
 
-        metadata: {
-          supabaseUserId: user.id,
-          planType: plan.id,
-        },
-
-        subscription_data: {
           metadata: {
             supabaseUserId: user.id,
             planType: plan.id,
           },
-        },
-      })
+
+          subscription_data: {
+            metadata: {
+              supabaseUserId: user.id,
+              planType: plan.id,
+            },
+          },
+        }
+      )
 
     return NextResponse.json({
       sessionId: session.id,
