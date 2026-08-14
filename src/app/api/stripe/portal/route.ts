@@ -1,40 +1,27 @@
-import {
-  NextRequest,
-  NextResponse,
-} from "next/server"
-
+import { NextRequest, NextResponse } from "next/server"
 import { stripe } from "@/lib/stripe/server"
 import { createClient } from "@/lib/supabase/server"
-import { supabaseAdmin } from "@/lib/supabase/admin"
 
-export async function POST(
-  req: NextRequest
-) {
+type SubscriptionRow = {
+  stripe_customer_id: string | null
+}
+
+export async function POST(req: NextRequest) {
   try {
-    const supabase =
-      await createClient()
+    const supabase = await createClient()
 
-    const authHeader =
-      req.headers.get("authorization")
-
-    const accessToken =
-      authHeader?.match(
-        /^Bearer\s+(.+)$/i
-      )?.[1]
-
+    /*
+     * Get authenticated Supabase user.
+     */
     const {
       data: { user },
       error: authError,
-    } = accessToken
-      ? await supabase.auth.getUser(
-          accessToken
-        )
-      : await supabase.auth.getUser()
+    } = await supabase.auth.getUser()
 
     if (authError) {
       console.error(
-        "Portal auth error:",
-        authError
+        "Billing portal authentication error:",
+        authError,
       )
     }
 
@@ -43,73 +30,103 @@ export async function POST(
         {
           error: "Unauthorized",
         },
-        { status: 401 }
+        {
+          status: 401,
+        },
       )
     }
 
+    /*
+     * Find the Stripe customer belonging
+     * to the authenticated user.
+     */
     const {
-      data: subscription,
-      error,
-    } = await supabaseAdmin
+      data: subscriptionData,
+      error: subscriptionError,
+    } = await supabase
       .from("subscriptions")
-      .select(
-        "stripe_customer_id"
-      )
-      .eq(
-        "user_id",
-        user.id
-      )
+      .select("stripe_customer_id")
+      .eq("user_id", user.id)
       .maybeSingle()
 
-    if (error) {
+    if (subscriptionError) {
+      console.error(
+        "Billing subscription lookup error:",
+        subscriptionError,
+      )
+
       return NextResponse.json(
         {
-          error: error.message,
+          error:
+            "Unable to load subscription information",
+          details:
+            subscriptionError.message,
         },
-        { status: 500 }
+        {
+          status: 500,
+        },
       )
     }
 
-    if (
-      !subscription
-        ?.stripe_customer_id
-    ) {
+    /*
+     * Explicit type prevents Supabase's
+     * generated types from resolving this
+     * result to `never`.
+     */
+    const subscription =
+      subscriptionData as
+        | SubscriptionRow
+        | null
+
+    const customerId =
+      subscription?.stripe_customer_id || null
+
+    if (!customerId) {
       return NextResponse.json(
         {
           error:
             "No Stripe customer found. Please choose a plan first.",
         },
-        { status: 400 }
+        {
+          status: 400,
+        },
       )
     }
 
+    /*
+     * Create Stripe Billing Portal session.
+     */
     const session =
       await stripe.billingPortal.sessions.create(
         {
-          customer:
-            subscription.stripe_customer_id,
+          customer: customerId,
 
           return_url:
             `${req.nextUrl.origin}/dashboard/settings`,
-        }
+        },
       )
 
     return NextResponse.json({
       url: session.url,
     })
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error(
-      "Billing portal error:",
-      error
+      "Error creating billing portal session:",
+      error,
     )
+
+    const message =
+      error instanceof Error
+        ? error.message
+        : "Unable to open billing portal"
 
     return NextResponse.json(
       {
-        error:
-          error?.message ||
-          "Unable to open billing portal",
+        error: message,
       },
-      { status: 500 }
+      {
+        status: 500,
+      },
     )
   }
 }
