@@ -29,7 +29,12 @@ export async function POST() {
     await supabase.from('subscriptions').delete().eq('user_id', user.id)
     await supabase.from('users').delete().eq('id', user.id)
     // 4. Sterge userul din auth
-    const { error: deleteError } = await supabase.auth.admin.deleteUser(user.id)
+    // 4. Sterge userul din auth (necesita client cu drepturi de admin)
+    const adminClient = createAdminClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.SUPABASE_SERVICE_ROLE_KEY!
+    )
+    const { error: deleteError } = await adminClient.auth.admin.deleteUser(user.id)
     if (deleteError) throw deleteError
     return NextResponse.json({ success: true })
   } catch (error: any) {
