@@ -48,12 +48,21 @@ export async function POST(req: Request) {
         const subscriptionId = session.subscription
 
         if (userId) {
+          let periodStart: string | null = null
+          let periodEnd: string | null = null
+          if (subscriptionId) {
+            const sub = await stripe.subscriptions.retrieve(subscriptionId)
+            periodStart = new Date(sub.current_period_start * 1000).toISOString()
+            periodEnd = new Date(sub.current_period_end * 1000).toISOString()
+          }
           await getSupabase().from('subscriptions').upsert({
             user_id: userId,
             stripe_customer_id: customerId,
             stripe_subscription_id: subscriptionId,
             plan_type: planType || 'pro',
             status: 'active',
+            current_period_start: periodStart,
+            current_period_end: periodEnd,
           }, { onConflict: 'user_id' })
         }
         break
@@ -73,6 +82,8 @@ export async function POST(req: Request) {
           await getSupabase().from('subscriptions').update({
             status: subscription.status,
             stripe_subscription_id: subscription.id,
+            current_period_start: new Date(subscription.current_period_start * 1000).toISOString(),
+            current_period_end: new Date(subscription.current_period_end * 1000).toISOString(),
           }).eq('stripe_customer_id', customerId)
         }
         break
