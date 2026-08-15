@@ -1,7 +1,15 @@
 import { NextRequest, NextResponse } from "next/server"
 import { stripe } from "@/lib/stripe/server"
 import { createClient } from "@/lib/supabase/server"
+import { createClient as createAdminClient } from "@supabase/supabase-js"
 import { PLANS } from "@/lib/stripe/plans"
+
+function getAdminClient() {
+  return createAdminClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!
+  )
+}
 
 type SubscriptionRow = {
   stripe_customer_id: string | null
@@ -133,9 +141,9 @@ export async function POST(req: NextRequest) {
       /*
        * Save Stripe customer in Supabase.
        */
-      const {
+     const {
         error: customerSaveError,
-      } = await supabase
+      } = await getAdminClient()
         .from("subscriptions")
         .upsert(
           {
