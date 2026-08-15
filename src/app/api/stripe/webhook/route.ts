@@ -50,7 +50,7 @@ export async function POST(req: Request) {
         if (userId) {
           let periodStart: string | null = null
           let periodEnd: string | null = null
-         if (subscriptionId) {
+        if (subscriptionId) {
             const sub = await stripe.subscriptions.retrieve(subscriptionId) as any
             periodStart = new Date(sub.current_period_start * 1000).toISOString()
             periodEnd = new Date(sub.current_period_end * 1000).toISOString()
