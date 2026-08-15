@@ -193,17 +193,8 @@ export default function SettingsPage() {
   }
 }
 
-  const handleCheckout = async (priceId: string, planId: string) => {
-    if (!priceId) return
-    setLoadingPlan(planId)
-    try {
-      const res = await fetch("/api/stripe/create-checkout", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ priceId, successUrl: `${window.location.origin}/dashboard?checkout=success`, cancelUrl: `${window.location.origin}/dashboard/settings` }) })
-      const data = await res.json()
-      if (data.url) window.location.href = data.url
-      else alert("Error: " + data.error)
-    } catch { alert("Something went wrong. Please try again.") }
-    finally { setLoadingPlan(null) }
-  }
+  if (data.url) window.location.href = data.url
+      else alert("Error: " + data.error + "\n\nDetails: " + JSON.stringify(data.details))
 
   const handleManageSubscription = async () => {
     setLoadingPortal(true)
