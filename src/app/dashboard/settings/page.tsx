@@ -176,25 +176,37 @@ export default function SettingsPage() {
     window.location.href = "/"
   }
 
-  const handleDeleteAccount = async () => {
-  if (deleteConfirm !== "DELETE") return
-  try {
-    const res = await fetch("/api/user/delete", { method: "POST" })
-    const data = await res.json()
-    if (res.ok) {
-      const { supabase } = await import("@/lib/supabase/client")
-      await supabase.auth.signOut()
-      window.location.href = "/"
-    } else {
-      alert("Error deleting account: " + data.error)
+ const handleDeleteAccount = async () => {
+    if (deleteConfirm !== "DELETE") return
+    try {
+      const res = await fetch("/api/user/delete", { method: "POST" })
+      const data = await res.json()
+      if (res.ok) {
+        const { supabase } = await import("@/lib/supabase/client")
+        await supabase.auth.signOut()
+        window.location.href = "/"
+      } else {
+        alert("Error deleting account: " + data.error)
+      }
+    } catch (error: any) {
+      alert("Something went wrong: " + error.message)
     }
-  } catch (error: any) {
-    alert("Something went wrong: " + error.message)
   }
-}
 
-  if (data.url) window.location.href = data.url
+  const handleCheckout = async (priceId: string, planId: string) => {
+    if (!priceId) return
+    setLoadingPlan(planId)
+    try {
+      const res = await fetch("/api/stripe/create-checkout", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ priceId, successUrl: `${window.location.origin}/dashboard?checkout=success`, cancelUrl: `${window.location.origin}/dashboard/settings` }) })
+      const data = await res.json()
+      if (data.url) window.location.href = data.url
       else alert("Error: " + data.error + "\n\nDetails: " + JSON.stringify(data.details))
+    } catch {
+      alert("Something went wrong. Please try again.")
+    } finally {
+      setLoadingPlan(null)
+    }
+  }
 
   const handleManageSubscription = async () => {
     setLoadingPortal(true)
