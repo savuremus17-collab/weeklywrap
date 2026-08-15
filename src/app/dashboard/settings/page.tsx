@@ -51,6 +51,12 @@ export default function SettingsPage() {
   const [savingNotif, setSavingNotif] = useState(false)
   const [savedNotif, setSavedNotif] = useState(false)
   const [saveError, setSaveError] = useState<string | null>(null)
+  const [subscription, setSubscription] = useState<{
+    plan_type: string | null
+    status: string | null
+    current_period_end: string | null
+    stripe_customer_id: string | null
+  } | null>(null)
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null)
   const [firstName, setFirstName] = useState("")
   const [lastName, setLastName] = useState("")
@@ -101,6 +107,13 @@ export default function SettingsPage() {
           }
           const { data: { publicUrl } } = supabase.storage.from("avatars").getPublicUrl(`avatars/${user.id}.jpg`)
           if (publicUrl) setAvatarUrl(publicUrl)
+
+          const { data: sub } = await supabase
+            .from("subscriptions")
+            .select("plan_type, status, current_period_end, stripe_customer_id")
+            .eq("user_id", user.id)
+            .maybeSingle()
+          setSubscription(sub || null)
         }
       } catch (e) {
         console.error("Failed to load user profile:", e)
@@ -404,17 +417,44 @@ export default function SettingsPage() {
 
         <TabsContent value="billing" className="space-y-6">
           <GlassCard intensity="low" className="p-6">
-            <div className="flex items-center justify-between mb-6"><h2 className="text-lg font-semibold">Current Plan</h2><GradientBadge variant="blue">Pro</GradientBadge></div>
-            <div className="rounded-xl bg-gradient-to-br from-blue-500/10 to-purple-600/10 border border-blue-500/20 p-4 mb-6">
-              <div className="flex items-center justify-between">
-                <div><p className="font-semibold">WeeklyWrap Pro</p><p className="text-sm text-muted-foreground">$15/month · Billed monthly</p></div>
-                <div className="text-right"><p className="text-lg font-bold">$15</p><p className="text-xs text-muted-foreground">Next billing: Jun 23, 2025</p></div>
-              </div>
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="text-lg font-semibold">Current Plan</h2>
+              <GradientBadge variant="blue">
+                {subscription?.status === "active"
+                  ? (subscription.plan_type === "yearly" ? "Yearly" : "Monthly")
+                  : "No active plan"}
+              </GradientBadge>
             </div>
-            <div className="flex gap-3">
-              <Button variant="outline" className="flex-1" onClick={handleManageSubscription} disabled={loadingPortal}>{loadingPortal ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}Manage Subscription</Button>
-              <Button variant="outline" className="flex-1" onClick={handleManageSubscription} disabled={loadingPortal}>View Invoices</Button>
-            </div>
+            {subscription?.status === "active" ? (
+              <>
+                <div className="rounded-xl bg-gradient-to-br from-blue-500/10 to-purple-600/10 border border-blue-500/20 p-4 mb-6">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="font-semibold">WeeklyWrap {subscription.plan_type === "yearly" ? "Yearly" : "Monthly"}</p>
+                      <p className="text-sm text-muted-foreground">
+                        {subscription.plan_type === "yearly" ? "$149/year · Billed yearly" : "$15/month · Billed monthly"}
+                      </p>
+                    </div>
+                    <div className="text-right">
+                      <p className="text-lg font-bold">{subscription.plan_type === "yearly" ? "$149" : "$15"}</p>
+                      <p className="text-xs text-muted-foreground">
+                        {subscription.current_period_end
+                          ? `Next billing: ${new Date(subscription.current_period_end).toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric" })}`
+                          : "Next billing date unavailable"}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+                <div className="flex gap-3">
+                  <Button variant="outline" className="flex-1" onClick={handleManageSubscription} disabled={loadingPortal}>{loadingPortal ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}Manage Subscription</Button>
+                  <Button variant="outline" className="flex-1" onClick={handleManageSubscription} disabled={loadingPortal}>View Invoices</Button>
+                </div>
+              </>
+            ) : (
+              <p className="text-sm text-muted-foreground">
+                You don't have an active subscription yet. Pick a plan below to get started.
+              </p>
+            )}
           </GlassCard>
           <GlassCard intensity="low" className="p-6">
             <h2 className="text-lg font-semibold mb-2">Available Plans</h2>
@@ -441,14 +481,15 @@ export default function SettingsPage() {
               })}
             </div>
           </GlassCard>
-          <GlassCard intensity="low" className="p-6">
-            <h2 className="text-lg font-semibold mb-4">Payment Method</h2>
-            <div className="flex items-center gap-3 p-3 rounded-xl border border-border/40">
-              <div className="flex h-10 w-14 items-center justify-center rounded-lg bg-gradient-to-br from-blue-500/20 to-blue-600/20 border border-blue-500/30 text-xs font-bold text-blue-400">VISA</div>
-              <div className="flex-1"><p className="text-sm font-medium">Visa ending in 4242</p><p className="text-xs text-muted-foreground">Expires 12/2026</p></div>
-              <Button variant="ghost" size="sm" className="h-8 text-xs" onClick={handleManageSubscription} disabled={loadingPortal}>Update</Button>
-            </div>
-          </GlassCard>
+          {subscription?.stripe_customer_id && (
+            <GlassCard intensity="low" className="p-6">
+              <h2 className="text-lg font-semibold mb-4">Payment Method</h2>
+              <div className="flex items-center gap-3 p-3 rounded-xl border border-border/40">
+                <div className="flex-1"><p className="text-sm font-medium">Manage your card</p><p className="text-xs text-muted-foreground">View or update your payment method securely in the Stripe billing portal.</p></div>
+                <Button variant="ghost" size="sm" className="h-8 text-xs" onClick={handleManageSubscription} disabled={loadingPortal}>{loadingPortal ? <Loader2 className="h-3.5 w-3.5 animate-spin mr-1" /> : null}Open Portal</Button>
+              </div>
+            </GlassCard>
+          )}
         </TabsContent>
 
         <TabsContent value="api" className="space-y-6">
