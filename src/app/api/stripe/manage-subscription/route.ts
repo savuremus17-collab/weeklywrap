@@ -12,7 +12,27 @@ export async function POST(req: NextRequest) {
     if (!user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
+const { data: ownSubscription, error: ownSubscriptionError } =
+  await supabase
+    .from("subscriptions")
+    .select("stripe_subscription_id")
+    .eq("user_id", user.id)
+    .eq("stripe_subscription_id", subscriptionId)
+    .maybeSingle()
 
+if (ownSubscriptionError) {
+  return NextResponse.json(
+    { error: ownSubscriptionError.message },
+    { status: 500 }
+  )
+}
+
+if (!ownSubscription) {
+  return NextResponse.json(
+    { error: "Subscription does not belong to this user" },
+    { status: 403 }
+  )
+}
     if (action === 'cancel') {
       const deletedSubscription = await stripe.subscriptions.cancel(subscriptionId);
       return NextResponse.json({ subscription: deletedSubscription });

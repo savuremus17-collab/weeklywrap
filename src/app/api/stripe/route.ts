@@ -6,7 +6,7 @@ type SubscriptionRow = {
   stripe_customer_id: string | null
 }
 
-export async function POST(req: NextRequest) {
+export async function GET(req: NextRequest) {
   try {
     const supabase = await createClient()
 
@@ -20,7 +20,7 @@ export async function POST(req: NextRequest) {
 
     if (authError) {
       console.error(
-        "Billing portal authentication error:",
+        "Payment method authentication error:",
         authError,
       )
     }
@@ -51,7 +51,7 @@ export async function POST(req: NextRequest) {
 
     if (subscriptionError) {
       console.error(
-        "Billing subscription lookup error:",
+        "Payment method subscription lookup error:",
         subscriptionError,
       )
 
@@ -69,9 +69,9 @@ export async function POST(req: NextRequest) {
     }
 
     /*
-     * Explicit type prevents Supabase's
-     * generated types from resolving this
-     * result to `never`.
+     * Explicit type prevents TypeScript
+     * from resolving the Supabase result
+     * to `never`.
      */
     const subscription =
       subscriptionData as
@@ -82,47 +82,63 @@ export async function POST(req: NextRequest) {
       subscription?.stripe_customer_id || null
 
     if (!customerId) {
-      return NextResponse.json(
-        {
-          error:
-            "No Stripe customer found. Please choose a plan first.",
-        },
-        {
-          status: 400,
-        },
-      )
+      return NextResponse.json({
+        paymentMethod: null,
+      })
     }
 
     /*
-     * Create Stripe Billing Portal session.
+     * Retrieve the Stripe customer payment methods.
      */
-    const session =
-      await stripe.billingPortal.sessions.create(
-        {
-          customer: customerId,
+    const paymentMethods =
+      await stripe.paymentMethods.list({
+        customer: customerId,
+        type: "card",
+      })
 
-          return_url:
-            `${req.nextUrl.origin}/dashboard/settings`,
-        },
-      )
+    const paymentMethod =
+      paymentMethods.data[0]
+
+    if (!paymentMethod) {
+      return NextResponse.json({
+        paymentMethod: null,
+      })
+    }
 
     return NextResponse.json({
-      url: session.url,
+      paymentMethod: {
+        brand:
+          paymentMethod.card?.brand ||
+          "card",
+
+        last4:
+          paymentMethod.card?.last4 ||
+          "",
+
+        expMonth:
+          paymentMethod.card?.exp_month ||
+          0,
+
+        expYear:
+          paymentMethod.card?.exp_year ||
+          0,
+      },
     })
   } catch (error: unknown) {
     console.error(
-      "Error creating billing portal session:",
+      "Error loading payment method:",
       error,
     )
 
     const message =
       error instanceof Error
         ? error.message
-        : "Unable to open billing portal"
+        : "Unable to load payment method"
 
     return NextResponse.json(
       {
         error: message,
+        paymentMethod: null,
       },
       {
         status: 500,

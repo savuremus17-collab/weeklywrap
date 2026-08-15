@@ -1,12 +1,20 @@
 import OpenAI from 'openai';
 
-if (!process.env.OPENAI_API_KEY) {
-  throw new Error('Missing OPENAI_API_KEY environment variable');
-}
+let _openai: OpenAI | null = null;
 
-export const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
+// Lazily create the client the first time it's actually needed, instead of
+// throwing at module-import time. Importing this file for other exports
+// (types, AI_MODEL, etc.) should never crash a build/route just because the
+// key isn't configured yet — only calls to getAICompletion() should fail.
+function getClient(): OpenAI {
+  if (!_openai) {
+    if (!process.env.OPENAI_API_KEY) {
+      throw new Error('Missing OPENAI_API_KEY environment variable');
+    }
+    _openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+  }
+  return _openai;
+}
 
 export const AI_MODEL = 'gpt-4o-mini';
 
@@ -30,7 +38,7 @@ export async function getAICompletion<T>(
   const start = Date.now();
   
   try {
-    const response = await openai.chat.completions.create({
+    const response = await getClient().chat.completions.create({
       model: AI_MODEL,
       messages,
       response_format: { type: 'json_object' },

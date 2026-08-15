@@ -2,10 +2,20 @@ import { NextResponse } from 'next/server'
 import { stripe } from '../../../../lib/stripe/server'
 import { createClient } from '@supabase/supabase-js'
 
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!
-)
+let _supabase: any = null
+
+// Lazily create the admin client on first use instead of at module-import
+// time, so a missing env var during build-time page-data collection can't
+// crash the whole build.
+function getSupabase() {
+  if (!_supabase) {
+    _supabase = createClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.SUPABASE_SERVICE_ROLE_KEY!
+    )
+  }
+  return _supabase
+}
 
 export async function POST(req: Request) {
   const body = await req.text()
@@ -38,31 +48,42 @@ export async function POST(req: Request) {
         const subscriptionId = session.subscription
 
         if (userId) {
-          await supabase.from('subscriptions').upsert({
+          let periodStart: string | null = null
+          let periodEnd: string | null = null
+        if (subscriptionId) {
+            const sub = await stripe.subscriptions.retrieve(subscriptionId) as any
+            periodStart = new Date(sub.current_period_start * 1000).toISOString()
+            periodEnd = new Date(sub.current_period_end * 1000).toISOString()
+          }
+          await getSupabase().from('subscriptions').upsert({
             user_id: userId,
             stripe_customer_id: customerId,
             stripe_subscription_id: subscriptionId,
             plan_type: planType || 'pro',
             status: 'active',
+            current_period_start: periodStart,
+            current_period_end: periodEnd,
           }, { onConflict: 'user_id' })
         }
         break
       }
 
-      case 'customer.subscription.updated': {
-        const subscription = event.data.object
+     case 'customer.subscription.updated': {
+        const subscription = event.data.object as any
         const customerId = subscription.customer
 
-        const { data: existing } = await supabase
+        const { data: existing } = await getSupabase()
           .from('subscriptions')
           .select('user_id')
           .eq('stripe_customer_id', customerId)
           .single()
 
         if (existing) {
-          await supabase.from('subscriptions').update({
+          await getSupabase().from('subscriptions').update({
             status: subscription.status,
             stripe_subscription_id: subscription.id,
+            current_period_start: new Date(subscription.current_period_start * 1000).toISOString(),
+            current_period_end: new Date(subscription.current_period_end * 1000).toISOString(),
           }).eq('stripe_customer_id', customerId)
         }
         break
@@ -72,7 +93,7 @@ export async function POST(req: Request) {
         const subscription = event.data.object
         const customerId = subscription.customer
 
-        await supabase.from('subscriptions').update({
+        await getSupabase().from('subscriptions').update({
           status: 'canceled',
           plan_type: 'free',
         }).eq('stripe_customer_id', customerId)
@@ -83,7 +104,7 @@ export async function POST(req: Request) {
         const invoice = event.data.object
         const customerId = invoice.customer
 
-        await supabase.from('subscriptions').update({
+        await getSupabase().from('subscriptions').update({
           status: 'past_due',
         }).eq('stripe_customer_id', customerId)
         break

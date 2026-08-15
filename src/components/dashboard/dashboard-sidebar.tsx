@@ -47,7 +47,8 @@ export function DashboardSidebar({
   const [userProfile, setUserProfile] = useState<{
     name: string
     avatarUrl: string | null
-  }>({ name: "", avatarUrl: null })
+    planLabel: string
+  }>({ name: "", avatarUrl: null, planLabel: "" })
 
   useEffect(() => {
     setMounted(true)
@@ -63,6 +64,12 @@ export function DashboardSidebar({
           .eq("id", user.id)
           .maybeSingle()
 
+        const { data: sub } = await supabase
+          .from("subscriptions")
+          .select("plan_type, status")
+          .eq("user_id", user.id)
+          .maybeSingle()
+
         const { data: { publicUrl } } = supabase.storage
           .from("avatars")
           .getPublicUrl(`avatars/${user.id}.jpg`)
@@ -70,6 +77,9 @@ export function DashboardSidebar({
         setUserProfile({
           name: data?.name || user.email || "User",
           avatarUrl: publicUrl || null,
+          planLabel: sub?.status === "active"
+            ? (sub.plan_type === "yearly" ? "Yearly Plan" : "Monthly Plan")
+            : "No active plan",
         })
       } catch (e) {
         console.error("Failed to load sidebar profile:", e)
@@ -77,6 +87,7 @@ export function DashboardSidebar({
     }
     loadProfile()
   }, [])
+
   if (!mounted) {
     return (
       <div
@@ -217,7 +228,7 @@ export function DashboardSidebar({
                 <p className="text-sm font-medium text-sidebar-foreground truncate">
                   {userProfile.name || "Loading..."}
                 </p>
-                <p className="text-xs text-sidebar-foreground/50 truncate">Pro Plan</p>
+                <p className="text-xs text-sidebar-foreground/50 truncate">{userProfile.planLabel || "Loading..."}</p>
               </motion.div>
             )}
           </AnimatePresence>
