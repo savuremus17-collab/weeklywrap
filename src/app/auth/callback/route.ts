@@ -8,6 +8,21 @@ export async function GET(request: NextRequest) {
   const next = searchParams.get("next") ?? "/dashboard";
 
   if (code) {
+    const redirectUrl =
+      type === "recovery"
+        ? (() => {
+            const url = new URL(`${origin}/update-password`);
+            url.searchParams.set("redirected", "true");
+            return url;
+          })()
+        : new URL(`${origin}${next}`);
+
+    // Create the response up front and attach session cookies directly to
+    // IT (not to `request.cookies`, which the browser never sees). This is
+    // the object we actually return, so any Set-Cookie headers written here
+    // are the ones the browser will store.
+    const response = NextResponse.redirect(redirectUrl);
+
     const supabase = createServerClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
       process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
@@ -18,7 +33,7 @@ export async function GET(request: NextRequest) {
           },
           setAll(cookiesToSet) {
             cookiesToSet.forEach(({ name, value, options }) =>
-              request.cookies.set({ name, value, ...options })
+              response.cookies.set(name, value, options)
             );
           },
         },
@@ -28,12 +43,7 @@ export async function GET(request: NextRequest) {
     const { error } = await supabase.auth.exchangeCodeForSession(code);
 
     if (!error) {
-      if (type === "recovery") {
-        const url = new URL(`${origin}/update-password`);
-        url.searchParams.set("redirected", "true");
-        return NextResponse.redirect(url);
-      }
-      return NextResponse.redirect(`${origin}${next}`);
+      return response;
     }
   }
 
