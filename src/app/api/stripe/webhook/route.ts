@@ -50,8 +50,8 @@ export async function POST(req: Request) {
         if (userId) {
           let periodStart: string | null = null
           let periodEnd: string | null = null
-          if (subscriptionId) {
-            const sub = await stripe.subscriptions.retrieve(subscriptionId)
+         if (subscriptionId) {
+            const sub = await stripe.subscriptions.retrieve(subscriptionId) as any
             periodStart = new Date(sub.current_period_start * 1000).toISOString()
             periodEnd = new Date(sub.current_period_end * 1000).toISOString()
           }
@@ -68,8 +68,8 @@ export async function POST(req: Request) {
         break
       }
 
-      case 'customer.subscription.updated': {
-        const subscription = event.data.object
+     case 'customer.subscription.updated': {
+        const subscription = event.data.object as any
         const customerId = subscription.customer
 
         const { data: existing } = await getSupabase()
