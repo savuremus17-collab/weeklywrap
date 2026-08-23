@@ -186,7 +186,7 @@ export default function SettingsPage() {
       await supabase.auth.signOut()
       window.location.href = "/"
     } else {
-      alert("Error deleting account: " + data.error)
+      alert("Error deleting account: " + data.error + (data.status ? ` (status: ${data.status})` : "") + (data.code ? ` (code: ${data.code})` : ""))
     }
   } catch (error: any) {
     alert("Something went wrong: " + error.message)
