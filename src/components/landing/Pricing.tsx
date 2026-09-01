@@ -16,12 +16,12 @@ const features = [
 
 const yearlyPerks = [
   { icon: Sparkles, label: "Year in Review report", desc: "An AI-generated year-end summary of every client's progress" },
-  { icon: Lock, label: "Price locked for life", desc: "Your $149/yr rate never goes up, even if we raise prices later" },
+  { icon: Lock, label: "Price locked for life", desc: "Your $499.99/yr rate never goes up, even if we raise prices later" },
   { icon: Rocket, label: "Early access to new features", desc: "Try new tools before they roll out to everyone else" },
   { icon: Headset, label: "Priority support", desc: "Jump the queue when you need help" },
 ];
 
-const price = { monthly: 15, yearly: 149 };
+const price = { monthly: 34.99, yearly: 499.99 };
 
 export const Pricing = () => {
   const [isYearly, setIsYearly] = useState(false);
