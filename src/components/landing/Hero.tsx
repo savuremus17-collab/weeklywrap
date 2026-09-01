@@ -40,7 +40,7 @@ export function Hero() {
             href="/signup"
             className="group bg-indigo-600 hover:bg-indigo-500 text-white font-semibold px-8 py-4 rounded-xl transition-all duration-200 flex items-center gap-2 text-base shadow-lg shadow-indigo-600/30"
           >
-            Get Started — $15/mo
+            Get Started — $34.99/mo
             <span className="group-hover:translate-x-1 transition-transform">→</span>
           </Link>
         </div>
