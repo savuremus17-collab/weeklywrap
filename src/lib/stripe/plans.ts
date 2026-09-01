@@ -16,7 +16,7 @@ export const PLANS: Plan[] = [
     id: 'pro',
     name: 'Monthly',
     description: 'Everything you need to automate client reporting.',
-    price: 15,
+    price: 34.99,
     interval: 'month',
     features: [
       'Unlimited clients & reports',
@@ -32,7 +32,7 @@ export const PLANS: Plan[] = [
     id: 'yearly',
     name: 'Yearly',
     description: 'Everything in Monthly — pay yearly and save 17%.',
-    price: 149,
+    price: 499.99,
     interval: 'year',
     features: [
       'Unlimited clients & reports',
