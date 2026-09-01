@@ -2,16 +2,13 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { Zap } from "lucide-react";
-
 export function Nav() {
   const [scrolled, setScrolled] = useState(false);
-
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 20);
     window.addEventListener("scroll", onScroll);
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
-
   return (
     <>
       <div
@@ -20,11 +17,10 @@ export function Nav() {
         <span className="flex items-center justify-center gap-2">
           <Zap size={14} />
           <span>
-            One simple plan. <strong>$15/mo</strong> or <strong>$149/yr</strong> — every feature included, cancel anytime.
+            One simple plan. <strong>$34.99/mo</strong> or <strong>$499.99/yr</strong> — every feature included, cancel anytime.
           </span>
         </span>
       </div>
-
       <nav
         className={`fixed left-0 right-0 z-40 transition-all duration-300 ${
           scrolled
@@ -42,7 +38,6 @@ export function Nav() {
               WeeklyWrap
             </span>
           </Link>
-
           <div className="hidden md:flex items-center gap-8">
             {["Features", "Pricing", "Testimonials", "FAQ"].map((item) => (
               <Link
@@ -54,7 +49,6 @@ export function Nav() {
               </Link>
             ))}
           </div>
-
           <div className="flex items-center gap-3">
             <Link
               href="/login"
