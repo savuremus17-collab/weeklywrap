@@ -20,7 +20,7 @@ export type AuthContextType = {
   loading: boolean
   signIn: (email: string, password: string) => Promise<{ error: AuthError | null }>
   signUp: (email: string, password: string, name?: string) => Promise<{ error: AuthError | null }>
-  signInWithGoogle: () => Promise<{ error: AuthError | null }>
+  signInWithGoogle: (next?: string) => Promise<{ error: AuthError | null }>
   sendMagicLink: (email: string) => Promise<{ error: AuthError | null }>
   signOut: () => Promise<void>
   sendPasswordResetEmail: (email: string) => Promise<{ error: AuthError | null }>
@@ -82,8 +82,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     return { error }
   }, [])
 
-  const handleSignInWithGoogle = useCallback(async () => {
-    const { error } = await signInWithGoogle()
+  const handleSignInWithGoogle = useCallback(async (next?: string) => {
+    const { error } = await signInWithGoogle(next)
     return { error }
   }, [])
 
