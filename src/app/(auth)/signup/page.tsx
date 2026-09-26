@@ -93,10 +93,11 @@ function SignupForm() {
   const handleGoogleLogin = useCallback(async () => {
     setIsGoogleLoading(true);
     try {
-      const { error } = await signInWithGoogle();
+      const next = planParam ? `/checkout?plan=${planParam}` : undefined;
+      const { error } = await signInWithGoogle(next);
       if (error) { toast.error(error.message); setIsGoogleLoading(false); }
     } catch { toast.error("Failed to sign in with Google"); setIsGoogleLoading(false); }
-  }, [signInWithGoogle]);
+  }, [signInWithGoogle, planParam]);
 
   return (
     <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3 }}>
