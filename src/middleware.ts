@@ -43,7 +43,8 @@ export async function middleware(request: NextRequest) {
   }
 
   if (
-    pathname.startsWith("/dashboard") &&
+    (pathname.startsWith("/dashboard") ||
+      pathname.startsWith("/checkout")) &&
     !user
   ) {
     const url = request.nextUrl.clone()
@@ -74,6 +75,7 @@ export async function middleware(request: NextRequest) {
 export const config = {
   matcher: [
     "/dashboard/:path*",
+    "/checkout",
     "/login",
     "/signup",
     "/magic-link",
