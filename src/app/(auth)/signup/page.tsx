@@ -1,7 +1,7 @@
 "use client";
 
-import { useState, useCallback, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { Suspense, useState, useCallback, useEffect } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { Loader2, Mail, Lock, User, Eye, EyeOff, ArrowRight } from "lucide-react";
@@ -9,6 +9,7 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/use-auth";
 import { useUser } from "@/hooks/use-user";
+import { PLANS } from "@/lib/stripe/plans";
 
 function GoogleIcon({ className }: { className?: string }) {
   return (
@@ -21,8 +22,16 @@ function GoogleIcon({ className }: { className?: string }) {
   );
 }
 
+// "monthly" / "yearly" vin din link-urile de pe pagina de pricing
+// (`/signup?plan=monthly|yearly`); PLANS folosește id-urile "pro" / "yearly".
+const PLAN_PARAM_TO_ID: Record<string, (typeof PLANS)[number]["id"]> = {
+  monthly: "pro",
+  yearly: "yearly",
+};
+
 function SignupForm() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { signUp, signInWithGoogle } = useAuth();
   const { user } = useUser();
 
@@ -33,9 +42,38 @@ function SignupForm() {
   const [isLoading, setIsLoading] = useState(false);
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
 
+  const planParam = searchParams.get("plan");
+  const selectedPlan = planParam ? PLANS.find((p) => p.id === PLAN_PARAM_TO_ID[planParam]) : undefined;
+
   useEffect(() => {
     if (user) router.replace("/dashboard");
   }, [user, router]);
+
+  // Creează sesiunea de checkout pentru planul ales și redirecționează spre Stripe.
+  // Dacă nu a fost ales niciun plan (sau ceva eșuează), userul ajunge oricum pe
+  // /dashboard cu contul creat — poate alege un abonament mai târziu din settings.
+  const redirectToCheckoutOrDashboard = useCallback(async () => {
+    if (!selectedPlan?.stripePriceId) {
+      router.replace("/dashboard");
+      return;
+    }
+    try {
+      const res = await fetch("/api/stripe/create-checkout", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ priceId: selectedPlan.stripePriceId }),
+      });
+      const data = await res.json();
+      if (res.ok && data.url) {
+        window.location.href = data.url;
+        return;
+      }
+      toast.error(data.error ?? "Couldn't start checkout — you can pick a plan from your dashboard.");
+    } catch {
+      toast.error("Couldn't start checkout — you can pick a plan from your dashboard.");
+    }
+    router.replace("/dashboard");
+  }, [selectedPlan, router]);
 
   const handleEmailSignup = useCallback(async (e: React.FormEvent) => {
     e.preventDefault();
@@ -46,11 +84,11 @@ function SignupForm() {
     try {
       const { error } = await signUp(email, password, name.trim());
       if (error) { toast.error(error.message); return; }
-      toast.success("Account created! Check your email to confirm.");
-      router.replace("/dashboard");
+      toast.success("Account created!");
+      await redirectToCheckoutOrDashboard();
     } catch { toast.error("An unexpected error occurred."); }
     finally { setIsLoading(false); }
-  }, [name, email, password, signUp, router]);
+  }, [name, email, password, signUp, redirectToCheckoutOrDashboard]);
 
   const handleGoogleLogin = useCallback(async () => {
     setIsGoogleLoading(true);
@@ -114,4 +152,10 @@ function SignupForm() {
   );
 }
 
-export default function SignupPage() { return <SignupForm />; }
+export default function SignupPage() {
+  return (
+    <Suspense fallback={null}>
+      <SignupForm />
+    </Suspense>
+  );
+}
