@@ -31,11 +31,14 @@ export async function signUpWithEmail(email: string, password: string, metadata?
   return { data, error: null as null }
 }
 
-export async function signInWithGoogle() {
+export async function signInWithGoogle(next?: string) {
+  const callbackUrl = `${process.env.NEXT_PUBLIC_APP_URL}/auth/callback${
+    next ? `?next=${encodeURIComponent(next)}` : ''
+  }`
   const { data, error } = await supabase.auth.signInWithOAuth({
     provider: 'google',
     options: {
-      redirectTo: `${process.env.NEXT_PUBLIC_APP_URL}/auth/callback`,
+      redirectTo: callbackUrl,
       queryParams: { access_type: 'offline', prompt: 'consent' },
     },
   })
